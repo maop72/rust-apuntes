@@ -1,0 +1,42 @@
+project:
+  type: book
+
+book:
+  title: "Apuntes de programación en Rust"
+  author: "Miguel A. Ortuño Pérez"
+  chapters:
+    - index.qmd
+    - 02-intro_rust.qmd
+    - 03-entorno.qmd
+    - 04-basicos.qmd
+
+lang: es-ES
+language:
+  title-block-author-single: "Autor"
+  title-block-author-plural: "Autores"
+
+crossref:
+  chapters: true
+
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-copy: true
+
+  pdf:
+    documentclass: scrreprt
+    fontsize: 11pt
+    geometry:
+    - top=2cm
+    - bottom=2cm
+    - left=2.2cm
+    - right=2.2cm
+    highlight-style: tango
+    linestretch: 1.05
+    number-sections: true
+    papersize: a4
+    pdf-engine: xelatex
+    toc: true
+    toc-title: Índice
+

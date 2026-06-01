@@ -1,0 +1,101 @@
+# El entorno de Rust
+
+## Instalar
+
+La instalación recomendada se realiza mediante `rustup`, el
+gestor oficial de herramientas y versiones de Rust.
+
+``` bash
+curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+```
+
+Esto instalará:
+
+- El compilador `rustc`.
+
+- La herramienta de gestión `cargo`.
+
+- La biblioteca estándar y herramientas auxiliares.
+
+## Compilar y ejecutar
+
+En muchos lenguajes, un programa suele corresponderse con un
+único fichero fuente. En Rust, lo habitual es trabajar con
+proyectos organizados como directorios.
+
+Se puede usar directamente el compilador `rustc`, pero lo normal
+es utilizar `cargo`, el sistema oficial de gestión de proyectos y
+paquetes de Rust. Integra compilación, ejecución, gestión de
+dependencias, tests y generación de documentación.
+
+### Crear un proyecto
+
+- `cargo new mi_proyecto`
+
+  Esa orden crea, en el directorio actual, un subdirectorio
+  llamado `mi_proyecto` con toda la estructura básica del
+  proyecto. En `mi_proyecto/src/main.rs` escribe un *holamundo*,
+  para usar como punto de partida.
+
+  A continuación veremos las órdenes para compilar y ejecutar nuestros programas. Todos estos
+  comandos tendremos que ejecutarlos desde el directorio
+  del proyecto. En este ejemplo, ```mi_proyecto```. 
+
+### Compilar y ejecutar
+
+
+`cargo run`
+
+Esto compila el proyecto, escribe el ejecutable en
+  `./target/debug/mi_proyecto` y lo invoca.
+
+### Solo compilar
+
+`cargo build`
+
+Compila el proyecto y genera el ejecutable en
+  `./target/debug/mi_programa`, pero sin ejecutarlo.
+
+### Compilación para distribución
+
+`cargo build --release`
+
+  Genera una versión optimizada para distribución y producción, en
+  `./target/release/mi_programa`.
+
+## Formato
+
+La *Rust Style Guide* define un formato oficial para el código
+fuente, implementado por la herramienta *rustfmt*, usada de forma
+prácticamente universal.
+
+Basta ejecutar, en el directorio del proyecto:
+`cargo fmt`.
+
+
+
+## Organización de proyectos en Rust
+
+- **Crate**
+
+  Unidad básica de compilación en Rust. Puede ser un ejecutable
+  (`main.rs`) o una biblioteca (`lib.rs`).
+
+- **Package**
+
+  Proyecto gestionado por Cargo. Puede contener uno o varios
+  crates. Se identifica por el fichero `Cargo.toml`, que
+  almacena:
+
+  - Nombre del proyecto.
+
+  - Versión.
+
+  - Dependencias.
+
+  - Configuración de compilación.
+
+- **Workspace**
+
+  Conjunto de packages gestionados conjuntamente. Resulta útil
+  para proyectos grandes divididos en varios componentes.

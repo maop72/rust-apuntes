@@ -1,0 +1,107 @@
+# Conceptos básicos 
+
+## Mayúsculas y minúsculas
+
+Rust distingue entre mayúsculas y minúsculas (*case-sensitive*).
+
+Convenciones habituales:
+
+- Variables, funciones y módulos: `snake_case`.
+- Tipos, `struct`, `enum` y `trait`: `PascalCase`.
+- Constantes y variables estáticas: `SCREAMING_SNAKE_CASE`.
+- Parámetros genéricos: normalmente una letra mayúscula (`T`,
+  `E`, etc.).
+
+## Identificadores
+
+- Case sensitive.
+- Pueden contener letras, números y `_`.
+- No pueden comenzar por un número.
+- No pueden contener espacios ni símbolos especiales como `+`,
+  `-`, `@`, etc.
+- Se permiten caracteres Unicode, aunque normalmente solo se usa
+  ASCII.
+
+
+## Variables y constantes
+
+Rust distingue variables mutables, variables
+inmutables y constantes.
+Las variables son inmutables por defecto. Para que una
+variable pueda modificarse, debe declararse con ```mut```. Una variable
+sin ```mut``` se comporta de manera parecida a una constante
+asignable una sola vez, aunque no es lo mismo que una verdadera
+constante.
+
+
+### Variables
+
+```rust
+let x = 5;
+```
+
+Intentar modificar `x` producirá un error de compilación.
+Aunque no es necesario conocer el valor de la variable en
+tiempo de compilación, esto es, no es necesario asignarle
+un valor concreto en el código fuente, como acabamos de hacer,
+sino que se puede darle valor en la ejecución. Por ejemplo así:
+
+```rust
+let x = rand();   // válido si rand() devuelve algo en runtime
+```
+También podría obtenerse el valor de *x* desde un fichero,
+consultando al usuario, etc. Pero una vez asignado, no se
+puede volver a cambiar.
+
+```rust
+let x = 5;
+x = 6; // ¡¡Error!!
+```
+
+
+Para permitir modificaciones se usa ```mut```
+
+```rust
+let mut contador = 0;
+contador = contador + 1;
+```
+
+### Constantes
+
+Las constantes se definen con ```const```
+
+```rust
+const MAX_CLIENTES: u32 = 100;
+```
+
+- Son inmutables, su valor no puede cambiar.
+
+- Deben indicar explícitamente el tipo.
+
+- Su valor debe conocerse en tiempo de compilación. Esto es, debe aparecer en el ćodigo fuente *tal cual*.
+
+- Por convenio, se escriben en MAYÚSCULAS.
+
+Ejemplo:
+
+
+```rust
+{{< include c03/const_ok/src/main.rs >}}
+```
+
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20PUERTO_HTTP%3A%20u16%20%3D%2080%3B%0Aconst%20TIMEOUT_SEGUNDOS%3A%20u64%20%3D%2030%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20println%21%28%22Puerto%3A%20%7B%7D%22%2C%20PUERTO_HTTP%29%3B%0A%20%20%20%20println%21%28%22Timeout%3A%20%7B%7D%22%2C%20TIMEOUT_SEGUNDOS%29%3B%0A%7D%0A)
+
+:::
+
+
+
+
+Ejemplos erróneos:
+
+```rust
+const X: i32 = rand(); //  ¡ERROR! No se conoce en tiempo de compilación.
+```
+

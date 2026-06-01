@@ -1,0 +1,62 @@
+Material didáctico sobre Rust, escrito por Miguel Ortuño en
+Quarto. <https://quarto.org/>.
+
+Quarto es una herramienta que, a partir de texto Markdown, puede
+generar PDF, HTML y otros formatos. El HTML puede incluir
+ejemplos de código en diversos lenguajes de programación,
+ejecutables directamente desde la propia página web que se
+generará.
+
+# Instalación
+
+``` bash
+apt install quarto
+
+# Quarto usará xelatex para generar PDF.
+apt install texlive texlive-xetex texlive-latex-extra
+```
+
+# Uso
+
+## Previsualización interactiva
+
+Para ver el documento completo en HTML, basta con ejecutar,
+dentro del directorio que lo contiene, el comando
+
+``` bash
+quarto preview
+```
+
+Esto lanza un servidor web local, abre el navegador y recompila
+automáticamente al detectar cambios.
+
+## Generar PDF
+
+``` bash
+quarto render --to pdf
+```
+
+## Generar HTML
+
+``` bash
+quarto render --to html
+```
+
+# Limpieza
+
+``` bash
+quarto clean
+```
+
+# Lectura online
+
+<https://maop72.github.io/rust-apuntes/>
+
+# Código fuente
+
+<https://github.com/maop72/rust-apuntes>
+
+# Licencias
+
+- Documentación: CC BY-SA 4.0 (véase LICENSE-CC-BY-SA).
+- Ejemplos de código Rust: MIT (véase LICENSE-MIT).

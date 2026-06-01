@@ -1,0 +1,87 @@
+# Introducción al lenguaje Rust
+
+## Historia de Rust
+
+- Entre 1990-2010 aprox., muchos sistemas críticos se desarrollan
+  en C y C++. Muy potentes, pero propensos a errores difíciles de
+  detectar relacionados con memoria, punteros y concurrencia.
+
+- Lenguajes modernos como Java o Python simplifican el desarrollo
+  y aumentan la seguridad, pero sacrifican rendimiento y control
+  de bajo nivel.
+
+- Rust comienza como un proyecto personal de Graydon Hoare
+  alrededor de 2006 y poco después recibe apoyo de Mozilla. Es
+  libre y gratuito (licencias MIT / Apache 2.0).
+
+- Primera versión estable: 2015. Empieza a popularizarse
+  rápidamente a finales de la década de 2010.
+
+- Rust intenta combinar seguridad y fiabilidad con el rendimiento
+  y control tradicionales de los lenguajes de sistemas.
+
+
+## Uso e impacto de Rust
+
+- Disponible en múltiples arquitecturas y plataformas:
+  x86, ARM, WebAssembly, Linux, macOS, Windows, sistemas
+  embebidos, etc.
+
+- Utilizado tanto en proyectos de software libre como en grandes
+  empresas tecnológicas: Google, Microsoft, Amazon, Meta,
+  Mozilla, Cloudflare, Discord, Dropbox, Linux, Android, etc.
+
+- Especialmente valorado en ámbitos donde son importantes la
+  seguridad, fiabilidad, concurrencia y rendimiento.
+
+- Recomendado por diversos organismos y expertos en
+  ciberseguridad para reducir errores relacionados con memoria y
+  corrupción de datos.
+
+- Cada vez más usado en redes, navegadores, servidores,
+  herramientas de línea de comandos, sistemas embebidos y
+  componentes de sistemas operativos.
+
+
+## Características de Rust
+
+Lenguaje compilado, orientado a sistemas y con alto rendimiento.
+
+- Seguridad de memoria sin necesidad de recolector de basura
+  (*garbage collector*).
+
+- Sistema de tipos estricto y muy orientado a detectar errores
+  durante la compilación.
+
+- Modelo de propiedad (*ownership*) y préstamos (*borrowing*)
+  para gestionar memoria y concurrencia de forma segura.
+
+- Concurrencia segura, reduciendo muchos errores típicos de los
+  programas paralelos.
+
+- Abstracciones de alto nivel con coste prácticamente nulo
+  (*zero-cost abstractions*).
+
+- Buen soporte multiplataforma y ecosistema moderno de
+  herramientas y bibliotecas.
+
+## Cargo
+
+Cargo es la herramienta oficial de gestión de proyectos de Rust.
+
+- Permite crear proyectos, compilar, ejecutar pruebas y generar
+  documentación desde una interfaz unificada.
+
+- Gestiona automáticamente dependencias y versiones.
+
+- El fichero `Cargo.toml` almacena configuración y metadatos del
+  proyecto.
+
+- Facilita la compilación reproducible mediante el fichero
+  `Cargo.lock`.
+
+- Integra de forma sencilla pruebas automáticas, ejemplos,
+  benchmarks y publicación de bibliotecas.
+
+- Permite aplicar automáticamente el formato oficial al código
+  fuente, evitando muchas "guerras de estilos".

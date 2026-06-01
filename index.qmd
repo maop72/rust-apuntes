@@ -1,0 +1,24 @@
+# Acerca de estos apuntes
+## Prefacio
+
+Este material didáctico está escrito para la asignatura *Programación de Sistemas Telemáticos-II*,
+de la 
+[Escuela de Ingeniería de Fuenlabrada](https://www.urjc.es/eif)
+de la [Universidad Rey Juan Carlos](https://www.urjc.es). 
+
+
+## Licencia
+
+La documentación de estos apuntes se distribuye bajo licencia
+CC BY-SA 4.0 y los ejemplos de código bajo licencia MIT.
+
+Los textos completos de las licencias están disponibles en el
+repositorio del proyecto.
+
+
+## Código fuente
+
+El código fuente de estos apuntes, junto con todos los ejemplos de Rust,
+está disponible en:
+
+https://github.com/maop72/rust-apuntes
