@@ -30,22 +30,17 @@ quarto preview
 Esto lanza un servidor web local, abre el navegador y recompila
 automáticamente al detectar cambios.
 
-## Generar PDF
+## Generar HTML y PDF
 
 ``` bash
-quarto render --to pdf
+make all
 ```
 
-## Generar HTML
-
-``` bash
-quarto render --to html
-```
 
 # Limpieza
 
 ``` bash
-quarto clean
+make clean
 ```
 
 # Lectura online
