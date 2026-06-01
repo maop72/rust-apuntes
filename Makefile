@@ -3,6 +3,7 @@
 all: render
 
 render:
+	git log -1 --format="Última actualización: %cs." > date.md
 	./tools/code2url.py
 	quarto render
 

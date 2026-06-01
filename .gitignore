@@ -5,3 +5,4 @@ debug
 target
 */*.rs.bk    # rustfmt backup files
 **/mutants.out*/  # generado por los tests de cargo mutants
+date.md

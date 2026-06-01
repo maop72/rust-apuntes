@@ -47,6 +47,11 @@ make clean
 
 <https://maop72.github.io/rust-apuntes/>
 
+
+# Versión en PDF 
+<https://maop72.github.io/rust-apuntes/Apuntes-de-programaci%C3%B3n-en-Rust.pdf>
+
+
 # Código fuente
 
 <https://github.com/maop72/rust-apuntes>

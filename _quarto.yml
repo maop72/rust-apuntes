@@ -4,6 +4,7 @@ project:
 book:
   title: "Apuntes de programación en Rust"
   author: "Miguel A. Ortuño Pérez"
+  date: today
   chapters:
     - index.qmd
     - 02-intro_rust.qmd
