@@ -14,7 +14,8 @@ html: common
 pdf: common
 	quarto render --to pdf
 
-all: html pdf
+all: common 
+	quarto render
 
 clean:
 	rm -rf _book .quarto
