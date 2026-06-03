@@ -1,16 +1,27 @@
-.PHONY: all render preview clean
+.PHONY: all links common html pdf all clean preview 
+
+CODE2URL := ./tools/code2url.py
 
 all: render
 
-render:
-	git log -1 --format="Última actualización: %cs." > date.md
-	./tools/code2url.py
-	quarto render
+links:
+	$(CODE2URL)
 
-preview:
-	./code2url.py -v
-	quarto preview
+common: links
+	git log -1 --format="Última actualización: %cs." > date.md
+
+html: common
+	quarto render --to html
+
+pdf: common
+	quarto render --to pdf
+
+all: html
+	pdf 
 
 clean:
 	rm -rf _book .quarto
+
+preview: links
+	quarto preview &>/dev/null
 

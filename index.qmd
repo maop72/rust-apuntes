@@ -7,11 +7,9 @@ Este material didáctico está escrito para la asignatura
 Ingeniería de Fuenlabrada](https://www.urjc.es/eif) de la
 [Universidad Rey Juan Carlos](https://www.urjc.es).
 
-
 ## Estado del documento
 
-Trabajo en desarrollo.
-{{< include date.md >}}
+Trabajo en desarrollo. {{\< include date.md \>}}
 
 ## Licencia
 
@@ -21,20 +19,36 @@ BY-SA 4.0 y los ejemplos de código bajo licencia MIT.
 Los textos completos de las licencias están disponibles en el
 repositorio del proyecto.
 
-# Lectura online
+## Direcciones de interés
 
-La última versión de estos apuntes puede leerse online en
+- Ejecución de los ejemplos
 
-<https://maop72.github.io/rust-apuntes/>
+  En el propio documento, tras cada ejemplo hay un enlace para
+  ejecutarlo online. Ejemplo:
 
-# Versión en PDF
 
-La versión PDF se puede encontrar en
+  ``` rust
+  {{< include c01/holamundo/src/main.rs >}}
+  ```
 
-<https://maop72.github.io/rust-apuntes/Apuntes-de-programaci%C3%B3n-en-Rust.pdf>
+::: {.text-end .small}
 
-# Código fuente
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20println%21%28%22Hola%2C%20mundo.%22%29%3B%0A%7D%0A)
 
-El código fuente de estos apuntes, junto con todos los ejemplos
-de Rust, está disponible en:
-<https://github.com/maop72/rust-apuntes>
+:::
+
+- La última versión de estos apuntes puede leerse online en HTML
+  en
+
+  <https://maop72.github.io/rust-apuntes/>
+
+- La versión PDF se puede encontrar en
+
+  <https://maop72.github.io/rust-apuntes/Apuntes-de-programaci%C3%B3n-en-Rust.pdf>
+
+- Código fuente completo.
+
+  El código fuente de estos apuntes, junto con todos los ejemplos
+  de Rust, está disponible en:
+
+  <https://github.com/maop72/rust-apuntes>

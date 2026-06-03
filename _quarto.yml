@@ -12,6 +12,7 @@ book:
     - 04-basicos.qmd
 
 lang: es-ES
+
 language:
   title-block-author-single: "Autor"
   title-block-author-plural: "Autores"
@@ -27,17 +28,43 @@ format:
 
   pdf:
     documentclass: scrreprt
+    classoption:
+      - twoside
+
     fontsize: 11pt
+
     geometry:
-    - top=2cm
-    - bottom=2cm
-    - left=2.2cm
-    - right=2.2cm
+      - top=2cm
+      - bottom=2cm
+      - left=2.2cm
+      - right=2.2cm
+
     highlight-style: tango
     linestretch: 1.05
     number-sections: true
     papersize: a4
     pdf-engine: xelatex
+
     toc: true
     toc-title: Índice
 
+    lot: true
+
+    include-in-header:
+      text: |
+        \usepackage{fancyhdr}
+
+        \pagestyle{fancy}
+        \fancyhf{}
+
+        % Título del libro en páginas pares
+        \fancyhead[LE]{Apuntes de programación en Rust}
+
+        % Capítulo actual en páginas impares
+        \fancyhead[RO]{\nouppercase{\leftmark}}
+
+        % Número de página en el exterior
+        \fancyhead[RE,LO]{\thepage}
+
+        \renewcommand{\headrulewidth}{0.4pt}
+        \renewcommand{\footrulewidth}{0pt}

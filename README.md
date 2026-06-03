@@ -24,18 +24,20 @@ Para ver el documento completo en HTML, basta con ejecutar,
 dentro del directorio que lo contiene, el comando
 
 ``` bash
-quarto preview
+make preview
 ```
 
 Esto lanza un servidor web local, abre el navegador y recompila
-automáticamente al detectar cambios.
+automáticamente el documento si detecta algún cambio. 
 
 ## Generar HTML y PDF
+
+Esta orden genera el documento completo en el subdirectorio
+*\_book*.  
 
 ``` bash
 make all
 ```
-
 
 # Limpieza
 
@@ -47,10 +49,9 @@ make clean
 
 <https://maop72.github.io/rust-apuntes/>
 
+# Versión en PDF
 
-# Versión en PDF 
 <https://maop72.github.io/rust-apuntes/Apuntes-de-programaci%C3%B3n-en-Rust.pdf>
-
 
 # Código fuente
 

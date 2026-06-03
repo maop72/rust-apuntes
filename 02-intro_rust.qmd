@@ -29,7 +29,7 @@
 
 - Utilizado tanto en proyectos de software libre como en grandes
   empresas tecnológicas: Google, Microsoft, Amazon, Meta,
-  Mozilla, Cloudflare, Discord, Dropbox, Linux, Android, etc.
+  Mozilla, Cloudflare, Discord, Dropbox, Linux, Android, entre otros.
 
 - Especialmente valorado en ámbitos donde son importantes la
   seguridad, fiabilidad, concurrencia y rendimiento.
@@ -84,4 +84,4 @@ Cargo es la herramienta oficial de gestión de proyectos de Rust.
   benchmarks y publicación de bibliotecas.
 
 - Permite aplicar automáticamente el formato oficial al código
-  fuente, evitando muchas "guerras de estilos".
+  fuente, evitando las *guerras de estilos*.

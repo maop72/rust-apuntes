@@ -1,6 +1,6 @@
 # El entorno de Rust
 
-## Instalar
+## Instalación
 
 La instalación recomendada se realiza mediante `rustup`, el
 gestor oficial de herramientas y versiones de Rust.
@@ -17,7 +17,7 @@ Esto instalará:
 
 - La biblioteca estándar y herramientas auxiliares.
 
-## Compilar y ejecutar
+## Compilación y ejecución 
 
 En muchos lenguajes, un programa suele corresponderse con un
 único fichero fuente. En Rust, lo habitual es trabajar con
@@ -46,7 +46,7 @@ dependencias, tests y generación de documentación.
 
 `cargo run`
 
-Esto compila el proyecto, escribe el ejecutable en
+Compila el proyecto, escribe el ejecutable en
   `./target/debug/mi_proyecto` y lo invoca.
 
 ### Solo compilar
@@ -68,8 +68,8 @@ Compila el proyecto y genera el ejecutable en
 La *Rust Style Guide* define un formato oficial para el código
 fuente, implementado por la herramienta *rustfmt*, usada de forma
 prácticamente universal.
-
 Basta ejecutar, en el directorio del proyecto:
+
 `cargo fmt`.
 
 

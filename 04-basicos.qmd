@@ -1,94 +1,242 @@
-# Conceptos básicos 
-
-## Mayúsculas y minúsculas
-
-Rust distingue entre mayúsculas y minúsculas (*case-sensitive*).
-
-Convenciones habituales:
-
-- Variables, funciones y módulos: `snake_case`.
-- Tipos, `struct`, `enum` y `trait`: `PascalCase`.
-- Constantes y variables estáticas: `SCREAMING_SNAKE_CASE`.
-- Parámetros genéricos: normalmente una letra mayúscula (`T`,
-  `E`, etc.).
+# Conceptos básicos
 
 ## Identificadores
 
-- Case sensitive.
-- Pueden contener letras, números y `_`.
-- No pueden comenzar por un número.
-- No pueden contener espacios ni símbolos especiales como `+`,
-  `-`, `@`, etc.
-- Se permiten caracteres Unicode, aunque normalmente solo se usa
-  ASCII.
+Un identificador es un nombre elegido por el programador para
+referirse a un elemento del programa: variable, función, tipo,
+módulo, constante, etc.
 
+- Puede contener letras, números y guión bajo ( `_` ).
+- No puede comenzar por un número.
+- No puede contener espacios ni símbolos especiales como `+`,
+  `-`, `@`, etc.
+- Se pueden usar caracteres Unicode. En estos apuntes usaremos el
+  español para identificadores y comentarios, aunque en entornos
+  profesionales lo habitual y recomendable es emplear solamente
+  términos en inglés y caracteres ASCII.
+
+## Mayúsculas y minúsculas
+
+Rust distingue entre mayúsculas y minúsculas (es
+*case-sensitive*), por lo que `edad`, `Edad` y `EDAD` son
+identificadores diferentes. Convenciones habituales:
+
+- Variables, funciones y módulos: `snake_case` (letras minúsculas
+  separadas por guión bajo).
+- Tipos, `struct`, `enum` y `trait`: `PascalCase` (primera letra
+  de cada palabra en mayúscula).
+- Constantes y variables estáticas: `SCREAMING_SNAKE_CASE`
+  (letras mayúsculas, separadas por guión bajo).
+- Parámetros genéricos: normalmente una letra mayúscula (`T`,
+  `E`, etc.).
+
+## Comentarios
+
+Los comentarios son fragmentos de texto ignorados por el
+compilador. Se utilizan para documentar o aclarar el código.
+
+- Los comentarios de una línea comienzan con `//`.
+- Los comentarios de varias líneas se delimitan mediante `/*` y
+  `*/`.
+
+Ejemplos:
+
+``` rust
+// Comentario de una línea.
+
+let edad = 23; // Comentario al final de una instrucción.
+
+/* Comentario
+   de varias líneas. */
+```
+
+Rust dispone también de comentarios especiales para generar
+documentación automática: `///` y `//!`, que trataremos
+posteriormente.
+
+## Operadores
+
+Tal y como muestra la tabla @tbl-operadores, los operadores
+básicos de Rust coinciden con los del lenguaje C y sus herederos,
+como C++, C#, Java, JavaScript, Go, Kotlin, etc.
+
+| Operación         | Operador |
+|-------------------|----------|
+| Suma              | `+`      |
+| Resta             | `-`      |
+| Multiplicación    | `*`      |
+| División          | `/`      |
+| Resto             | `%`      |
+| Igualdad          | `==`     |
+| Desigualdad       | `!=`     |
+| Menor que         | `<`      |
+| Menor o igual que | `<=`     |
+| Mayor que         | `>`      |
+| Mayor o igual que | `>=`     |
+| AND lógico        | `&&`     |
+| OR lógico         | \`       |
+| NOT lógico        | `!`      |
+
+: Operador básicos de Rust {#tbl-operadores}
+
+Los operadores de asignación compuesta (`+=`, `-=`, `*=`, etc.)
+también están disponibles.
 
 ## Variables y constantes
 
-Rust distingue variables mutables, variables
-inmutables y constantes.
-Las variables son inmutables por defecto. Para que una
-variable pueda modificarse, debe declararse con ```mut```. Una variable
-sin ```mut``` se comporta de manera parecida a una constante
-asignable una sola vez, aunque no es lo mismo que una verdadera
-constante.
+### Tipos de variables
 
+Las variables se declaran mediante la palabra reservada `let`. Lo
+más idiomático es omitir el tipo, ya que Rust puede deducirlo a
+partir del valor inicial.
 
-### Variables
-
-```rust
-let x = 5;
+``` rust
+let nombre = "URJC";
+let creacion = 1996;
+let publica = true;
 ```
 
-Intentar modificar `x` producirá un error de compilación.
-Aunque no es necesario conocer el valor de la variable en
-tiempo de compilación, esto es, no es necesario asignarle
-un valor concreto en el código fuente, como acabamos de hacer,
-sino que se puede darle valor en la ejecución. Por ejemplo así:
+También es correcto declarar los tipos de manera explícita, pero
+se considera redundante. La @tbl-tipos-rust resume los tipos
+básicos de Rust.
 
-```rust
-let x = rand();   // válido si rand() devuelve algo en runtime
-```
-También podría obtenerse el valor de *x* desde un fichero,
-consultando al usuario, etc. Pero una vez asignado, no se
-puede volver a cambiar.
-
-```rust
-let x = 5;
-x = 6; // ¡¡Error!!
+``` rust
+let nombre: &str = "URJC";
+let creacion: i32 = 1996;
+let publica: bool = true;
 ```
 
+Habrá ocasiones donde sí es necesario indicar el tipo. Por
+ejemplo, para los literales de coma flotante, Rust infiere por
+defecto un número real de doble precisión (`f64`). Si deseamos un
+real de simple precisión (`f32`), deberemos indicarlo de forma
+explícita.
 
-Para permitir modificaciones se usa ```mut```
-
-```rust
-let mut contador = 0;
-contador = contador + 1;
+``` rust
+let radio: f32 = 3.5;
 ```
+
+También puede ser conveniente hacerlo para mejorar la legibilidad
+del código o para documentar una decisión de diseño:
+
+``` rust
+let puerto: u16 = 8080;
+let temperatura: f32 = 21.5;
+```
+
+Más adelante veremos otras situaciones en las que el compilador
+no dispone de suficiente información para deducir el tipo y es
+obligatorio especificarlo explícitamente.
+
+| Tipo                              | Descripción                               | Ejemplo             |
+|-----------------------------------|-------------------------------------------|---------------------|
+| `bool`                            | Valor lógico                              | `true`, `false`     |
+| `char`                            | Carácter Unicode                          | `'A'`, `'ñ'`, `'€'` |
+| `&str`                            | Cadena de texto inmutable                 | `"Hola"`            |
+| `i8`, `i16`, `i32`, `i64`, `i128` | Enteros con signo                         | `-42`               |
+| `u8`, `u16`, `u32`, `u64`, `u128` | Enteros sin signo                         | `42`                |
+| `isize`                           | Entero con signo del tamaño de un puntero | `-42`               |
+| `usize`                           | Entero sin signo del tamaño de un puntero | `42`                |
+| `f32`                             | Real de simple precisión                  | `3.14`              |
+| `f64`                             | Real de doble precisión                   | `3.14`              |
+
+: Tipos de datos fundamentales de Rust {#tbl-tipos-rust}
+
+Los tipos enteros y de coma flotante también admiten anotaciones
+explícitas en los literales:
+
+``` rust
+let edad = 54u8;
+let poblacion = 8_000_000u64;
+let radio = 3.5f32;
+```
+
+### Mutables e inmutables
+
+Comenzaremos por repasar dos ideas previas:
+
+- Tiempo de compilación (*compile time*): Fase en la que el
+  compilador analiza y traduce el código fuente a código máquina
+  o ejecutable.
+
+- Tiempo de ejecución (*run time*): Fase en la que el programa ya
+  compilado se está ejecutando.
+
+La mayoría de lenguajes de programación incluyen *constantes* y
+*variables*. Mientras que Rust distingue tres categorías:
+*constantes*, *variables inmutables* y *variables mutables*.
+
+Por defecto, las variables son inmutables. Esto es, una vez que
+reciben un valor, este no puede cambiar durante la ejecución del
+programa. En esto coinciden con las constantes. La diferencia
+entre una variable inmutable y una constante es:
+
+- La constante tiene que inicializarse con una expresión cuyo
+  valor puede determinarse durante la compilación.
+
+- La variable inmutable puede recibir su valor en tiempo de
+  ejecución. Cada vez que se ejecute el programa puede tener un
+  valor inicial distinto: leído de un fichero, consultado al
+  usuario, aleatorio, etc. Aunque una vez asignado, no puede
+  cambiar.
+
+El siguiente ejemplo intenta cambiar una variable inmutable, y
+por tanto genera un error de compilación.
+
+``` rust
+{{< include c04/inmutable_error/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20x%20%3D%205%3B%0A%20%20%20%20println%21%28%22x%3A%7Bx%7D%22%29%3B%0A%20%20%20%20x%20%3D%206%3B%20//%20%C2%A1%C2%A1Error%21%21%0A%20%20%20%20println%21%28%22x%3A%7Bx%7D%22%29%3B%0A%7D%0A)
+
+:::
+
+Para que una variable sea mutable, como la de prácticamente
+cualquier otro lenguaje de programación, debe declararse con
+`mut` como en el siguiente ejemplo:
+
+``` rust
+{{< include c04/mutable_ok/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20x%20%3D%205%3B%0A%20%20%20%20println%21%28%22x%3A%7Bx%7D%22%29%3B%0A%20%20%20%20x%20%3D%206%3B%20%0A%20%20%20%20println%21%28%22x%3A%7Bx%7D%22%29%3B%0A%7D%0A)
+
+:::
 
 ### Constantes
 
-Las constantes se definen con ```const```
+Las constantes se definen con la palabra reservada `const`.
 
-```rust
-const MAX_CLIENTES: u32 = 100;
-```
+- Por convención, se escriben en MAYÚSCULAS.
 
-- Son inmutables, su valor no puede cambiar.
+- Son inmutables. Su valor no puede cambiar.
 
 - Deben indicar explícitamente el tipo.
 
-- Su valor debe conocerse en tiempo de compilación. Esto es, debe aparecer en el ćodigo fuente *tal cual*.
+- Su valor debe conocerse en tiempo de compilación.
 
-- Por convenio, se escriben en MAYÚSCULAS.
+Puede tratarse de un valor literal
+
+``` rust
+const MAX_CLIENTES: u32 = 100;
+```
+
+o de una expresión cuyo valor pueda calcularse durante la
+compilación.
+
+``` rust
+const TAM: usize = 1024 * 1024;
+```
 
 Ejemplo:
 
-
-```rust
-{{< include c03/const_ok/src/main.rs >}}
+``` rust
+{{< include c04/const_ok/src/main.rs >}}
 ```
-
 
 ::: {.text-end .small}
 
@@ -96,12 +244,6 @@ Ejemplo:
 
 :::
 
-
-
-
-Ejemplos erróneos:
-
-```rust
-const X: i32 = rand(); //  ¡ERROR! No se conoce en tiempo de compilación.
-```
-
+Más adelante estudiaremos otros conceptos relacionados como el
+*shadowing*, las variables estáticas (`static`) y las funciones
+que pueden evaluarse en tiempo de compilación (`const fn`).
