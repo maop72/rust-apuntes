@@ -1,8 +1,6 @@
-.PHONY: all links common html pdf all clean preview 
+.PHONY: all links common html pdf clean preview
 
 CODE2URL := ./tools/code2url.py
-
-all: render
 
 links:
 	$(CODE2URL)
@@ -16,12 +14,10 @@ html: common
 pdf: common
 	quarto render --to pdf
 
-all: html
-	pdf 
+all: html pdf
 
 clean:
 	rm -rf _book .quarto
 
 preview: links
 	quarto preview &>/dev/null
-
