@@ -18,9 +18,9 @@ repositorio del proyecto.
 
 ## Direcciones de interés
 
-- Ejecución de los ejemplos
+- Ejecución del código.
 
-  En el propio documento, tras cada ejemplo hay un enlace para
+  En el propio documento, tras cada programa hay un enlace para
   ejecutarlo online. Ejemplo:
 
 
@@ -43,9 +43,7 @@ repositorio del proyecto.
 
   <https://maop72.github.io/rust-apuntes/Apuntes-de-programaci%C3%B3n-en-Rust.pdf>
 
-- Código fuente completo.
-
-  El código fuente de estos apuntes, junto con todos los ejemplos
+- El código fuente de estos apuntes, junto con todos los ejemplos
   de Rust, está disponible en:
 
   <https://github.com/maop72/rust-apuntes>
