@@ -7,9 +7,6 @@ Este material didáctico está escrito para la asignatura
 Ingeniería de Fuenlabrada](https://www.urjc.es/eif) de la
 [Universidad Rey Juan Carlos](https://www.urjc.es).
 
-## Estado del documento
-
-Trabajo en desarrollo. {{\< include date.md \>}}
 
 ## Licencia
 

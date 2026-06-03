@@ -1,4 +1,3 @@
-
 name: Build and deploy Quarto book
 
 on:
@@ -34,7 +33,8 @@ jobs:
           sudo apt-get install -y \
             texlive \
             texlive-xetex \
-            texlive-latex-extra
+            texlive-latex-extra \
+            texlive-lang-spanish
 
       - name: Build
         run: make all

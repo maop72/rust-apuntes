@@ -176,8 +176,8 @@ entre una variable inmutable y una constante es:
 
 - La variable inmutable puede recibir su valor en tiempo de
   ejecución. Cada vez que se ejecute el programa puede tener un
-  valor inicial distinto: leído de un fichero, consultado al
-  usuario, aleatorio, etc. Aunque una vez asignado, no puede
+  valor inicial distinto: aleatorio, leído de un fichero, consultado al
+  usuario, etc. Aunque una vez asignado, no puede
   cambiar.
 
 El siguiente ejemplo intenta cambiar una variable inmutable, y

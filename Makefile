@@ -6,7 +6,6 @@ links:
 	$(CODE2URL)
 
 common: links
-	git log -1 --format="Última actualización: %cs." > date.md
 
 html: common
 	quarto render --to html
