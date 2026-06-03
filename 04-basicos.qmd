@@ -97,7 +97,7 @@ let publica = true;
 ```
 
 También es correcto declarar los tipos de manera explícita, pero
-se considera redundante. La @tbl-tipos-rust resume los tipos
+se considera redundante. La @tbl-tipos-basicos resume los tipos
 básicos de Rust.
 
 ``` rust
@@ -140,7 +140,7 @@ obligatorio especificarlo explícitamente.
 | `f32`                             | Real de simple precisión                  | `3.14`              |
 | `f64`                             | Real de doble precisión                   | `3.14`              |
 
-: Tipos de datos fundamentales de Rust {#tbl-tipos-rust}
+: Tipos de datos básicos de Rust {#tbl-tipos-basicos}
 
 Los tipos enteros y de coma flotante también admiten anotaciones
 explícitas en los literales:
@@ -155,11 +155,11 @@ let radio = 3.5f32;
 
 Comenzaremos por repasar dos ideas previas:
 
-- Tiempo de compilación (*compile time*): Fase en la que el
+- Tiempo de compilación (*compile time*): fase en la que el
   compilador analiza y traduce el código fuente a código máquina
   o ejecutable.
 
-- Tiempo de ejecución (*run time*): Fase en la que el programa ya
+- Tiempo de ejecución (*run time*): fase en la que el programa ya
   compilado se está ejecutando.
 
 La mayoría de lenguajes de programación incluyen *constantes* y
@@ -176,8 +176,8 @@ entre una variable inmutable y una constante es:
 
 - La variable inmutable puede recibir su valor en tiempo de
   ejecución. Cada vez que se ejecute el programa puede tener un
-  valor inicial distinto: aleatorio, leído de un fichero, consultado al
-  usuario, etc. Aunque una vez asignado, no puede
+  valor inicial distinto: aleatorio, leído de un fichero,
+  consultado al usuario, etc. Aunque una vez asignado, no puede
   cambiar.
 
 El siguiente ejemplo intenta cambiar una variable inmutable, y
@@ -189,7 +189,7 @@ por tanto genera un error de compilación.
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20x%20%3D%205%3B%0A%20%20%20%20println%21%28%22x%3A%7Bx%7D%22%29%3B%0A%20%20%20%20x%20%3D%206%3B%20//%20%C2%A1%C2%A1Error%21%21%0A%20%20%20%20println%21%28%22x%3A%7Bx%7D%22%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20x%20%3D%205%3B%0A%20%20%20%20println%21%28%22x%3A%7B%7D%22%2Cx%29%3B%0A%20%20%20%20x%20%3D%206%3B%20//%20%C2%A1%C2%A1Error%21%21%0A%20%20%20%20println%21%28%22x%3A%7B%7D%22%2Cx%29%3B%0A%7D%0A)
 
 :::
 
@@ -203,9 +203,19 @@ cualquier otro lenguaje de programación, debe declararse con
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20x%20%3D%205%3B%0A%20%20%20%20println%21%28%22x%3A%7Bx%7D%22%29%3B%0A%20%20%20%20x%20%3D%206%3B%20%0A%20%20%20%20println%21%28%22x%3A%7Bx%7D%22%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20x%20%3D%205%3B%0A%20%20%20%20println%21%28%22x%3A%7B%7D%22%2Cx%29%3B%0A%20%20%20%20x%20%3D%206%3B%20%0A%20%20%20%20println%21%28%22x%3A%7B%7D%22%2Cx%29%3B%0A%7D%0A)
 
 :::
+
+La macro `println!` muestra texto por pantalla. En este ejemplo:
+
+``` rust
+println!("x:{}", x);
+```
+
+la cadena `"x:{}"` indica el formato de salida. El especificador
+`{}` será sustituido por el valor de la variable `x`, que se pasa
+como segundo argumento.
 
 ### Constantes
 
@@ -247,3 +257,124 @@ Ejemplo:
 Más adelante estudiaremos otros conceptos relacionados como el
 *shadowing*, las variables estáticas (`static`) y las funciones
 que pueden evaluarse en tiempo de compilación (`const fn`).
+
+## Tipos de datos compuestos
+
+En la tabla @tbl-tipos-basicos ya hemos visto los tipos básicos
+de datos: enteros, reales, booleanos y caracteres. Rust define,
+además, los tipos compuestos: las tuplas y los *arrays*.
+
+### Tuplas
+
+Una tupla es una colección ordenada de valores. Sus elementos
+pueden tener tipos distintos y su longitud no puede cambiar una
+vez definida. Se escriben entre paréntesis, separados por comas.
+
+``` rust
+{{< include c04/tuplas/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20persona%20%3D%20%28%22Ana%22%2C%2025%2C%20true%29%3B%0A%0A%20%20%20%20println%21%28%22Contenido%20de%20la%20tupla%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20persona%29%3B%0A%0A%20%20%20%20println%21%28%22Elementos%20de%20la%20tupla%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5CtNombre%3A%20%7B%7D%22%2C%20persona.0%29%3B%0A%20%20%20%20println%21%28%22%5CtEdad%3A%20%7B%7D%22%2C%20persona.1%29%3B%0A%20%20%20%20println%21%28%22%5CtActivo%3A%20%7B%7D%22%2C%20persona.2%29%3B%0A%7D%0A)
+
+:::
+
+- La variable `persona` contiene una tupla con tres elementos:
+  una cadena (`"Ana"`), un entero (`25`) y un booleano (`true`).
+
+- La instrucción
+
+  ``` rust
+  println!("\t{:?}", persona);
+  ```
+
+  muestra el contenido completo de la tupla. El especificador
+  `:?` indica que el valor debe imprimirse usando su
+  representación de depuración (*debug*).
+
+- Los elementos de una tupla se acceden mediante un punto seguido
+  de su posición. El primer elemento es `persona.0`, el segundo
+  `persona.1` y el tercero `persona.2`.
+
+- Las últimas instrucciones muestran cada elemento por separado:
+
+  ``` rust
+  println!("\tNombre: {}", persona.0);
+  println!("\tEdad: {}", persona.1);
+  println!("\tActivo: {}", persona.2);
+  ```
+
+  El especificador `{}` indica dónde debe insertarse el valor que
+  aparece como segundo argumento de `println!`.
+
+- La secuencia `\t` representa un carácter de tabulación y se
+  utiliza aquí para mejorar la presentación de la salida.
+
+### La tupla vacía
+
+La tupla vacía se escribe `()` y no contiene ningún elemento.
+
+``` rust
+{{< include c04/tupla_vacia/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20tupla_vacia%20%3D%20%28%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20tupla_vacia%29%3B%0A%7D%0A)
+
+:::
+
+Aunque pueda parecer poco útil, la tupla vacía tiene un papel
+importante en Rust. Por ejemplo, es el valor que devuelven muchas
+funciones cuya finalidad es realizar una acción y no producir un
+resultado.
+
+### Arrays
+
+Al igual que una tupla, un array es una colección ordenada de
+valores cuya longitud no puede cambiar una vez definido. Pero a
+diferencia de las tuplas, sus elementos han de ser todos del
+mismo tipo.
+
+Los elementos de un array se escriben entre corchetes, separados
+por comas. También se usan los corchetes para acceder a los
+elementos por su índice. Al igual que en C y muchos otros
+lenguajes, el primer elemento es el `0`, el segundo es el `1`,
+etc.
+
+``` rust
+{{< include c04/arrays/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20numeros%20%3D%20%5B10%2C%2020%2C%2030%2C%2040%2C%2050%5D%3B%0A%0A%20%20%20%20println%21%28%22Contenido%20del%20array%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20numeros%29%3B%0A%20%20%0A%20%20%20%20println%21%28%22Elementos%20del%20array%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5CtPrimero%3A%20%7B%7D%22%2C%20numeros%5B0%5D%29%3B%0A%20%20%20%20println%21%28%22%5CtSegundo%3A%20%7B%7D%22%2C%20numeros%5B1%5D%29%3B%0A%20%20%20%20println%21%28%22%5CtTercero%3A%20%7B%7D%22%2C%20numeros%5B2%5D%29%3B%0A%7D%0A%0A)
+
+:::
+
+- La variable `numeros` contiene un array con cinco elementos.
+  Todos ellos son enteros. Si alguno no lo fuera, el compilador
+  mostraría un error.
+
+  Ejemplo:
+
+  ``` rust
+  let datos = [10, true, "hola"];  //  ¡¡MAL!!
+  ```
+
+### Comparación entre tuplas y arrays
+
+La tabla @tbl-tupla-vs-array resume las similitudes y diferencias entre tuplas
+y arrays.
+
+| Característica           | Tupla                   | Array                      |
+|--------------------------|-------------------------|----------------------------|
+| Longitud fija            | Sí                      | Sí                         |
+| Elementos del mismo tipo | No necesariamente       | Sí                         |
+| Delimitadores            | Paréntesis `()`         | Corchetes `[]`             |
+| Acceso a elementos       | Punto (`.0`, `.1`, ...) | Índice (`[0]`, `[1]`, ...) |
+| Ejemplo                  | `("Ana", 25, true)`     | `[10, 20, 30, 40, 50]`     |
+
+
+: Comparación entre tuplas y arrays {#tbl-tupla-vs-array}

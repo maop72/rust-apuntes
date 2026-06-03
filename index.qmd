@@ -12,7 +12,6 @@ Ingeniería de Fuenlabrada](https://www.urjc.es/eif) de la
 
 La documentación de estos apuntes se distribuye bajo licencia CC
 BY-SA 4.0 y los ejemplos de código bajo licencia MIT.
-
 Los textos completos de las licencias están disponibles en el
 repositorio del proyecto.
 
