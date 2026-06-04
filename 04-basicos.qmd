@@ -35,20 +35,38 @@ identificadores diferentes. Convenciones habituales:
 Los comentarios son fragmentos de texto ignorados por el
 compilador. Se utilizan para documentar o aclarar el código.
 
-- Los comentarios de una línea comienzan con `//`.
+- Los comentarios de una línea comienzan con `//`. Pueden ocupar
+  una línea completa, para comentar el código que aparece debajo,
+  o escribirse al final de una instrucción.
+
 - Los comentarios de varias líneas se delimitan mediante `/*` y
   `*/`.
 
 Ejemplos:
 
 ``` rust
-// Comentario de una línea.
+// Dirección IP del servidor DNS principal.
+let dns_principal = "8.8.8.8";
 
-let edad = 23; // Comentario al final de una instrucción.
+// Puerto utilizado por HTTPS.
+let puerto_https = 443;
 
-/* Comentario
-   de varias líneas. */
+// Tiempo máximo de espera en segundos.
+let timeout = 5;
+
+// En un programa real no deberíamos comentar obviedades como estas.
+// En este ejemplo, lo único relevante es que las unidades son segundos,
+// (podrían ser milisegundos). El resto, sobra.
+
+/* También puede usarse este formato
+   para comentarios de varias líneas
+   pero es menos habitual.  */
 ```
+
+Recuerda que un comentario nunca debería contar nada que pueda
+deducirse directamente del código. Entre otros motivos, porque en
+el futuro podría modificarse el código sin actualizar el
+comentario, dejando ambos en contradicción.
 
 Rust dispone también de comentarios especiales para generar
 documentación automática: `///` y `//!`, que trataremos
@@ -56,9 +74,9 @@ posteriormente.
 
 ## Operadores
 
-Tal y como muestra la tabla @tbl-operadores, los operadores
-básicos de Rust coinciden con los del lenguaje C y sus herederos,
-como C++, C#, Java, JavaScript, Go, Kotlin, etc.
+Tal y como muestra la @tbl-operadores, los operadores básicos de
+Rust coinciden con los del lenguaje C y sus herederos, como C++,
+C#, Java, JavaScript, Go, Kotlin, etc.
 
 | Operación         | Operador |
 |-------------------|----------|
@@ -258,7 +276,7 @@ Más adelante estudiaremos otros conceptos relacionados como el
 *shadowing*, las variables estáticas (`static`) y las funciones
 que pueden evaluarse en tiempo de compilación (`const fn`).
 
-## Tipos de datos compuestos
+## Tipos de datos compuestos {#sec-tipos-compuestos}
 
 En la tabla @tbl-tipos-basicos ya hemos visto los tipos básicos
 de datos: enteros, reales, booleanos y caracteres. Rust define,
@@ -355,18 +373,22 @@ etc.
 
 - La variable `numeros` contiene un array con cinco elementos.
   Todos ellos son enteros. Si alguno no lo fuera, el compilador
-  mostraría un error.
+  mostraría un error. Como en el siguiente ejemplo:
 
-  Ejemplo:
+``` rust
+{{< include c04/arrays_mal/src/main.rs >}}
+```
 
-  ``` rust
-  let datos = [10, true, "hola"];  //  ¡¡MAL!!
-  ```
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20datos%20%3D%20%5B10%2C%2020%2C%20%22azul%22%5D%3B%20//%20%C2%A1%C2%A1MAL%21%21%0A%0A%20%20%20%20println%21%28%22Contenido%20del%20array%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20datos%29%3B%0A%7D%0A)
+
+:::
 
 ### Comparación entre tuplas y arrays
 
-La tabla @tbl-tupla-vs-array resume las similitudes y diferencias entre tuplas
-y arrays.
+La tabla @tbl-tupla-vs-array resume las similitudes y diferencias
+entre tuplas y arrays.
 
 | Característica           | Tupla                   | Array                      |
 |--------------------------|-------------------------|----------------------------|
@@ -376,5 +398,162 @@ y arrays.
 | Acceso a elementos       | Punto (`.0`, `.1`, ...) | Índice (`[0]`, `[1]`, ...) |
 | Ejemplo                  | `("Ana", 25, true)`     | `[10, 20, 30, 40, 50]`     |
 
-
 : Comparación entre tuplas y arrays {#tbl-tupla-vs-array}
+
+## Funciones
+
+Una función es un bloque de código que realiza una tarea
+concreta. Las funciones permiten dividir un programa en partes
+más pequeñas y reutilizables, facilitando su comprensión,
+modificación y mantenimiento. La idea fundamental es sencilla:
+una función recibe unos datos de entrada, realiza un
+procesamiento y produce un resultado.
+
+``` text
+Entradas ──► Función ──► Resultado
+```
+
+La utilización de funciones presenta varias ventajas:
+
+- Facilita la reutilización de soluciones ya implementadas, sin
+  duplicar código.
+- Permite dividir problemas complejos en problemas más pequeños.
+- Mejora la legibilidad del programa.
+- Facilita las pruebas y la detección de errores.
+
+En Rust, como en la mayoría de lenguajes modernos, la ejecución
+de un programa comienza en una función especial llamada `main`.
+Normalmente, desde esta función se llama a otras funciones.
+
+La definición de una función puede aparecer antes o después de
+las llamadas que la utilizan. Lo único necesario es que sea
+visible desde el lugar donde se invoca, esto es, que pertenezca
+al mismo ámbito o a un ámbito accesible desde él.
+
+
+``` rust
+{{< include c04/saludar/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20saludar%28%29%20%7B%0A%20%20%20%20println%21%28%22Hola%22%29%3B%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20saludar%28%29%3B%0A%20%20%20%20saludar%28%29%3B%0A%7D%0A)
+
+:::
+
+La palabra clave `fn` indica la definición de una función. A
+continuación aparece el nombre de la función y, entre paréntesis,
+la lista de parámetros. En este ejemplo ninguna de las funciones
+reciben parámetros.
+
+Las llaves delimitan el bloque de instrucciones que forman el
+cuerpo de la función.
+
+La ejecución de una llamada a función puede entenderse como una
+transferencia temporal del control. Cuando se llama a una
+función, la ejecución continúa en ella. Una vez terminada, el
+control vuelve al punto inmediatamente posterior a la llamada. En
+el ejemplo anterior, cada vez que main llama a saludar, la
+ejecución pasa temporalmente a dicha función y vuelve a main
+cuando esta termina.
+
+### Efectos laterales
+
+Algunos lenguajes clásicos, como Pascal, Modula-2 o Ada,
+distinguen entre dos tipos de subprogramas:
+
+- *Funciones*, que devuelven un valor al programa que las invoca.
+
+- *Procedimientos*, que no devuelven ningún valor y cuyo
+  propósito principal es realizar acciones que producen algún
+  efecto.
+
+Por ejemplo, calcular una raíz cuadrada encaja naturalmente en el
+concepto de función, mientras que mostrar un mensaje en pantalla
+encaja mejor en el de procedimiento.
+
+Esta distinción está relacionada con el concepto de *efecto
+lateral* (*side effect*). Decimos que una operación tiene un
+efecto lateral cuando, además de producir un resultado, modifica
+el estado del programa o del entorno. Algunos ejemplos de efectos
+laterales son:
+
+- Modificar una variable global.
+- Escribir en pantalla.
+- Leer datos del teclado.
+- Escribir en un fichero.
+- Enviar información a través de una red.
+
+Existen metodologías de programación, como la programación
+funcional, que promueven la utilización de funciones libres de
+efectos laterales siempre que sea posible. Sin embargo, ningún
+programa útil puede evitar completamente los efectos laterales,
+ya que en algún momento será necesario interactuar con el
+usuario, almacenar información o comunicarse con otros sistemas.
+
+En Rust, como en muchos otros lenguajes herederos de C, no existe
+esta distinción entre función y procedimiento. Sin embargo, con
+independencia del lenguaje y de la metodología utilizados, es una
+buena práctica limitar los efectos laterales a aquellos casos en
+los que resultan realmente necesarios. Las funciones sin efectos
+laterales suelen ser más fáciles de comprender, probar, depurar y
+reutilizar.
+
+Por ello, es recomendable organizar el código de forma que la
+mayor parte del trabajo se realice mediante funciones sin efectos
+laterales, dejando las interacciones con el exterior para un
+conjunto reducido de funciones. De forma esquemática, podemos
+distinguir entre:
+
+- Funciones sin efectos laterales (*calculan cosas*). Son el
+  equivalente conceptual de las funciones de Pascal, Modula-2 o
+  Ada.
+
+- Funciones con efectos laterales (*hacen cosas*), normalmente
+  utilizando los resultados producidos por las funciones del
+  grupo anterior. Son el equivalente conceptual de los
+  procedimientos de dichos lenguajes.
+
+### Parámetros y argumentos
+
+Una función puede recibir información del programa que la invoca
+mediante *parámetros*. En el siguiente ejemplo, `a` y `b` son
+parámetros.
+
+Cuando la función es invocada, los valores concretos que se
+proporcionan reciben el nombre de *argumentos*. En el ejemplo,
+los valores `2` y `3` son los argumentos.
+
+``` rust
+{{< include c04/funcion/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20sumar%28a%3A%20i32%2C%20b%3A%20i32%29%20-%3E%20i32%20%7B%20%0A%20%20%20%20a%20%2B%20b%0A%7D%0A%0Afn%20main%28%29%20%7B%20%0A%20%20%20%20let%20resultado%20%3D%20sumar%282%2C%203%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cresultado%29%3B%0A%7D%0A)
+
+:::
+
+Aunque en la práctica muchos programadores utilizan ambos
+términos indistintamente, conviene distinguirlos.
+
+### Tipado de parámetros
+
+Hay lenguajes de programación como Python, MATLAB o JavaScript
+donde los tipos no aparecen en la definición de la función, lo
+que proporciona una mayor flexibilidad al programador.
+
+Pero en Rust, como en C, C++, Pascal o Java, es obligatorio
+indicar el tipo de los parámetros. Esta información permite
+realizar comprobaciones adicionales durante la compilación y
+detectar errores de forma temprana. Esta característica es
+coherente con uno de los principales objetivos de diseño de Rust
+
+El nombre del parámetro va seguido de dos puntos y del tipo
+correspondiente. Los tipos básicos los resumimos en la
+@tbl-tipos-basicos, los tipos compuestos los tratamos en la
+@sec-tipos-compuestos.
+
+En el ejemplo anterior, las expresiones `a: i32` y `b: i32`
+indican que ambos parámetros son números enteros de 32 bits con
+signo.

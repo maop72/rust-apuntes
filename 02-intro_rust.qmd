@@ -2,86 +2,169 @@
 
 ## Historia de Rust
 
-- Entre 1990-2010 aprox., muchos sistemas críticos se desarrollan
-  en C y C++. Muy potentes, pero propensos a errores difíciles de
-  detectar relacionados con memoria, punteros y concurrencia.
+Durante las décadas de 1990 y 2000, muchos sistemas operativos,
+navegadores, servidores y otros programas críticos se
+desarrollaron en C y C++. Estos lenguajes ofrecen un gran
+rendimiento y un control muy preciso del hardware, pero también
+son propensos a errores difíciles de detectar relacionados con la
+gestión de memoria, los punteros y la concurrencia.
 
-- Lenguajes modernos como Java o Python simplifican el desarrollo
-  y aumentan la seguridad, pero sacrifican rendimiento y control
-  de bajo nivel.
+Posteriormente aparecieron lenguajes como Java o Python, que
+simplifican el desarrollo y ayudan a evitar muchos de estos
+errores. Sin embargo, esta mayor comodidad suele venir acompañada
+de una pérdida de rendimiento o de un menor control sobre los
+recursos del sistema.
 
-- Rust comienza como un proyecto personal de Graydon Hoare
-  alrededor de 2006 y poco después recibe apoyo de Mozilla. Es
-  libre y gratuito (licencias MIT / Apache 2.0).
+Rust nació alrededor de 2006 como un proyecto personal de Graydon
+Hoare. Poco después recibió el apoyo de Mozilla, que contribuyó
+activamente a su desarrollo. El lenguaje es libre y gratuito,
+distribuido bajo licencias MIT y Apache 2.0.
 
-- Primera versión estable: 2015. Empieza a popularizarse
-  rápidamente a finales de la década de 2010.
+La primera versión estable de Rust se publicó en 2015. Desde
+entonces su popularidad ha crecido de forma constante, tanto en
+la industria como en el ámbito académico.
 
-- Rust intenta combinar seguridad y fiabilidad con el rendimiento
-  y control tradicionales de los lenguajes de sistemas.
-
+El objetivo de Rust es combinar la seguridad y la fiabilidad de
+los lenguajes modernos con el rendimiento y el control de bajo
+nivel característicos de los lenguajes de sistemas.
 
 ## Uso e impacto de Rust
 
-- Disponible en múltiples arquitecturas y plataformas:
-  x86, ARM, WebAssembly, Linux, macOS, Windows, sistemas
-  embebidos, etc.
+Rust está disponible para una gran variedad de arquitecturas y
+plataformas. Puede utilizarse en ordenadores personales,
+servidores, dispositivos embebidos y equipos de red, ejecutándose
+sobre arquitecturas como x86 o ARM y sobre sistemas operativos
+como Android, Windows, Linux o macOS.
 
-- Utilizado tanto en proyectos de software libre como en grandes
-  empresas tecnológicas: Google, Microsoft, Amazon, Meta,
-  Mozilla, Cloudflare, Discord, Dropbox, Linux, Android, entre otros.
+Su adopción ha crecido de forma constante durante los últimos
+años. Actualmente se utiliza tanto en proyectos de software libre
+como en productos desarrollados por grandes empresas
+tecnológicas. Entre ellas se encuentran Google, Microsoft,
+Amazon, Meta, Cloudflare, Cisco, Mozilla y OpenAI.
 
-- Especialmente valorado en ámbitos donde son importantes la
-  seguridad, fiabilidad, concurrencia y rendimiento.
+Rust resulta especialmente atractivo en aplicaciones donde son
+importantes la seguridad, la fiabilidad, la concurrencia y el
+rendimiento. Por este motivo se utiliza cada vez más en
+servidores, navegadores, herramientas de línea de comandos,
+sistemas embebidos, software de red y componentes de sistemas
+operativos.
 
-- Recomendado por diversos organismos y expertos en
-  ciberseguridad para reducir errores relacionados con memoria y
-  corrupción de datos.
-
-- Cada vez más usado en redes, navegadores, servidores,
-  herramientas de línea de comandos, sistemas embebidos y
-  componentes de sistemas operativos.
-
+Diversos organismos y expertos en ciberseguridad han recomendado
+la adopción de lenguajes con garantías de seguridad de memoria,
+entre ellos Rust, como una forma eficaz de reducir errores
+relacionados con la corrupción de memoria y otros problemas
+similares.
 
 ## Características de Rust
 
-Lenguaje compilado, orientado a sistemas y con alto rendimiento.
+Rust es un lenguaje compilado, orientado al desarrollo de
+software de sistemas y diseñado para ofrecer un alto rendimiento.
 
-- Seguridad de memoria sin necesidad de recolector de basura
-  (*garbage collector*).
+Una de sus características más destacadas es la seguridad de
+memoria. Rust permite evitar muchos errores habituales, como
+accesos a memoria inválidos o referencias colgantes, sin
+necesidad de utilizar un recolector de basura (*garbage
+collector*).
 
-- Sistema de tipos estricto y muy orientado a detectar errores
-  durante la compilación.
+Su sistema de tipos es estricto y está diseñado para detectar
+errores durante la compilación siempre que sea posible. Esto
+permite descubrir numerosos problemas antes de ejecutar el
+programa.
 
-- Modelo de propiedad (*ownership*) y préstamos (*borrowing*)
-  para gestionar memoria y concurrencia de forma segura.
+Rust utiliza un modelo de propiedad (*ownership*) y préstamos
+(*borrowing*) para gestionar la memoria y el acceso a los datos.
+Este modelo constituye una de las características más innovadoras
+del lenguaje y desempeña un papel fundamental en su seguridad y
+fiabilidad.
 
-- Concurrencia segura, reduciendo muchos errores típicos de los
-  programas paralelos.
+También proporciona mecanismos de concurrencia seguros,
+reduciendo muchos errores típicos de los programas paralelos,
+como determinadas condiciones de carrera (*race conditions*).
 
-- Abstracciones de alto nivel con coste prácticamente nulo
-  (*zero-cost abstractions*).
+A pesar de estas garantías adicionales, Rust mantiene un alto
+rendimiento gracias al uso de abstracciones de alto nivel con
+coste prácticamente nulo (*zero-cost abstractions*).
 
-- Buen soporte multiplataforma y ecosistema moderno de
-  herramientas y bibliotecas.
+Por último, Rust dispone de un amplio soporte multiplataforma y
+de un ecosistema moderno de herramientas y bibliotecas que
+facilitan el desarrollo, la compilación, las pruebas y la
+distribución de aplicaciones.
+
+## El compilador de Rust
+
+Una de las características más apreciadas del ecosistema Rust es
+la calidad de su compilador. Aunque estrictamente no forma parte
+del lenguaje, sino de su implementación de referencia, está tan
+ligado a la filosofía de Rust que merece una mención especial.
+
+El compilador realiza numerosas comprobaciones antes de generar
+el programa ejecutable. Gracias a ello es capaz de detectar una
+gran cantidad de errores durante la compilación, evitando que
+aparezcan posteriormente durante la ejecución.
+
+Además, los mensajes de error suelen ser especialmente claros y
+detallados. En muchos casos el compilador no solo indica dónde se
+encuentra el problema, sino también cuál es su causa y qué
+posibles soluciones pueden aplicarse.
+
+Durante el aprendizaje del lenguaje es frecuente que el
+compilador actúe casi como una herramienta de apoyo docente,
+guiando al programador hacia construcciones más seguras y
+correctas.
+
+Esta filosofía de detección temprana de errores aparece de forma
+recurrente en Rust y constituye uno de los objetivos principales
+del lenguaje.
 
 ## Cargo
 
-Cargo es la herramienta oficial de gestión de proyectos de Rust.
+Cargo es la herramienta oficial de gestión de proyectos de Rust y
+forma parte de la instalación estándar del lenguaje.
 
-- Permite crear proyectos, compilar, ejecutar pruebas y generar
-  documentación desde una interfaz unificada.
+En muchos otros ecosistemas de desarrollo es habitual utilizar
+herramientas distintas para compilar, ejecutar pruebas, gestionar
+dependencias, generar documentación o publicar bibliotecas. Esto
+ofrece gran flexibilidad, pero también aumenta la complejidad de
+los proyectos.
 
-- Gestiona automáticamente dependencias y versiones.
+Por ejemplo, en C y C++ es frecuente combinar GCC o Clang para
+compilar, Make o CMake para construir los proyectos, Doxygen para
+generar documentación y diversos gestores de paquetes según la
+plataforma utilizada. En Java son habituales herramientas como
+Maven o Gradle para gestionar dependencias y automatizar el
+proceso de construcción.
 
-- El fichero `Cargo.toml` almacena configuración y metadatos del
+Cargo integra todas estas funcionalidades bajo una interfaz
+común, sencilla y coherente.
+
+Entre sus funciones más importantes se encuentran:
+
+- La creación de nuevos proyectos con una estructura de
+  directorios adecuada y lista para utilizar.
+
+- La compilación de programas y la gestión automática de las
+  opciones más habituales de construcción.
+
+- La ejecución de pruebas automáticas integradas en el propio
   proyecto.
 
-- Facilita la compilación reproducible mediante el fichero
-  `Cargo.lock`.
+- La gestión de dependencias mediante el fichero `Cargo.toml`,
+  incluyendo la descarga de bibliotecas y la selección de
+  versiones compatibles.
 
-- Integra de forma sencilla pruebas automáticas, ejemplos,
-  benchmarks y publicación de bibliotecas.
+- La compilación reproducible mediante el fichero `Cargo.lock`,
+  donde se registran las versiones exactas de las dependencias
+  utilizadas.
 
-- Permite aplicar automáticamente el formato oficial al código
-  fuente, evitando las *guerras de estilos*.
+- La integración de ejemplos y *benchmarks* para facilitar el
+  desarrollo y la evaluación del rendimiento.
+
+- La generación automática de documentación a partir del código
+  fuente y de sus comentarios.
+
+- La publicación de bibliotecas en repositorios públicos para su
+  reutilización por otros desarrolladores.
+
+- La aplicación automática del formato oficial de Rust al código
+  fuente, contribuyendo a mantener un estilo uniforme sin
+  *guerras de estilos*.

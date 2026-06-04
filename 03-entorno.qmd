@@ -15,13 +15,15 @@ Esto instalará:
 
 - La herramienta de gestión `cargo`.
 
-- La biblioteca estándar y herramientas auxiliares.
+- La biblioteca estándar, documentación y herramientas
+  auxiliares.
 
-## Compilación y ejecución 
+## Compilación y ejecución
 
 En muchos lenguajes, un programa suele corresponderse con un
-único fichero fuente. En Rust, lo habitual es trabajar con
-proyectos organizados como directorios.
+único fichero fuente. En Rust incluso un programa sencillo se
+denomina típicamente *proyecto*, con un directorio propio y
+varios subdirectorios.
 
 Se puede usar directamente el compilador `rustc`, pero lo normal
 es utilizar `cargo`, el sistema oficial de gestión de proyectos y
@@ -30,72 +32,119 @@ dependencias, tests y generación de documentación.
 
 ### Crear un proyecto
 
-- `cargo new mi_proyecto`
+Normalmente empezaremos un proyecto ejecutando
 
-  Esa orden crea, en el directorio actual, un subdirectorio
-  llamado `mi_proyecto` con toda la estructura básica del
-  proyecto. En `mi_proyecto/src/main.rs` escribe un *holamundo*,
-  para usar como punto de partida.
+`cargo new mi_proyecto`
 
-  A continuación veremos las órdenes para compilar y ejecutar nuestros programas. Todos estos
-  comandos tendremos que ejecutarlos desde el directorio
-  del proyecto. En este ejemplo, ```mi_proyecto```. 
+Esa orden crea, en el directorio actual, un subdirectorio llamado
+`mi_proyecto` con toda la estructura básica del proyecto. En
+`mi_proyecto/src/main.rs` escribe un *holamundo*, para usar como
+punto de partida.
+
+A continuación veremos las órdenes para compilar y ejecutar
+nuestros programas. Todos estos comandos tendremos que
+ejecutarlos desde el directorio del proyecto. En este ejemplo,
+`mi_proyecto`.
 
 ### Compilar y ejecutar
 
+El comando:
 
-`cargo run`
+``` bash
+cargo run
+```
 
-Compila el proyecto, escribe el ejecutable en
-  `./target/debug/mi_proyecto` y lo invoca.
+compila el proyecto y, si la compilación finaliza con éxito,
+ejecuta automáticamente el programa resultante. El ejecutable
+generado se almacena en el directorio `./target/debug/`.
 
 ### Solo compilar
 
-`cargo build`
+El comando:
 
-Compila el proyecto y genera el ejecutable en
-  `./target/debug/mi_programa`, pero sin ejecutarlo.
+``` bash
+cargo build
+```
+
+compila el proyecto y genera el ejecutable correspondiente, pero
+sin ejecutarlo. Por defecto, el ejecutable se almacena en el
+directorio `./target/debug/`.
 
 ### Compilación para distribución
 
-`cargo build --release`
+El comando:
 
-  Genera una versión optimizada para distribución y producción, en
-  `./target/release/mi_programa`.
+``` bash
+cargo build --release
+```
+
+genera una versión optimizada del programa. La compilación suele
+requerir más tiempo, pero produce programas más rápidos y
+eficientes. El ejecutable resultante se almacena en el directorio
+`./target/release/`.
+
+Por defecto, el comando `cargo run` ejecuta la versión situada en
+`./target/debug/`. Para compilar y ejecutar directamente la
+versión optimizada puede utilizarse:
+
+``` bash
+cargo run --release
+```
 
 ## Formato
 
 La *Rust Style Guide* define un formato oficial para el código
 fuente, implementado por la herramienta *rustfmt*, usada de forma
-prácticamente universal.
-Basta ejecutar, en el directorio del proyecto:
+prácticamente universal. Basta ejecutar, en el directorio del
+proyecto:
 
 `cargo fmt`.
 
+## Documentación
 
+La principal referencia para aprender Rust es el libro *The Rust
+Programming Language*, de S. Klabnik, C. Nichols y C. Krycho.
+
+Además de la edición impresa, existe una versión en HTML que
+puede consultarse de dos formas:
+
+- En su página web:
+
+  <https://doc.rust-lang.org/book/>
+
+- Mediante el comando:
+
+  ``` bash
+  rustup doc --book
+  ```
+
+  Esto abre en nuestro navegador la copia local del libro
+  instalada junto con Rust, por lo que no es necesario disponer
+  de conexión a Internet.
 
 ## Organización de proyectos en Rust
 
-- **Crate**
+Rust y Cargo utilizan varios conceptos para organizar el código y
+estructurar proyectos de distinto tamaño. Los más importantes son
+*crate*, *package* y *workspace*.
 
-  Unidad básica de compilación en Rust. Puede ser un ejecutable
-  (`main.rs`) o una biblioteca (`lib.rs`).
+- *Crate*
 
-- **Package**
+  Unidad básica de compilación en Rust. Puede corresponder a un
+  programa ejecutable, cuyo punto de entrada se encuentra
+  habitualmente en `main.rs`, o a una biblioteca, definida
+  normalmente en `lib.rs`.
 
-  Proyecto gestionado por Cargo. Puede contener uno o varios
-  crates. Se identifica por el fichero `Cargo.toml`, que
-  almacena:
+- *Package*
 
-  - Nombre del proyecto.
+  Proyecto gestionado por Cargo. Se identifica mediante un
+  fichero `Cargo.toml`, donde se almacenan datos como el nombre
+  del proyecto, su versión, las dependencias utilizadas y
+  diversas opciones de configuración. Un *package* puede contener
+  uno o varios *crates*.
 
-  - Versión.
+- *Workspace*
 
-  - Dependencias.
-
-  - Configuración de compilación.
-
-- **Workspace**
-
-  Conjunto de packages gestionados conjuntamente. Resulta útil
-  para proyectos grandes divididos en varios componentes.
+  Conjunto de *packages* gestionados conjuntamente. Resulta
+  especialmente útil en proyectos grandes, donde diferentes
+  componentes se desarrollan y compilan de forma coordinada.
