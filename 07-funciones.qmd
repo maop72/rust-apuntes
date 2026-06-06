@@ -1,0 +1,283 @@
+# Funciones
+
+Una función es un bloque de código que realiza una tarea
+concreta. Las funciones permiten dividir un programa en partes
+más pequeñas y reutilizables, facilitando su comprensión,
+modificación y mantenimiento. La idea fundamental es sencilla:
+una función recibe unos datos de entrada, realiza un
+procesamiento y produce un resultado.
+
+## Introducción a las funciones.
+
+La utilización de funciones presenta varias ventajas:
+
+- Facilita la reutilización de soluciones ya implementadas, sin
+  duplicar código.
+- Permite dividir problemas complejos en problemas más pequeños.
+- Mejora la legibilidad del programa.
+- Facilita las pruebas y la detección de errores.
+
+En Rust, como en la mayoría de lenguajes modernos, la ejecución
+de un programa comienza en una función especial llamada `main`.
+Normalmente, desde esta función se llama a otras funciones.
+
+La definición de una función puede aparecer antes o después de
+las llamadas que la utilizan. Lo único necesario es que sea
+visible desde el lugar donde se invoca, esto es, que pertenezca
+al mismo ámbito o a un ámbito accesible desde él.
+
+``` rust
+{{< include c07/saludar/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20saludar%28%29%20%7B%0A%20%20%20%20println%21%28%22Hola%22%29%3B%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20saludar%28%29%3B%0A%20%20%20%20saludar%28%29%3B%0A%7D%0A)
+
+:::
+
+La palabra clave `fn` indica la definición de una función. A
+continuación aparece el nombre de la función y, entre paréntesis,
+la lista de parámetros. En este ejemplo ninguna de las funciones
+reciben parámetros.
+
+Las llaves delimitan el bloque de sentencias que forman el cuerpo
+de la función.
+
+La ejecución de una llamada a función puede entenderse como una
+transferencia temporal del control. Cuando se llama a una
+función, la ejecución continúa en ella. Una vez terminada, el
+control vuelve al punto inmediatamente posterior a la llamada. En
+el ejemplo anterior, cada vez que main llama a saludar, la
+ejecución pasa temporalmente a dicha función y vuelve a main
+cuando esta termina.
+
+## Efectos laterales
+
+Algunos lenguajes clásicos, como Pascal, Modula-2 o Ada,
+distinguen entre dos tipos de subprogramas:
+
+- *Funciones*, que devuelven un valor al programa que las invoca.
+
+- *Procedimientos*, que no devuelven ningún valor y cuyo
+  propósito principal es realizar acciones que producen algún
+  efecto.
+
+Por ejemplo, calcular una raíz cuadrada encaja naturalmente en el
+concepto de función, mientras que mostrar un mensaje en pantalla
+encaja mejor en el de procedimiento.
+
+Esta distinción está relacionada con el concepto de *efecto
+lateral* (*side effect*). Decimos que una operación tiene un
+efecto lateral cuando, además de producir un resultado, modifica
+el estado del programa o del entorno. Algunos ejemplos de efectos
+laterales son:
+
+- Modificar una variable global.
+- Escribir en pantalla.
+- Leer datos del teclado.
+- Escribir en un fichero.
+- Enviar información a través de una red.
+
+Existen metodologías de programación, como la programación
+funcional, que promueven la utilización de funciones libres de
+efectos laterales siempre que sea posible. Sin embargo, ningún
+programa útil puede evitar completamente los efectos laterales,
+ya que en algún momento será necesario interactuar con el
+usuario, almacenar información o comunicarse con otros sistemas.
+
+En Rust, como en muchos otros lenguajes herederos de C, no existe
+esta distinción entre función y procedimiento. Sin embargo, con
+independencia del lenguaje y de la metodología utilizados, es una
+buena práctica limitar los efectos laterales a aquellos casos en
+los que resultan realmente necesarios. Las funciones sin efectos
+laterales suelen ser más fáciles de comprender, probar, depurar y
+reutilizar.
+
+Por ello, es recomendable organizar el código de forma que la
+mayor parte del trabajo se realice mediante funciones sin efectos
+laterales, dejando las interacciones con el exterior para un
+conjunto reducido de funciones. De forma esquemática, podemos
+distinguir entre:
+
+- Funciones sin efectos laterales (*calculan cosas*). Son el
+  equivalente conceptual de las funciones de Pascal, Modula-2 o
+  Ada.
+
+- Funciones con efectos laterales (*hacen cosas*), normalmente
+  utilizando los resultados producidos por las funciones del
+  grupo anterior. Son el equivalente conceptual de los
+  procedimientos de dichos lenguajes.
+
+## Parámetros y argumentos
+
+Una función puede recibir información del programa que la invoca
+mediante *parámetros*. En el siguiente ejemplo, `a` y `b` son
+parámetros.
+
+Cuando la función es invocada, los valores concretos que se
+proporcionan reciben el nombre de *argumentos*. En el ejemplo,
+los valores `2` y `3` son los argumentos.
+
+``` rust
+{{< include c07/funcion/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20sumar%28a%3A%20i32%2C%20b%3A%20i32%29%20-%3E%20i32%20%7B%20%0A%20%20%20%20a%20%2B%20b%0A%7D%0A%0Afn%20main%28%29%20%7B%20%0A%20%20%20%20let%20resultado%20%3D%20sumar%282%2C%203%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cresultado%29%3B%0A%7D%0A)
+
+:::
+
+Aunque en la práctica muchos programadores utilizan ambos
+términos indistintamente, conviene distinguirlos.
+
+## Tipado de parámetros
+
+Hay lenguajes de programación como Python, MATLAB o JavaScript
+donde los tipos no aparecen en la definición de la función, lo
+que proporciona una mayor flexibilidad al programador.
+
+Pero en Rust, como en C, C++, Pascal o Java, es obligatorio
+indicar el tipo de los parámetros. Esta información permite
+realizar comprobaciones adicionales durante la compilación y
+detectar errores de forma temprana, que es, precisamente, uno de
+los principales objetivos de diseño de Rust
+
+El nombre del parámetro va seguido de dos puntos y del tipo
+correspondiente. Los tipos básicos los resumimos en la
+@tbl-tipos-basicos, los tipos compuestos los tratamos en la
+@sec-tipos-compuestos.
+
+En el ejemplo anterior, las expresiones `a: i32` y `b: i32`
+indican que ambos parámetros son números enteros de 32 bits con
+signo.
+
+## Valor de retorno
+
+Hay funciones que no devuelven nada, pero es mucho más habitual
+que sí lo hagan: calculan un resultado y lo devuelven al programa
+que las invoca. En Rust, además de indicar el tipo de los
+parámetros, también hay que declarar el tipo del valor devuelto.
+Se hace después de la lista de parámetros, mediante el símbolo
+`->`.
+
+En el ejemplo anterior, la cabecera
+`fn sumar(a: i32, b: i32) -> i32` indica que la función devuelve
+un valor de tipo `i32`.
+
+El valor devuelto por la función viene determinado por la última
+expresión de su cuerpo, en este caso, `a + b`. Esta expresión ha
+de ser del tipo declarado tras el símbolo `->`. Un error bastante
+frecuente entre principiantes es intentar devolver un valor cuyo
+tipo no coincide con el declarado, lo que provocará un error de
+compilación.
+
+## Expresiones y sentencias
+
+Un programador acostumbrado a otros lenguajes seguramente
+observará una peculiaridad: la función anterior no termina con
+una sentencia `return`. Esto es lo habitual en Rust, donde en
+lugar de utilizar `return`, normalmente la última línea del
+cuerpo de una función es una expresión, cuyo valor se devuelve
+automáticamente. Para entender este comportamiento es necesario
+distinguir entre expresiones y sentencias. Es algo que aparece
+con frecuencia en Rust y constituye una característica importante
+del lenguaje.
+
+Rust distingue entre *expressions* y *statements*. En español, es
+habitual traducir *statement* como *sentencia*, aunque también se
+emplea el término *instrucción*. En estos apuntes consideraremos
+ambos términos equivalentes.
+
+- Una expresión es un fragmento de código que produce un valor.
+  Por ejemplo `2 + 3` es una expresión cuyo valor es `5`.
+
+  En Rust, los bloques de código también son expresiones. Por
+  ello, el valor de la última expresión de una función puede
+  utilizarse como valor devuelto por la función.
+
+  ``` rust
+  fn cuadrado(x: i32) -> i32 {
+    x * x
+  }
+  ```
+
+  La expresión `x * x` aparece como última expresión del bloque
+  y, por tanto, su valor es devuelto automáticamente por la
+  función.
+
+- Una sentencia realiza una acción. Por ejemplo: `let x = 2 + 3;`
+  es una sentencia de declaración de variable.
+
+## El papel del punto y coma
+
+En Rust, el punto y coma suele indicar el final de una sentencia.
+Esto tiene una consecuencia importante: si se añade un punto y
+coma al final de la última expresión de una función, dicha
+expresión deja de actuar como valor devuelto. Por ejemplo, el
+siguiente código no compila:
+
+``` rust
+{{< include c07/funcion_mal/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20sumar%28a%3A%20i32%2C%20b%3A%20i32%29%20-%3E%20i32%20%7B%20%0A%20%20%20%20a%20%2B%20b%3B%20%20%20%20//%20%C2%A1%C2%A1MAL%21%21%0A%7D%0A%0Afn%20main%28%29%20%7B%20%0A%20%20%20%20let%20resultado%20%3D%20sumar%282%2C%203%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cresultado%29%3B%0A%7D%0A)
+
+:::
+
+La función declara que debe devolver un valor de tipo `i32`, pero
+la expresión `x * x` ya no constituye el valor devuelto por la
+función. Por tanto, lo habitual en Rust es que la última línea de
+una función no termine en punto y coma, permitiendo que dicha
+expresión actúe como valor devuelto.
+
+Por este mismo motivo, el siguiente ejemplo también es
+incorrecto. El `;` después de la definición de la función es
+erróneo. Esto puede parecer sorprendente: en muchos lenguajes,
+como C, C++, Java o JavaScript, añadir un `;` al final
+del cuerpo de una función no suele tener ningún efecto,
+se interpreta como una sentencia vacía adicional.
+
+``` rust
+{{< include c07/funcion_mal2/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20sumar%28a%3A%20i32%2C%20b%3A%20i32%29%20-%3E%20i32%20%7B%20%0A%20%20%20%20a%20%2B%20b%0A%7D%3B%20%20%20%20//%20%C2%A1MAL%21%20El%20cuerpo%20de%20una%20funci%C3%B3n%20no%20puede%20llevar%20%27%3B%27%20a%20continuaci%C3%B3n%0A%0Afn%20main%28%29%20%7B%20%0A%20%20%20%20let%20resultado%20%3D%20sumar%282%2C%203%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cresultado%29%3B%0A%7D%0A)
+
+:::
+
+Mientras que en Rust el punto y coma forma parte de la distinción
+entre expresiones y sentencias. Los bloques de código son
+expresiones y, por tanto, producen valores. El punto y coma puede
+modificar el significado del código, no es un mero separador de
+sentencias.
+
+## Uso de `Return`
+
+Aunque no es necesario, también es posible utilizar la palabra
+clave `return` para devolver un valor:
+
+``` rust
+{{< include c07/fn_return/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20sumar%28a%3A%20i32%2C%20b%3A%20i32%29%20-%3E%20i32%20%7B%20%0A%20%20%20%20return%20a%20%2B%20b%3B%20%20%20//%20Raro%20en%20Rust%2C%20pero%20legal.%0A%7D%0A%0Afn%20main%28%29%20%7B%20%0A%20%20%20%20let%20resultado%20%3D%20sumar%282%2C%203%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cresultado%29%3B%0A%7D%0A)
+
+:::
+
+Esto es correcto, pero no es idiomático. Normalmente se reserva
+`return` para aquellos casos en los que se desea abandonar la
+función antes de llegar al final de su cuerpo.
+
+Obsérvese que en este ejemplo la última línea de la función `suma` sí
+termina en punto y coma. Esto se debe a que `return` es una
+sentencia. Aunque contiene una expresión `a + b` cuyo valor será
+devuelto por la función, la construcción completa `return a + b;`
+no es una expresión, sino una sentencia.

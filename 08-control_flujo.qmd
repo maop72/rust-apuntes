@@ -1,0 +1,143 @@
+# Control de flujo
+
+Hasta ahora hemos visto cómo almacenar datos y organizar código
+en funciones. En este capítulo aprenderemos a controlar el flujo
+de ejecución de un programa mediante estructuras condicionales y
+bucles.
+
+## Sentencia `if`
+
+La sentencia `if` permite ejecutar código de forma condicional.
+Su sintaxis es similar a la de muchos otros lenguajes. Sin
+embargo, a diferencia de C, C++, JavaScript o Python, la
+condición debe ser siempre una expresión booleana. Rust no
+realiza conversiones implícitas entre números y valores
+booleanos.
+
+En el siguiente ejemplo se comprueba si un número de puerto
+pertenece al rango de puertos de sistema (del 0 al 1023) o si se
+trata de un puerto de usuario:
+
+``` rust
+{{< include c08/if_else/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20ULTIMO_PUERTO_SISTEMA%3A%20u32%20%3D%201023%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20puerto%20%3D%208080%3B%0A%0A%20%20%20%20if%20puerto%20%3C%3D%20ULTIMO_PUERTO_SISTEMA%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%20es%20puerto%20de%20sistema%22%2C%20puerto%29%3B%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%20es%20puerto%20de%20usuario%22%2C%20puerto%29%3B%0A%20%20%20%20%7D%0A%7D%0A%0A)
+
+:::
+
+La condición aparece entre `if` y la llave de apertura. Si su
+valor es `true`, se ejecuta el primer bloque; en caso contrario,
+se ejecuta el bloque asociado a `else`.
+
+### `if` sin `else`
+
+La cláusula `else` es opcional. Cuando no se especifica, el
+bloque de código asociado al `if` se ejecuta únicamente si la
+condición es verdadera; en caso contrario, no ocurre nada.
+
+``` rust
+{{< include c08/if_ok/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20TEMPERATURA_MAXIMA_CPU%3A%20u32%20%3D%2080%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20temperatura_cpu%20%3D%2072%3B%0A%0A%20%20%20%20if%20temperatura_cpu%20%3E%20TEMPERATURA_MAXIMA_CPU%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22Aviso%3A%20temperatura%20excesiva%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20println%21%28%22Monitorizaci%C3%B3n%20completada%22%29%3B%0A%7D%0A)
+
+:::
+
+En este ejemplo, el mensaje de advertencia solo se muestra cuando
+la temperatura de la CPU supera el umbral definido por la
+constante `TEMPERATURA_MAXIMA_CPU`. La última llamada a
+`println!` se ejecuta siempre, independientemente del resultado
+de la condición.
+
+### Cadenas `if`–`else if`
+
+Cuando existen varias alternativas, es posible encadenar varias
+condiciones mediante cláusulas `else if`. Las condiciones se
+evalúan en orden y se ejecuta únicamente el bloque asociado a la
+primera que resulte verdadera.
+
+``` rust
+{{< include c08/else_if/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20TEMPERATURA_FRIA%3A%20u32%20%3D%2040%3B%0Aconst%20TEMPERATURA_NORMAL%3A%20u32%20%3D%2070%3B%0Aconst%20TEMPERATURA_CALIENTE%3A%20u32%20%3D%2085%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20temperatura_cpu%20%3D%2072%3B%0A%0A%20%20%20%20if%20temperatura_cpu%20%3C%20TEMPERATURA_FRIA%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20fr%C3%ADa%22%29%3B%0A%20%20%20%20%7D%20else%20if%20temperatura_cpu%20%3C%20TEMPERATURA_NORMAL%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22Temperatura%20normal%22%29%3B%0A%20%20%20%20%7D%20else%20if%20temperatura_cpu%20%3C%20TEMPERATURA_CALIENTE%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20caliente%22%29%3B%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22Advertencia%3A%20temperatura%20excesiva%22%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+En este ejemplo, las condiciones se evalúan de arriba abajo. Una
+vez encontrada una condición verdadera, el resto de alternativas
+ya no se comprueban. Así, para una temperatura de 72 grados, se
+mostrará el mensaje `"CPU caliente"`.
+
+Las cadenas `if`–`else if` son adecuadas para expresar un número
+reducido de alternativas. Más adelante veremos la construcción
+`match`, que suele resultar más clara cuando existen muchas
+posibilidades o cuando se desea clasificar valores discretos.
+
+### Evitando el anidamiento excesivo
+
+Las sentencias `if` pueden anidarse sin ninguna restricción. Sin
+embargo, un exceso de anidamiento suele dificultar la lectura y
+el mantenimiento del código. Como regla práctica, uno o dos
+niveles de anidamiento suelen ser aceptables. Cuando un fragmento
+de código alcanza tres o más niveles, a menudo es una señal de
+que existe una forma más clara de expresar la misma lógica.
+
+Muchos programadores siguen la recomendación informal *Flat is
+better than nested* ("mejor plano que anidado"). La idea consiste
+en mantener el flujo de ejecución lo más alineado posible hacia
+la izquierda, evitando niveles de indentación innecesarios.
+
+Los dos ejemplos siguientes implementan exactamente la misma
+funcionalidad: clasificar la temperatura de una CPU. Para ello se
+consideran dos arquitecturas distintas: x86-64 (utilizada por los
+procesadores Intel y AMD actuales) y ARM, cada una con sus
+propios umbrales de temperatura.
+
+El primero utiliza varias sentencias `if` anidadas.
+
+``` rust
+{{< include c08/ifs_anidados/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20TEMP_CALIENTE_X64%3A%20u32%20%3D%2070%3B%0Aconst%20TEMP_M_CALIENTE_X64%3A%20u32%20%3D%2085%3B%0Aconst%20TEMP_CRITICA_X64%3A%20u32%20%3D%2095%3B%0A%0Aconst%20TEMP_CALIENTE_ARM%3A%20u32%20%3D%2060%3B%0Aconst%20TEMP_M_CALIENTE_ARM%3A%20u32%20%3D%2075%3B%0Aconst%20TEMP_CRITICA_ARM%3A%20u32%20%3D%2085%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20es_arm%20%3D%20true%3B%0A%20%20%20%20let%20temp_cpu%20%3D%2078%3B%0A%0A%20%20%20%20if%20es_arm%20%7B%0A%20%20%20%20%20%20%20%20if%20temp_cpu%20%3C%20TEMP_CALIENTE_ARM%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22temp%20normal%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20temp_cpu%20%3C%20TEMP_M_CALIENTE_ARM%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22CPU%20caliente%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20temp_cpu%20%3C%20TEMP_CRITICA_ARM%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22CPU%20muy%20caliente%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22temp%20cr%C3%ADtica%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20if%20temp_cpu%20%3C%20TEMP_CALIENTE_X64%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22temp%20normal%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20temp_cpu%20%3C%20TEMP_M_CALIENTE_X64%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22CPU%20caliente%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20temp_cpu%20%3C%20TEMP_CRITICA_X64%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22CPU%20muy%20caliente%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22temp%20cr%C3%ADtica%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+mientras que el segundo expresa cada caso de forma independiente.
+Aunque ambas soluciones son correctas, muchos programadores
+consideran que la segunda resulta más fácil de leer y mantener.
+
+``` rust
+{{< include c08/ifs_planos/src/main.rs >}}
+```
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20TEMP_CALIENTE_X64%3A%20u32%20%3D%2070%3B%0Aconst%20TEMP_M_CALIENTE_X64%3A%20u32%20%3D%2085%3B%0Aconst%20TEMP_CRITICA_X64%3A%20u32%20%3D%2095%3B%0A%0Aconst%20TEMP_CALIENTE_ARM%3A%20u32%20%3D%2060%3B%0Aconst%20TEMP_M_CALIENTE_ARM%3A%20u32%20%3D%2075%3B%0Aconst%20TEMP_CRITICA_ARM%3A%20u32%20%3D%2085%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20es_arm%20%3D%20true%3B%0A%20%20%20%20let%20temp_cpu%20%3D%2078%3B%0A%0A%20%20%20%20if%20es_arm%20%26%26%20temp_cpu%20%3C%20TEMP_CALIENTE_ARM%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22temp%20normal%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_CALIENTE_ARM%20%26%26%20temp_cpu%20%3C%20TEMP_M_CALIENTE_ARM%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20caliente%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_M_CALIENTE_ARM%20%26%26%20temp_cpu%20%3C%20TEMP_CRITICA_ARM%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20muy%20caliente%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_CRITICA_ARM%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22temp%20cr%C3%ADtica%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20%21es_arm%20%26%26%20temp_cpu%20%3C%20TEMP_CALIENTE_X64%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22temp%20normal%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20%21es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_CALIENTE_X64%20%26%26%20temp_cpu%20%3C%20TEMP_M_CALIENTE_X64%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20caliente%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20%21es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_M_CALIENTE_X64%20%26%26%20temp_cpu%20%3C%20TEMP_CRITICA_X64%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20muy%20caliente%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20%21es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_CRITICA_X64%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22temp%20cr%C3%ADtica%22%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+Si en vez de dos niveles de anidamiento como en este ejemplo
+hubiera tres, cuatro o más, la ventaja del enfoque *plano*
+resultaría mucho más evidente.
+
+Por otro lado, la segunda solución no es completamente
+equivalente a la primera. Al utilizar varias sentencias `if`
+independientes, todas las condiciones se evalúan, mientras que en
+una cadena `if`–`else if` la evaluación se detiene en cuanto se
+encuentra una condición verdadera.
+
+En este ejemplo la diferencia carece de importancia, ya que las
+condiciones son simples comparaciones. En general, salvo que
+existan requisitos específicos de rendimiento o de otro tipo,
+suele ser preferible la solución más clara y fácil de mantener.
+

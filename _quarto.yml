@@ -9,7 +9,13 @@ book:
     - index.qmd
     - 02-intro_rust.qmd
     - 03-entorno.qmd
-    - 04-basicos.qmd
+    - 04-fundamentos.qmd
+    - 05-vbles-ctes-tbasicos.qmd
+    - 06-tipos_compuestos.qmd
+    - 07-funciones.qmd
+    - 08-control_flujo.qmd
+
+
 
 lang: es-ES
 

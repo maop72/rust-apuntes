@@ -1,5 +1,10 @@
 # El entorno de Rust
 
+En este capítulo conoceremos las herramientas básicas que forman
+parte del ecosistema de Rust. Veremos cómo instalar Rust, crear
+proyectos, compilar programas y acceder a la documentación
+oficial.
+
 ## Instalación
 
 La instalación recomendada se realiza mediante `rustup`, el

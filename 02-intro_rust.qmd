@@ -1,5 +1,11 @@
 # Introducción al lenguaje Rust
 
+Rust es un lenguaje relativamente reciente que combina un alto
+rendimiento con mecanismos diseñados para aumentar la seguridad y
+la fiabilidad del software. En este capítulo se presenta su
+origen, sus principales características y las herramientas
+básicas que forman parte de su ecosistema.
+
 ## Historia de Rust
 
 Durante las décadas de 1990 y 2000, muchos sistemas operativos,

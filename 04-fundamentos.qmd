@@ -1,0 +1,77 @@
+# Sintaxis básica
+
+En este capítulo conoceremos algunos de los elementos básicos de
+la sintaxis de Rust. Veremos cómo se forman los identificadores,
+el uso de los comentarios y los operadores más habituales.
+
+## Identificadores
+
+Un identificador es un nombre elegido por el programador para
+referirse a un elemento del programa: variable, función, tipo,
+módulo, constante, etc.
+
+- Puede contener letras, números y guión bajo ( `_` ).
+- No puede comenzar por un número.
+- No puede contener espacios ni símbolos especiales como `+`,
+  `-`, `@`, etc.
+- Se pueden usar caracteres Unicode. En estos apuntes usaremos el
+  español para identificadores y comentarios, aunque en entornos
+  profesionales lo habitual y recomendable es emplear solamente
+  términos en inglés y caracteres ASCII.
+
+## Mayúsculas y minúsculas
+
+Rust distingue entre mayúsculas y minúsculas (es
+*case-sensitive*), por lo que `edad`, `Edad` y `EDAD` son
+identificadores diferentes. Convenciones habituales:
+
+- Variables, funciones y módulos: `snake_case` (letras minúsculas
+  separadas por guión bajo).
+- Tipos, `struct`, `enum` y `trait`: `PascalCase` (primera letra
+  de cada palabra en mayúscula).
+- Constantes y variables estáticas: `SCREAMING_SNAKE_CASE`
+  (letras mayúsculas, separadas por guión bajo).
+- Parámetros genéricos: normalmente una letra mayúscula (`T`,
+  `E`, etc.).
+
+## Comentarios
+
+Los comentarios son fragmentos de texto ignorados por el
+compilador. Se utilizan para documentar o aclarar el código.
+
+- Los comentarios de una línea comienzan con `//`. Pueden ocupar
+  una línea completa, para comentar el código que aparece debajo,
+  o escribirse al final de una sentencia.
+
+- Los comentarios de varias líneas se delimitan mediante `/*` y
+  `*/`.
+
+Ejemplos:
+
+``` rust
+// Dirección IP del servidor DNS principal.
+let dns_principal = "8.8.8.8";
+
+// Puerto utilizado por HTTPS.
+let puerto_https = 443;
+
+// Tiempo máximo de espera en segundos.
+let timeout = 5;
+
+// En un programa real no deberíamos comentar obviedades como estas.
+// En este ejemplo, lo único relevante es que las unidades son segundos,
+// (podrían ser milisegundos). El resto, sobra.
+
+/* También puede usarse este formato
+   para comentarios de varias líneas
+   pero es menos habitual.  */
+```
+
+Recuerda que un comentario nunca debería contar nada que pueda
+deducirse directamente del código. Entre otros motivos, porque en
+el futuro podría modificarse el código sin actualizar el
+comentario, dejando ambos en contradicción.
+
+Rust dispone también de comentarios especiales para generar
+documentación automática: `///` y `//!`, que trataremos
+posteriormente.

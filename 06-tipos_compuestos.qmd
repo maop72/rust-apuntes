@@ -1,0 +1,127 @@
+# Tipos de datos compuestos {#sec-tipos-compuestos}
+
+En la @sec-tipos-basicos ya hemos visto los tipos básicos
+de datos: enteros, reales, booleanos y caracteres. Sin embargo,
+con frecuencia necesitaremos agrupar varios valores para
+representar una entidad o manejar colecciones de datos. Para ello,
+Rust define dos tipos de datos compuestos: las tuplas y los
+*arrays*.
+
+## Tuplas
+
+Una tupla es una colección ordenada de valores. Sus elementos
+pueden tener tipos distintos y su longitud no puede cambiar una
+vez definida. Se escriben entre paréntesis, separados por comas.
+
+``` rust
+{{< include c06/tuplas/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20persona%20%3D%20%28%22Ana%22%2C%2025%2C%20true%29%3B%0A%0A%20%20%20%20println%21%28%22Contenido%20de%20la%20tupla%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20persona%29%3B%0A%0A%20%20%20%20println%21%28%22Elementos%20de%20la%20tupla%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5CtNombre%3A%20%7B%7D%22%2C%20persona.0%29%3B%0A%20%20%20%20println%21%28%22%5CtEdad%3A%20%7B%7D%22%2C%20persona.1%29%3B%0A%20%20%20%20println%21%28%22%5CtActivo%3A%20%7B%7D%22%2C%20persona.2%29%3B%0A%7D%0A)
+
+:::
+
+- La variable `persona` contiene una tupla con tres elementos:
+  una cadena (`"Ana"`), un entero (`25`) y un booleano (`true`).
+
+- La sentencia
+
+  ``` rust
+  println!("\t{:?}", persona);
+  ```
+
+  muestra el contenido completo de la tupla. El especificador
+  `:?` indica que el valor debe imprimirse usando su
+  representación de depuración (*debug*).
+
+- Los elementos de una tupla se acceden mediante un punto seguido
+  de su posición. El primer elemento es `persona.0`, el segundo
+  `persona.1` y el tercero `persona.2`.
+
+- Las últimas sentencias muestran cada elemento por separado:
+
+  ``` rust
+  println!("\tNombre: {}", persona.0);
+  println!("\tEdad: {}", persona.1);
+  println!("\tActivo: {}", persona.2);
+  ```
+
+  El especificador `{}` indica dónde debe insertarse el valor que
+  aparece como segundo argumento de `println!`.
+
+- La secuencia `\t` representa un carácter de tabulación y se
+  utiliza aquí para mejorar la presentación de la salida.
+
+## La tupla vacía
+
+La tupla vacía se escribe `()` y no contiene ningún elemento.
+
+``` rust
+{{< include c06/tupla_vacia/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20tupla_vacia%20%3D%20%28%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20tupla_vacia%29%3B%0A%7D%0A)
+
+:::
+
+Aunque pueda parecer poco útil, la tupla vacía tiene un papel
+importante en Rust. Por ejemplo, es el valor que devuelven muchas
+funciones cuya finalidad es realizar una acción y no producir un
+resultado.
+
+## Arrays
+
+Al igual que una tupla, un array es una colección ordenada de
+valores cuya longitud no puede cambiar una vez definido. Pero a
+diferencia de las tuplas, sus elementos han de ser todos del
+mismo tipo.
+
+Los elementos de un array se escriben entre corchetes, separados
+por comas. También se usan los corchetes para acceder a los
+elementos por su índice. Al igual que en C y muchos otros
+lenguajes, el primer elemento es el `0`, el segundo es el `1`,
+etc.
+
+``` rust
+{{< include c06/arrays/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20numeros%20%3D%20%5B10%2C%2020%2C%2030%2C%2040%2C%2050%5D%3B%0A%0A%20%20%20%20println%21%28%22Contenido%20del%20array%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20numeros%29%3B%0A%20%20%0A%20%20%20%20println%21%28%22Elementos%20del%20array%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5CtPrimero%3A%20%7B%7D%22%2C%20numeros%5B0%5D%29%3B%0A%20%20%20%20println%21%28%22%5CtSegundo%3A%20%7B%7D%22%2C%20numeros%5B1%5D%29%3B%0A%20%20%20%20println%21%28%22%5CtTercero%3A%20%7B%7D%22%2C%20numeros%5B2%5D%29%3B%0A%7D%0A%0A)
+
+:::
+
+- La variable `numeros` contiene un array con cinco elementos.
+  Todos ellos son enteros. Si alguno no lo fuera, el compilador
+  mostraría un error. Como en el siguiente ejemplo:
+
+``` rust
+{{< include c06/arrays_mal/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20datos%20%3D%20%5B10%2C%2020%2C%20%22azul%22%5D%3B%20//%20%C2%A1%C2%A1MAL%21%21%0A%0A%20%20%20%20println%21%28%22Contenido%20del%20array%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20datos%29%3B%0A%7D%0A)
+
+:::
+
+## Comparación entre tuplas y arrays
+
+La tabla @tbl-tupla-vs-array resume las similitudes y diferencias
+entre tuplas y arrays.
+
+| Característica           | Tupla                   | Array                      |
+|--------------------------|-------------------------|----------------------------|
+| Longitud fija            | Sí                      | Sí                         |
+| Elementos del mismo tipo | No necesariamente       | Sí                         |
+| Delimitadores            | Paréntesis `()`         | Corchetes `[]`             |
+| Acceso a elementos       | Punto (`.0`, `.1`, ...) | Índice (`[0]`, `[1]`, ...) |
+| Ejemplo                  | `("Ana", 25, true)`     | `[10, 20, 30, 40, 50]`     |
+
+: Comparación entre tuplas y arrays {#tbl-tupla-vs-array}
+

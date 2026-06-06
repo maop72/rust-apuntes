@@ -1,0 +1,214 @@
+# Variables y constantes
+
+En este capítulo aprenderemos a declarar variables y constantes,
+a distinguir entre datos mutables e inmutables y a utilizar los
+tipos de datos básicos de Rust. A diferencia de muchos otros
+lenguajes, Rust considera la inmutabilidad como la opción por
+defecto, una característica que suele resultar sorprendente a los
+principiantes. También veremos los operadores más habituales.
+
+## Tipos de datos básicos {#sec-tipos-basicos}
+
+Las variables se declaran mediante la palabra reservada `let`. Lo
+más idiomático es omitir el tipo, ya que Rust puede deducirlo a
+partir del valor inicial.
+
+En programación se dice que un fragmento de código es
+*idiomático* cuando sigue los usos y convenciones habituales del
+lenguaje.
+
+``` rust
+let nombre = "URJC";
+let creacion = 1996;
+let publica = true;
+```
+
+También es correcto declarar los tipos de manera explícita, pero
+se considera redundante. La @tbl-tipos-basicos resume los tipos
+básicos de Rust.
+
+``` rust
+let nombre: &str = "URJC";
+let creacion: i32 = 1996;
+let publica: bool = true;
+```
+
+Habrá ocasiones donde sí es necesario indicar el tipo. Por
+ejemplo, para los literales de coma flotante, Rust infiere por
+defecto un número real de doble precisión (`f64`). Si deseamos un
+real de simple precisión (`f32`), deberemos indicarlo de forma
+explícita.
+
+``` rust
+let radio: f32 = 3.5;
+```
+
+También puede ser conveniente hacerlo para mejorar la legibilidad
+del código o para documentar una decisión de diseño:
+
+``` rust
+let puerto: u16 = 8080;
+let temperatura: f32 = 21.5;
+```
+
+Más adelante veremos otras situaciones en las que el compilador
+no dispone de suficiente información para deducir el tipo y es
+obligatorio especificarlo explícitamente.
+
+| Tipo                              | Descripción                               | Ejemplo             |
+|-----------------------------------|-------------------------------------------|---------------------|
+| `bool`                            | Valor lógico                              | `true`, `false`     |
+| `char`                            | Carácter Unicode                          | `'A'`, `'ñ'`, `'€'` |
+| `&str`                            | Cadena de texto inmutable                 | `"Hola"`            |
+| `i8`, `i16`, `i32`, `i64`, `i128` | Enteros con signo                         | `-42`               |
+| `u8`, `u16`, `u32`, `u64`, `u128` | Enteros sin signo                         | `42`                |
+| `isize`                           | Entero con signo del tamaño de un puntero | `-42`               |
+| `usize`                           | Entero sin signo del tamaño de un puntero | `42`                |
+| `f32`                             | Real de simple precisión                  | `3.14`              |
+| `f64`                             | Real de doble precisión                   | `3.14`              |
+
+: Tipos de datos básicos de Rust {#tbl-tipos-basicos}
+
+Los tipos enteros y de coma flotante también admiten anotaciones
+explícitas en los literales:
+
+``` rust
+let edad = 54u8;
+let poblacion = 8_000_000u64;
+let radio = 3.5f32;
+```
+
+## Mutables e inmutables
+
+Comenzaremos por repasar dos ideas previas:
+
+- Tiempo de compilación (*compile time*): fase en la que el
+  compilador analiza y traduce el código fuente a código máquina
+  o ejecutable.
+
+- Tiempo de ejecución (*run time*): fase en la que el programa ya
+  compilado se está ejecutando.
+
+La mayoría de lenguajes de programación incluyen *constantes* y
+*variables*. Mientras que Rust distingue tres categorías:
+*constantes*, *variables inmutables* y *variables mutables*.
+
+Por defecto, las variables son inmutables. Esto es, una vez que
+reciben un valor, este no puede cambiar durante la ejecución del
+programa. En esto coinciden con las constantes. La diferencia
+entre una variable inmutable y una constante es:
+
+- La constante tiene que inicializarse con una expresión cuyo
+  valor puede determinarse durante la compilación.
+
+- La variable inmutable puede recibir su valor en tiempo de
+  ejecución. Cada vez que se ejecute el programa puede tener un
+  valor inicial distinto: aleatorio, leído de un fichero,
+  consultado al usuario, etc. Aunque una vez asignado, no puede
+  cambiar.
+
+El siguiente ejemplo intenta cambiar una variable inmutable, y
+por tanto genera un error de compilación.
+
+``` rust
+{{< include c05/inmutable_error/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20x%20%3D%205%3B%0A%20%20%20%20println%21%28%22x%3A%7B%7D%22%2Cx%29%3B%0A%20%20%20%20x%20%3D%206%3B%20//%20%C2%A1%C2%A1Error%21%21%0A%20%20%20%20println%21%28%22x%3A%7B%7D%22%2Cx%29%3B%0A%7D%0A)
+
+:::
+
+Para que una variable sea mutable, como la de prácticamente
+cualquier otro lenguaje de programación, debe declararse con
+`mut` como en el siguiente ejemplo:
+
+``` rust
+{{< include c05/mutable_ok/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20x%20%3D%205%3B%0A%20%20%20%20println%21%28%22x%3A%7B%7D%22%2Cx%29%3B%0A%20%20%20%20x%20%3D%206%3B%20%0A%20%20%20%20println%21%28%22x%3A%7B%7D%22%2Cx%29%3B%0A%7D%0A)
+
+:::
+
+La macro `println!` muestra texto por pantalla. En este ejemplo:
+
+``` rust
+println!("x:{}", x);
+```
+
+la cadena `"x:{}"` indica el formato de salida. El especificador
+`{}` será sustituido por el valor de la variable `x`, que se pasa
+como segundo argumento.
+
+## Constantes
+
+Las constantes se definen con la palabra reservada `const`.
+
+- Por convención, se escriben en MAYÚSCULAS.
+
+- Son inmutables. Su valor no puede cambiar.
+
+- Deben indicar explícitamente el tipo.
+
+- Su valor debe conocerse en tiempo de compilación.
+
+Puede tratarse de un valor literal
+
+``` rust
+const MAX_CLIENTES: u32 = 100;
+```
+
+o de una expresión cuyo valor pueda calcularse durante la
+compilación.
+
+``` rust
+const TAM: usize = 1024 * 1024;
+```
+
+Ejemplo:
+
+``` rust
+{{< include c05/const_ok/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20PUERTO_HTTP%3A%20u16%20%3D%2080%3B%0Aconst%20TIMEOUT_SEGUNDOS%3A%20u64%20%3D%2030%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20println%21%28%22Puerto%3A%20%7B%7D%22%2C%20PUERTO_HTTP%29%3B%0A%20%20%20%20println%21%28%22Timeout%3A%20%7B%7D%22%2C%20TIMEOUT_SEGUNDOS%29%3B%0A%7D%0A)
+
+:::
+
+Más adelante estudiaremos otros conceptos relacionados como el
+*shadowing*, las variables estáticas (`static`) y las funciones
+que pueden evaluarse en tiempo de compilación (`const fn`).
+
+## Operadores
+
+Tal y como muestra la @tbl-operadores, los operadores básicos de
+Rust coinciden con los del lenguaje C y sus herederos, como C++,
+C#, Java, JavaScript, Go, Kotlin, etc.
+
+| Operación         | Operador |
+|-------------------|----------|
+| Suma              | `+`      |
+| Resta             | `-`      |
+| Multiplicación    | `*`      |
+| División          | `/`      |
+| Resto             | `%`      |
+| Igualdad          | `==`     |
+| Desigualdad       | `!=`     |
+| Menor que         | `<`      |
+| Menor o igual que | `<=`     |
+| Mayor que         | `>`      |
+| Mayor o igual que | `>=`     |
+| AND lógico        | `&&`     |
+| OR lógico         | \`       |
+| NOT lógico        | `!`      |
+
+: Operador básicos de Rust {#tbl-operadores}
+
+Los operadores de asignación compuesta (`+=`, `-=`, `*=`, etc.)
+también están disponibles.
