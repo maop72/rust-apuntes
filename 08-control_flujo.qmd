@@ -7,12 +7,11 @@ bucles.
 
 ## Sentencia `if`
 
-La sentencia `if` permite ejecutar código de forma condicional.
-Su sintaxis es similar a la de muchos otros lenguajes. Sin
-embargo, a diferencia de C, C++, JavaScript o Python, la
-condición debe ser siempre una expresión booleana. Rust no
-realiza conversiones implícitas entre números y valores
-booleanos.
+La sentencia `if` permite ejecutar código de forma condicional,
+con sintaxis similar a la de muchos otros lenguajes. Sin embargo,
+a diferencia de C, C++, JavaScript o Python, la condición debe
+ser siempre una expresión booleana: Rust no realiza conversiones
+implícitas entre números y valores booleanos.
 
 En el siguiente ejemplo se comprueba si un número de puerto
 pertenece al rango de puertos de sistema (del 0 al 1023) o si se
@@ -109,7 +108,7 @@ El primero utiliza varias sentencias `if` anidadas.
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20TEMP_CALIENTE_X64%3A%20u32%20%3D%2070%3B%0Aconst%20TEMP_M_CALIENTE_X64%3A%20u32%20%3D%2085%3B%0Aconst%20TEMP_CRITICA_X64%3A%20u32%20%3D%2095%3B%0A%0Aconst%20TEMP_CALIENTE_ARM%3A%20u32%20%3D%2060%3B%0Aconst%20TEMP_M_CALIENTE_ARM%3A%20u32%20%3D%2075%3B%0Aconst%20TEMP_CRITICA_ARM%3A%20u32%20%3D%2085%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20es_arm%20%3D%20true%3B%0A%20%20%20%20let%20temp_cpu%20%3D%2078%3B%0A%0A%20%20%20%20if%20es_arm%20%7B%0A%20%20%20%20%20%20%20%20if%20temp_cpu%20%3C%20TEMP_CALIENTE_ARM%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22temp%20normal%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20temp_cpu%20%3C%20TEMP_M_CALIENTE_ARM%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22CPU%20caliente%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20temp_cpu%20%3C%20TEMP_CRITICA_ARM%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22CPU%20muy%20caliente%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22temp%20cr%C3%ADtica%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20if%20temp_cpu%20%3C%20TEMP_CALIENTE_X64%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22temp%20normal%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20temp_cpu%20%3C%20TEMP_M_CALIENTE_X64%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22CPU%20caliente%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20temp_cpu%20%3C%20TEMP_CRITICA_X64%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22CPU%20muy%20caliente%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22temp%20cr%C3%ADtica%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20TEMP_ALTA_X64%3A%20u32%20%3D%2070%3B%0Aconst%20TEMP_M_ALTA_X64%3A%20u32%20%3D%2085%3B%0Aconst%20TEMP_CRITICA_X64%3A%20u32%20%3D%2095%3B%0A%0Aconst%20TEMP_ALTA_ARM%3A%20u32%20%3D%2060%3B%0Aconst%20TEMP_M_ALTA_ARM%3A%20u32%20%3D%2075%3B%0Aconst%20TEMP_CRITICA_ARM%3A%20u32%20%3D%2085%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20es_arm%20%3D%20true%3B%0A%20%20%20%20let%20temp_cpu%20%3D%2078%3B%0A%0A%20%20%20%20if%20es_arm%20%7B%0A%20%20%20%20%20%20%20%20if%20temp_cpu%20%3C%20TEMP_ALTA_ARM%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22temp%20normal%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20temp_cpu%20%3C%20TEMP_M_ALTA_ARM%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22CPU%20ALTA%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20temp_cpu%20%3C%20TEMP_CRITICA_ARM%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22CPU%20muy%20ALTA%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22temp%20cr%C3%ADtica%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20if%20temp_cpu%20%3C%20TEMP_ALTA_X64%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22temp%20normal%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20temp_cpu%20%3C%20TEMP_M_ALTA_X64%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22CPU%20ALTA%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20temp_cpu%20%3C%20TEMP_CRITICA_X64%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22CPU%20muy%20ALTA%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22temp%20cr%C3%ADtica%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A)
 
 :::
 
@@ -120,9 +119,10 @@ consideran que la segunda resulta más fácil de leer y mantener.
 ``` rust
 {{< include c08/ifs_planos/src/main.rs >}}
 ```
+
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20TEMP_CALIENTE_X64%3A%20u32%20%3D%2070%3B%0Aconst%20TEMP_M_CALIENTE_X64%3A%20u32%20%3D%2085%3B%0Aconst%20TEMP_CRITICA_X64%3A%20u32%20%3D%2095%3B%0A%0Aconst%20TEMP_CALIENTE_ARM%3A%20u32%20%3D%2060%3B%0Aconst%20TEMP_M_CALIENTE_ARM%3A%20u32%20%3D%2075%3B%0Aconst%20TEMP_CRITICA_ARM%3A%20u32%20%3D%2085%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20es_arm%20%3D%20true%3B%0A%20%20%20%20let%20temp_cpu%20%3D%2078%3B%0A%0A%20%20%20%20if%20es_arm%20%26%26%20temp_cpu%20%3C%20TEMP_CALIENTE_ARM%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22temp%20normal%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_CALIENTE_ARM%20%26%26%20temp_cpu%20%3C%20TEMP_M_CALIENTE_ARM%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20caliente%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_M_CALIENTE_ARM%20%26%26%20temp_cpu%20%3C%20TEMP_CRITICA_ARM%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20muy%20caliente%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_CRITICA_ARM%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22temp%20cr%C3%ADtica%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20%21es_arm%20%26%26%20temp_cpu%20%3C%20TEMP_CALIENTE_X64%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22temp%20normal%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20%21es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_CALIENTE_X64%20%26%26%20temp_cpu%20%3C%20TEMP_M_CALIENTE_X64%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20caliente%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20%21es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_M_CALIENTE_X64%20%26%26%20temp_cpu%20%3C%20TEMP_CRITICA_X64%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20muy%20caliente%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20%21es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_CRITICA_X64%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22temp%20cr%C3%ADtica%22%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20TEMP_ALTA_X64%3A%20u32%20%3D%2070%3B%0Aconst%20TEMP_M_ALTA_X64%3A%20u32%20%3D%2085%3B%0Aconst%20TEMP_CRITICA_X64%3A%20u32%20%3D%2095%3B%0A%0Aconst%20TEMP_ALTA_ARM%3A%20u32%20%3D%2060%3B%0Aconst%20TEMP_M_ALTA_ARM%3A%20u32%20%3D%2075%3B%0Aconst%20TEMP_CRITICA_ARM%3A%20u32%20%3D%2085%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20es_arm%20%3D%20true%3B%0A%20%20%20%20let%20temp_cpu%20%3D%2078%3B%0A%0A%20%20%20%20if%20es_arm%20%26%26%20temp_cpu%20%3C%20TEMP_ALTA_ARM%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22temp%20normal%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_ALTA_ARM%20%26%26%20temp_cpu%20%3C%20TEMP_M_ALTA_ARM%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20ALTA%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_M_ALTA_ARM%20%26%26%20temp_cpu%20%3C%20TEMP_CRITICA_ARM%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20muy%20ALTA%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_CRITICA_ARM%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22temp%20cr%C3%ADtica%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20%21es_arm%20%26%26%20temp_cpu%20%3C%20TEMP_ALTA_X64%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22temp%20normal%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20%21es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_ALTA_X64%20%26%26%20temp_cpu%20%3C%20TEMP_M_ALTA_X64%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20ALTA%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20%21es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_M_ALTA_X64%20%26%26%20temp_cpu%20%3C%20TEMP_CRITICA_X64%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22CPU%20muy%20ALTA%22%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20if%20%21es_arm%20%26%26%20temp_cpu%20%3E%3D%20TEMP_CRITICA_X64%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22temp%20cr%C3%ADtica%22%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
 
 :::
 
@@ -140,4 +140,124 @@ En este ejemplo la diferencia carece de importancia, ya que las
 condiciones son simples comparaciones. En general, salvo que
 existan requisitos específicos de rendimiento o de otro tipo,
 suele ser preferible la solución más clara y fácil de mantener.
+
+### `if` como expresión
+
+En Rust, `if` no es únicamente una sentencia de control de flujo.
+También puede utilizarse como una expresión que produce un valor.
+Por ejemplo, el siguiente código asigna una cadena distinta según
+el tipo de puerto:
+
+``` rust
+{{< include c08/let_if/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20ULTIMO_PUERTO_SISTEMA%3A%20u32%20%3D%201023%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20puerto%20%3D%208080%3B%0A%0A%20%20%20%20let%20categoria%20%3D%20if%20puerto%20%3C%3D%20ULTIMO_PUERTO_SISTEMA%20%7B%0A%20%20%20%20%20%20%20%20%22sistema%22%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%22usuario%22%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%20es%20puerto%20de%20%7B%7D%22%2C%20puerto%2C%20categoria%29%3B%0A%7D%0A%0A)
+
+:::
+
+Obsérvese que los bloques asociados a `if` y `else` no terminan
+en punto y coma. El valor de la última expresión de cada bloque
+es el valor producido por toda la construcción `if`.
+
+Además, ambos bloques deben producir valores compatibles con el
+mismo tipo. Por ejemplo, no sería válido devolver una cadena en
+una rama y un número entero en la otra.
+
+``` rust
+{{< include c08/let_if_mal/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20ULTIMO_PUERTO_SISTEMA%3A%20u32%20%3D%201023%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20puerto%20%3D%208080%3B%0A%0A%20%20%20%20let%20categoria%20%3D%20if%20puerto%20%3C%3D%20ULTIMO_PUERTO_SISTEMA%20%7B%0A%20%20%20%20%20%20%20%20%22sistema%22%20%3B%20%20//%20%C2%A1MAL%21%20Si%20acaba%20en%20%3B%20ya%20no%20es%20una%20expresi%C3%B3n%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%202%3B%20%20//%20%C2%A1MAL%21%20El%20tipo%20es%20distinto%20al%20de%20la%20rama%20%22then%22%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%20es%20puerto%20de%20%7B%7D%22%2C%20puerto%2C%20categoria%29%3B%0A%7D%0A%0A)
+
+:::
+
+## Bucles
+
+Los bucles permiten ejecutar repetidamente un bloque de código.
+Rust proporciona tres construcciones para ello: `loop`, `while` y
+`for`, con propósitos diferentes. `loop` representa una
+repetición incondicional, `while` ejecuta el bloque mientras se
+cumpla una condición y `for` está pensado para recorrer los
+elementos de una secuencia. En la práctica, `for` suele ser la
+opción preferida cuando se desea iterar sobre una colección o un
+rango de valores.
+
+### El bucle `loop`
+
+La construcción `loop` ejecuta repetidamente un bloque de código.
+A diferencia de otros bucles, no incorpora ninguna condición de
+terminación, por lo que continuará ejecutándose indefinidamente
+mientras no se abandone explícitamente mediante una instrucción
+`break`.
+
+``` rust
+{{< include c08/loop_1/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20contador%20%3D%200%3B%0A%0A%20%20%20%20loop%20%7B%0A%20%20%20%20%20%20%20%20contador%20%2B%3D%201%3B%0A%20%20%20%20%20%20%20%20print%21%28%22hola%20%22%29%3B%0A%0A%20%20%20%20%20%20%20%20if%20contador%20%3D%3D%205%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20break%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20println%21%28%22Fin%20del%20bucle.%22%29%3B%0A%7D%0A%0A)
+
+:::
+
+En este ejemplo, en cada iteración se incrementa la variable
+`contador` y se muestra el texto *hola* en pantalla mediante la
+sentencia `print!`, que a diferencia de `println!`, no añade un
+salto de línea. Cuando el contador alcanza el valor 5, la
+instrucción `break` interrumpe la ejecución del bucle.
+
+Si eliminásemos la instrucción `break`, tendríamos un bucle
+infinito que solo se detendría con una interrupción externa, por
+ejemplo pulsando `Ctrl+c`.
+
+En el siguiente ejemplo vemos cómo, además de finalizar el bucle,
+`break` puede devolver un valor: la construcción loop es una
+expresión y, mediante break, puede producir un valor.
+
+``` rust
+{{< include c08/loop_2/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20contador%20%3D%200%3B%0A%0A%20%20%20%20let%20resultado%20%3D%20loop%20%7B%0A%20%20%20%20%20%20%20%20contador%20%2B%3D%201%3B%0A%0A%20%20%20%20%20%20%20%20if%20contador%20%3D%3D%205%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20break%20contador%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cresultado%29%3B%0A%7D%0A)
+
+:::
+
+En este caso, cuando `contador` alcanza el valor 5, el bucle
+termina y la expresión `loop` produce dicho valor, que se asigna
+a la variable `resultado`.
+
+### El bucle `while`
+
+La construcción `while` ejecuta repetidamente un bloque de código
+mientras una condición sea verdadera. Antes de cada iteración se
+evalúa la condición y, si resulta falsa, el bucle finaliza.
+
+
+``` rust
+{{< include c08/while_ok/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20contador%20%3D%201%3B%0A%0A%20%20%20%20while%20contador%20%3C%3D%205%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2Ccontador%29%3B%0A%20%20%20%20%20%20%20%20contador%20%2B%3D%201%3B%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+En este ejemplo, el cuerpo del bucle se ejecuta mientras la
+variable `contador` sea menor o igual que 5. En cada iteración se
+muestra su valor y se incrementa en una unidad. Cuando `contador`
+alcanza el valor 6, la condición deja de cumplirse y el bucle
+termina.
+
+Conceptualmente, este bucle es completamente análogo a los
+anteriores con `loop`, pero expresando la condición de
+terminación directamente en la cabecera del bucle.
+
 

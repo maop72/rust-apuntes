@@ -55,6 +55,56 @@ Más adelante veremos otras situaciones en las que el compilador
 no dispone de suficiente información para deducir el tipo y es
 obligatorio especificarlo explícitamente.
 
+Los tipos enteros y de coma flotante también admiten anotaciones
+explícitas en los literales:
+
+``` rust
+let edad = 54u8;
+let poblacion = 8_000_000u64;
+let radio = 3.5f32;
+```
+
+### El tipo unitario `()` {#sec-tipo-unitario}
+
+Rust dispone de un tipo especial denominado *tipo unitario*
+(*unit type*), cuyo único valor posible es el *valor unitario*.
+Ambos se representan de la misma forma: `()`.
+
+``` rust
+let x = ();
+```
+
+Aunque pueda parecer un concepto peculiar, no es muy distinto de
+otros tipos básicos. Por ejemplo, un valor de tipo `i32` puede
+tomar cualquiera de los 2³² valores enteros representables
+mediante 32 bits. Un valor de tipo `bool` puede tomar únicamente
+dos valores posibles: `true` y `false`. Por su parte, el tipo
+unitario `()` solo admite un único valor: `()`.
+
+El tipo `()` se utiliza para representar la ausencia de
+información útil. Como trataremos posteriormente, una función que
+no devuelve ningún resultado devuelve implícitamente un valor de
+tipo `()`:
+
+``` rust
+fn saludar() {
+    println!("Hola");
+}
+```
+
+equivale a:
+
+``` rust
+fn saludar() -> () {
+    println!("Hola");
+}
+```
+
+Además, cuando una expresión termina en punto y coma, su valor se
+descarta y la expresión pasa a producir el valor `()`.
+
+### Resumen de tipos básicos
+
 | Tipo                              | Descripción                               | Ejemplo             |
 |-----------------------------------|-------------------------------------------|---------------------|
 | `bool`                            | Valor lógico                              | `true`, `false`     |
@@ -66,17 +116,9 @@ obligatorio especificarlo explícitamente.
 | `usize`                           | Entero sin signo del tamaño de un puntero | `42`                |
 | `f32`                             | Real de simple precisión                  | `3.14`              |
 | `f64`                             | Real de doble precisión                   | `3.14`              |
+| `()`                              | Tipo unitario                             | `()`                |
 
 : Tipos de datos básicos de Rust {#tbl-tipos-basicos}
-
-Los tipos enteros y de coma flotante también admiten anotaciones
-explícitas en los literales:
-
-``` rust
-let edad = 54u8;
-let poblacion = 8_000_000u64;
-let radio = 3.5f32;
-```
 
 ## Mutables e inmutables
 

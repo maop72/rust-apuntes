@@ -237,9 +237,9 @@ expresión actúe como valor devuelto.
 Por este mismo motivo, el siguiente ejemplo también es
 incorrecto. El `;` después de la definición de la función es
 erróneo. Esto puede parecer sorprendente: en muchos lenguajes,
-como C, C++, Java o JavaScript, añadir un `;` al final
-del cuerpo de una función no suele tener ningún efecto,
-se interpreta como una sentencia vacía adicional.
+como C, C++, Java o JavaScript, añadir un `;` al final del cuerpo
+de una función no suele tener ningún efecto, se interpreta como
+una sentencia vacía adicional.
 
 ``` rust
 {{< include c07/funcion_mal2/src/main.rs >}}
@@ -253,9 +253,16 @@ se interpreta como una sentencia vacía adicional.
 
 Mientras que en Rust el punto y coma forma parte de la distinción
 entre expresiones y sentencias. Los bloques de código son
-expresiones y, por tanto, producen valores. El punto y coma puede
-modificar el significado del código, no es un mero separador de
-sentencias.
+expresiones y, por tanto, producen valores. Cuando se añade un
+punto y coma, la expresión pasa a convertirse en una sentencia y
+su valor se descarta. Como consecuencia, la sentencia produce el
+valor unitario `()`, como adelantamos en la {@sec-tipo-unitario}.
+
+Por tanto, el punto y coma puede modificar el significado del
+código; no es un mero separador de sentencias. Más adelante
+veremos que esta diferencia también resulta importante al
+utilizar construcciones como `if` o `match` para producir
+valores.
 
 ## Uso de `Return`
 
@@ -276,8 +283,47 @@ Esto es correcto, pero no es idiomático. Normalmente se reserva
 `return` para aquellos casos en los que se desea abandonar la
 función antes de llegar al final de su cuerpo.
 
-Obsérvese que en este ejemplo la última línea de la función `suma` sí
-termina en punto y coma. Esto se debe a que `return` es una
-sentencia. Aunque contiene una expresión `a + b` cuyo valor será
-devuelto por la función, la construcción completa `return a + b;`
-no es una expresión, sino una sentencia.
+Obsérvese que en este ejemplo la última línea de la función
+`suma` sí termina en punto y coma. Esto se debe a que `return` es
+una sentencia. Aunque contiene una expresión `a + b` cuyo valor
+será devuelto por la función, la construcción completa
+`return a + b;` no es una expresión, sino una sentencia.
+
+## Parámetros por omisión, argumentos por nombre y sobrecarga
+
+A diferencia de otros lenguajes, Rust no admite:
+
+- Argumentos por omisión.
+
+  Son valores predeterminados para algunos parámetros, de forma
+  que el programador puede omitirlos en una llamada y el
+  compilador utilizará automáticamente dichos valores.
+
+- Argumentos por nombre.
+
+  En algunos lenguajes, como Python o Swift, es posible
+  especificar los argumentos mediante el nombre de los parámetros
+  en lugar de por su posición en la llamada.
+
+- Sobrecarga de funciones.
+
+  Es la posibilidad de tener varias funciones con el mismo nombre
+  pero con distintas listas de parámetros, típicamente de
+  distinto tipo. Según los parámetros de una llamada concreta, el
+  compilador elige una u otra versión de la función.
+
+Rust prescinde de estas características para mantener un lenguaje
+más sencillo y explícito. De este modo, cada función tiene una
+única definición y todas las llamadas deben proporcionar
+exactamente los argumentos esperados, lo que facilita la lectura,
+comprensión y validación del código.
+
+Cuando se necesitan argumentos por omisión, es habitual recurrir a
+otros mecanismos del lenguaje, como el tipo `Option` o patrones
+de diseño específicos como *builder*.
+
+Respecto a los argumentos por nombre, existen bibliotecas
+externas que permiten aproximarse a este comportamiento. No
+obstante, en el ecosistema Rust es más habitual recurrir a
+estructuras de datos o al patrón *builder* cuando una función
+requiere un gran número de parámetros.

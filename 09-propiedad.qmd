@@ -1,0 +1,89 @@
+# Propiedad, préstamos y referencias
+
+Uno de los aspectos más característicos de Rust es su sistema de
+propiedad. Gracias a él, el compilador puede garantizar la
+seguridad de la memoria y evitar problemas habituales en otros
+lenguajes, como los accesos a memoria liberada o las condiciones
+de carrera, sin necesidad de un recolector de basura.
+
+Para conseguirlo, Rust controla quién es el propietario de cada
+dato, cuándo puede transferirse dicha propiedad y en qué
+situaciones es posible acceder temporalmente a un valor mediante
+préstamos y referencias. Aunque estas reglas pueden resultar
+extrañas al principio, constituyen la base sobre la que se apoya
+gran parte del lenguaje.
+
+Antes de estudiar estas reglas introduciremos algunos conceptos
+previos:
+
+- Las dos zonas de memoria utilizadas habitualmente por los
+  programas: *stack* (pila) y *heap* (montón). Esto nos permitirá
+  comprender por qué algunos tipos de datos son más sencillos de
+  gestionar que otros y qué papel desempeña la memoria dinámica.
+
+- El tipo `String`, que utiliza memoria *heap* para almacenar sus
+  caracteres. Gracias a él podremos observar problemas de gestión
+  de memoria que no aparecen con tipos simples como `i32` o
+  `bool`, y comprender la necesidad del sistema de propiedad de
+  Rust.
+
+## Stack y heap
+
+La memoria *stack* almacena datos de tamaño conocido en tiempo de
+compilación. Su gestión es muy eficiente, ya que reservar y
+liberar memoria suele reducirse a desplazar un puntero. Tipos
+como `i32`, `f64`, `bool` o `char` suelen almacenarse
+completamente en la *stack*.
+
+La memoria *heap* se utiliza para almacenar datos cuyo tamaño
+puede variar durante la ejecución del programa. En este caso es
+necesario solicitar memoria al sistema y llevar un registro de
+las zonas ocupadas y libres, por lo que las operaciones son más
+costosas que en la *stack*.
+
+Por ejemplo, en el siguiente fragmento:
+
+``` rust
+let x = 42;
+let s = String::from("Hola");
+```
+
+la variable `x` se almacena íntegramente en memoria *stack*. En
+cambio, la variable `s` utiliza memoria en memoria *heap* para
+almacenar los caracteres de la cadena.
+
+En resumen:
+
+Stack:
+
+- Almacena datos de tamaño conocido en tiempo de compilación.
+- Se gestiona automáticamente.
+- Reservar y liberar memoria es muy rápido.
+- Copiar valores suele ser una operación barata.
+
+Heap:
+
+- Permite almacenar datos cuyo tamaño puede variar durante la
+  ejecución.
+- Requiere solicitar memoria de forma dinámica.
+- Su gestión es más compleja y costosa.
+- Muchos tipos dinámicos, como `String` o `Vec<T>`, utilizan
+  memoria *heap*.
+
+La diferencia entre ambos mecanismos de almacenamiento es
+fundamental para comprender el sistema de propiedad de Rust y el
+comportamiento de tipos como `String`, vectores y otras
+estructuras de datos dinámicas.
+
+
+## El tipo `string`
+
+## Propiedad.
+
+## Movimiento de valores.
+
+## Copia de valores.
+
+## Referencias y préstamos.
+
+## Referencias mutables.

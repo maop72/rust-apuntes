@@ -14,6 +14,7 @@ book:
     - 06-tipos_compuestos.qmd
     - 07-funciones.qmd
     - 08-control_flujo.qmd
+    - 09-propiedad.qmd
 
 
 
@@ -37,7 +38,7 @@ format:
     classoption:
       - twoside
 
-    fontsize: 11pt
+    fontsize: 12pt
 
     geometry:
       - top=2cm
