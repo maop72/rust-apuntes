@@ -173,6 +173,41 @@ frecuente entre principiantes es intentar devolver un valor cuyo
 tipo no coincide con el declarado, lo que provocará un error de
 compilación.
 
+## Devolución de varios valores
+
+Aunque una función solo puede devolver un valor, dicho valor
+puede ser una tupla. Esto permite devolver varios datos
+relacionados.
+
+``` rust
+{{< include c07/devolver_tupla/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=%0Afn%20dividir%28a%3A%20i32%2C%20b%3A%20i32%29%20-%3E%20%28i32%2C%20i32%29%20%7B%0A%20%20%20%20%28a%20/%20b%2C%20a%20%25%20b%29%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20%28cociente%2C%20resto%29%20%3D%20dividir%2817%2C%205%29%3B%0A%0A%20%20%20%20println%21%28%22Cociente%3A%20%7B%7D%22%2C%20cociente%29%3B%0A%20%20%20%20println%21%28%22Resto%3A%20%7B%7D%22%2C%20resto%29%3B%0A%7D%0A)
+
+:::
+
+En este ejemplo, la cabecera de la función `dividir` declara que
+el tipo devuelto es una tupla formada por dos números enteros. La
+expresión de la última línea devuelve una tupla de dicho tipo.
+
+Esta línea recibe la tupla devuelta por la función y la
+descompone en sus elementos.
+
+``` rust
+let (cociente, resto) = dividir(17, 5);
+```
+
+- El primer elemento de la tupla se asigna a la variable
+  cociente.
+- El segundo elemento de la tupla se asigna a la variable resto.
+
+Este mecanismo se conoce como *desempaquetado de tuplas* y
+resulta especialmente útil cuando una función necesita devolver
+varios valores relacionados.
+
 ## Expresiones y sentencias
 
 Un programador acostumbrado a otros lenguajes seguramente
@@ -318,8 +353,8 @@ más sencillo y explícito. De este modo, cada función tiene una
 exactamente los argumentos esperados, lo que facilita la lectura,
 comprensión y validación del código.
 
-Cuando se necesitan argumentos por omisión, es habitual recurrir a
-otros mecanismos del lenguaje, como el tipo `Option` o patrones
+Cuando se necesitan argumentos por omisión, es habitual recurrir
+a otros mecanismos del lenguaje, como el tipo `Option` o patrones
 de diseño específicos como *builder*.
 
 Respecto a los argumentos por nombre, existen bibliotecas

@@ -239,7 +239,6 @@ La construcción `while` ejecuta repetidamente un bloque de código
 mientras una condición sea verdadera. Antes de cada iteración se
 evalúa la condición y, si resulta falsa, el bucle finaliza.
 
-
 ``` rust
 {{< include c08/while_ok/src/main.rs >}}
 ```
@@ -260,4 +259,65 @@ Conceptualmente, este bucle es completamente análogo a los
 anteriores con `loop`, pero expresando la condición de
 terminación directamente en la cabecera del bucle.
 
+### El bucle `for`
 
+La construcción `for` permite recorrer secuencias de valores de
+forma sencilla y segura. Es el mecanismo habitual para iterar
+sobre colecciones y rangos.
+
+Un programador procedente de lenguajes como C o Java tal vez 
+haría algo así:
+
+``` rust
+{{< include c08/for_indice/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B%2222/tcp%22%2C%20%2280/tcp%22%2C%20%22443/tcp%22%5D%3B%0A%0A%20%20%20%20for%20i%20in%200..puertos.len%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20puertos%5Bi%5D%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+Este código es correcto y produce el resultado esperado. Sin
+embargo, no es la forma habitual de iterar sobre una colección en
+Rust. Siempre que sea posible, se prefiere recorrer directamente
+sus elementos como en el siguiente ejemplo. En cada iteración, la
+variable `nombre` toma el valor de uno de los elementos.
+
+``` rust
+{{< include c08/for_array/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B%2222/tcp%22%2C%20%2280/tcp%22%2C%20%22443/tcp%22%5D%3B%0A%0A%20%20%20%20for%20puerto%20in%20puertos%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20puerto%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+También es posible utilizar `for` para recorrer un rango de
+valores enteros.
+
+- El operador `..` crea un rango entre dos enteros, excluyendo el
+  límite superior.
+
+- El operador `..=` es similar, pero incluyendo el límite
+  superior.
+
+``` rust
+{{< include c08/for_enteros/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20for%20i%20in%201..5%20%7B%0A%20%20%20%20%20%20%20%20//%20De%201%20a%204%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%20%22%2C%20i%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%0A%20%20%20%20for%20i%20in%201..%3D5%20%7B%0A%20%20%20%20%20%20%20%20//%20De%201%20a%205%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%20%22%2C%20i%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%0A%20%20%20%20for%20i%20in%20%281..%3D5%29.rev%28%29%20%7B%0A%20%20%20%20%20%20%20%20//%20de%205%20a%201%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%20%22%2C%20i%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%7D%0A)
+
+:::
+
+- El rango `1..5` contiene los valores 1, 2, 3 y 4. El extremo
+  superior no forma parte del rango.
+
+- El rango `1..=5` contiene todos los valores entre 1 y 5, ambos
+  inclusive.
+
+- El método `rev()` devuelve los elementos del rango en sentido
+  descendente.

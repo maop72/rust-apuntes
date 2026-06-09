@@ -16,16 +16,59 @@ gran parte del lenguaje.
 Antes de estudiar estas reglas introduciremos algunos conceptos
 previos:
 
+- El tipo `String`, que permite crear cadenas cuyo contenido y
+  longitud pueden modificarse durante la ejecución del programa.
+  Gracias a él podremos comprender la necesidad de algunos de los
+  mecanismos de gestión de memoria de Rust.
+
 - Las dos zonas de memoria utilizadas habitualmente por los
   programas: *stack* (pila) y *heap* (montón). Esto nos permitirá
   comprender por qué algunos tipos de datos son más sencillos de
   gestionar que otros y qué papel desempeña la memoria dinámica.
 
-- El tipo `String`, que utiliza memoria *heap* para almacenar sus
-  caracteres. Gracias a él podremos observar problemas de gestión
-  de memoria que no aparecen con tipos simples como `i32` o
-  `bool`, y comprender la necesidad del sistema de propiedad de
-  Rust.
+## Introducción al tipo `string`
+
+Hasta ahora hemos trabajado con cadenas literales, como `"Hola"`
+o `"Puerto"`. Su contenido está fijado en el código fuente y no
+puede modificarse.
+
+Rust también dispone del tipo `String`, que permite crear cadenas
+cuyo contenido y longitud pueden variar durante la ejecución del
+programa. Un valor de tipo `String` puede crearse a partir de una
+cadena literal mediante la función asociada `String::from()`:
+
+``` rust
+let s = String::from("Hola");
+```
+
+Si queremos modificar posteriormente la cadena, debemos declarar
+la variable como mutable:
+
+``` rust
+let mut s = String::from("Hola");
+```
+
+El método `push()` añade un carácter al final de la cadena y el
+método `push_str()` añade otra cadena al final:
+
+``` rust
+{{< include c09/intro_string/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20s%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20s.push_str%28%22%2C%20mundo%22%29%3B%20%20//%20A%C3%B1ade%20cadena%20%28se%20delimita%20con%20comilla%20doble%29%0A%20%20%20%20s.push%28%27%21%27%29%3B%20%20%20%20%20%20%20%20%20%20%20//%20A%C3%B1ade%20car%C3%A1cter%20%28se%20delimita%20con%20comilla%20simple%29%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%0A%7D%0A)
+
+:::
+
+En este capítulo utilizaremos el tipo `String` como ejemplo para
+estudiar cómo Rust gestiona la memoria y qué papel desempeña el
+sistema de propiedad.
+
+El acceso a caracteres individuales requiere algunas
+consideraciones adicionales relacionadas con la representación de
+texto en Unicode. Por este motivo pospondremos su estudio hasta
+más adelante.
 
 ## Stack y heap
 
@@ -75,15 +118,329 @@ fundamental para comprender el sistema de propiedad de Rust y el
 comportamiento de tipos como `String`, vectores y otras
 estructuras de datos dinámicas.
 
+## Propiedad
 
-## El tipo `string`
+En Rust, cada valor tiene un propietario (*owner*). El
+propietario es la variable responsable de dicho valor y determina
+cuándo deben liberarse los recursos asociados. La propiedad está
+estrechamente relacionada con el ámbito (*scope*) de las
+variables. El ámbito determina la parte del programa en la que
+una variable existe y puede utilizarse.
 
-## Propiedad.
+Por ejemplo:
+
+``` rust
+{{< include c09/ambito/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20let%20s%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%20//%20%C2%A1MAL%21%20aqu%C3%AD%20%27s%27%20ya%20no%20existe%0A%7D%0A)
+
+:::
+
+La variable `s` se crea al ejecutar la sentencia `let` y puede
+utilizarse hasta el final del bloque delimitado por las llaves.
+Al abandonar dicho bloque, `s` sale de su ámbito y deja de
+existir.
+
+Cuando el propietario de un valor sale de su ámbito, Rust
+destruye automáticamente dicho valor y libera los recursos
+asociados. Esta liberación se realiza de forma automática, sin
+necesidad de que el programador solicite explícitamente la
+destrucción del objeto.
+
+Las reglas fundamentales del sistema de propiedad son:
+
+- Cada valor tiene un propietario.
+- Un valor solo puede tener un propietario a la vez.
+- Cuando el propietario sale de su ámbito, el valor se destruye y
+  sus recursos se liberan automáticamente.
 
 ## Movimiento de valores.
 
-## Copia de valores.
+La asignación de un valor a una nueva variable no siempre tiene
+el mismo efecto. Consideremos el siguiente ejemplo:
+
+``` rust
+{{< include c09/movimiento/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20i1%20%3D%205%3B%0A%20%20%20%20let%20i2%20%3D%20i1%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20i1%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20i2%29%3B%0A%0A%20%20%20%20let%20s1%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20let%20s2%20%3D%20s1%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s2%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s1%29%3B%20//%20%C2%A1MAL%21%20%20s1%20ya%20no%20es%20el%20propietario%20de%20la%20cadena%0A%7D%0A)
+
+:::
+
+La primera asignación no presenta ningún problema. Tras ejecutar:
+
+``` rust
+let i2 = i1;
+```
+
+ambas variables pueden seguir utilizándose normalmente. Sin
+embargo, la segunda asignación produce un error de compilación.
+Tras ejecutar:
+
+``` rust
+let s2 = s1;
+```
+
+la variable `s1` deja de ser válida y ya no puede utilizarse. La
+diferencia entre ambos casos está relacionada con la forma en que
+se almacenan los datos en memoria.
+
+Los enteros tienen un tamaño pequeño y conocido en tiempo de
+compilación, por lo que se almacenan íntegramente en memoria
+*stack*. Al realizar una asignación, Rust crea automáticamente
+una copia del valor.
+
+Por el contrario, un valor de tipo `String` utiliza memoria
+*heap* para almacenar sus caracteres. En este caso, Rust no crea
+una copia completa de la cadena. En su lugar, transfiere la
+propiedad del valor a la nueva variable.
+
+Este proceso se denomina *movimiento* (*move*), ya que la
+propiedad del valor se mueve desde una variable a otra. Tras la
+asignación, `s2` pasa a ser la propietaria de la cadena y `s1`
+deja de ser válida. De este modo Rust garantiza que cada valor
+tenga un único propietario en todo momento y evita problemas
+relacionados con la liberación de memoria.
+
+En realidad, los enteros también obedecen las reglas de
+propiedad. La diferencia es que pertenecen a una categoría
+especial de tipos que se copian automáticamente, como veremos en
+la siguiente sección.
+
+## Copias automáticas: rasgo *Copy*
+
+En la sección anterior vimos dos comportamientos distintos al
+realizar una asignación:
+
+- Los enteros pueden seguir utilizándose después de la
+  asignación.
+- Los valores de tipo `String` transfieren su propiedad a la
+  nueva variable.
+
+La razón es que algunos tipos implementan un rasgo (*trait*)
+llamado `Copy`.
+
+Como estudiaremos en capítulos posteriores, un rasgo es un
+mecanismo mediante el cual Rust asocia ciertas capacidades o
+comportamientos a un tipo de datos. De momento nos basta saber
+que un tipo que implementa `Copy` puede copiarse automáticamente.
+
+Cuando un tipo implementa `Copy`, una asignación crea una copia
+del valor en lugar de transferir su propiedad. Como consecuencia,
+la variable original sigue siendo válida después de la
+asignación.
+
+Los tipos que implementan `Copy` suelen ser pequeños y
+almacenarse íntegramente en memoria *stack*. Algunos ejemplos son
+`i32`, `u64`, `f64`, `bool` y `char`.
+
+Por el contrario, tipos como `String` no implementan `Copy`. En
+estos casos, la asignación produce un movimiento de la propiedad,
+tal y como vimos en la sección anterior.
+
+Pero cuidado: aunque muchos tipos que implementan el rasgo `Copy`
+se almacenan íntegramente en memoria *stack*, y muchos tipos que
+no lo implementan utilizan memoria *heap*, esta no es la regla
+que determina la existencia de dicho rasgo.
+
+De forma simplificada, un tipo puede implementar `Copy` cuando
+duplicar los bits que lo representan en memoria produce un nuevo
+valor completamente válido e independiente del original.
+Volveremos sobre esta idea más adelante.
+
+## Copias explícitas: método `clone` {#sec-clone}
+
+En la sección anterior vimos que algunos tipos implementan el
+rasgo `Copy`, lo que permite realizar copias automáticas durante
+las asignaciones. Sin embargo, tipos como `String` no implementan
+dicho rasgo. Por tanto, una asignación no crea una copia de la
+cadena, sino que transfiere su propiedad a la nueva variable:
+
+Si realmente necesitamos dos cadenas con el mismo contenido pero
+independientes, podemos utilizar el método `clone()`, que crea
+una nueva cadena en una zona distinta de memoria y le asigna un
+contenido igual al de la primera cadena. Como consecuencia, las
+modificaciones realizadas sobre una de las cadenas no afectan a
+la otra:
+
+``` rust
+{{< include c09/clonado/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20s1%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20let%20mut%20s2%20%3D%20s1.clone%28%29%3B%0A%0A%20%20%20%20println%21%28%22s1%3A%20%7B%7D%22%2C%20s1%29%3B%20//%20No%20hemos%20perdido%20acceso%20a%20s1%0A%20%20%20%20println%21%28%22s2%3A%20%7B%7D%22%2C%20s2%29%3B%0A%0A%20%20%20%20s1.push_str%28%22%2C%20soy%20s1%22%29%3B%20//%20Ahora%20tenemos%20dos%20cadenas%20independientes%0A%20%20%20%20s2.push_str%28%22%2C%20soy%20s2%22%29%3B%0A%0A%20%20%20%20println%21%28%22s1%3A%20%7B%7D%22%2C%20s1%29%3B%0A%20%20%20%20println%21%28%22s2%3A%20%7B%7D%22%2C%20s2%29%3B%0A%7D%0A)
+
+:::
+
+A diferencia de las copias automáticas proporcionadas por el
+rasgo `Copy`, el método `clone()` debe invocarse explícitamente.
+Esto se debe a que crear una copia independiente puede requerir
+operaciones adicionales y resultar más costoso.
+
+## Paso de valores a funciones
+
+Las reglas de propiedad que hemos estudiado hasta ahora no solo
+se aplican a las asignaciones. El paso de argumentos a funciones
+sigue exactamente las mismas reglas.
+
+Consideremos el siguiente ejemplo:
+
+``` rust
+{{< include c09/paso_funciones/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20mostrar_entero%28i%3A%20i32%29%20%7B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20i%29%3B%0A%7D%0A%0Afn%20mostrar_cadena%28s%3A%20String%29%20%7B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20i%20%3D%207%3B%0A%20%20%20%20let%20s%20%3D%20String%3A%3Afrom%28%22hola%22%29%3B%0A%0A%20%20%20%20mostrar_entero%28i%29%3B%0A%20%20%20%20mostrar_cadena%28s%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20i%29%3B%20//%20Correcto%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%20//%20%C2%A1ERROR%21%20%20%27s%27%20ha%20perdido%20la%20propiedad%0A%7D%0A)
+
+:::
+
+Al llamar a `mostrar_entero()`, el valor de `i` se copia
+automáticamente porque el tipo `i32` implementa el rasgo `Copy`.
+Como consecuencia, la variable original sigue siendo válida tras
+la llamada.
+
+Sin embargo, al llamar a `mostrar_cadena()`, la propiedad de la
+cadena se transfiere al parámetro `s` de la función. Dicho
+parámetro pasa a ser el nuevo propietario del valor y la variable
+`s` de `main()` deja de ser válida.
+
+Podemos interpretar una llamada a función como la creación de una
+nueva variable cuyo valor se inicializa con el argumento
+proporcionado. Por este motivo, las mismas reglas que gobiernan
+las asignaciones también se aplican al paso de parámetros.
+
+Una forma de resolver este problema es hacer que la función
+devuelva el parámetro que ha recibido, como en este ejemplo:
+
+``` rust
+{{< include c09/devolucion/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20mostrar_cadena%28s%3A%20String%29%20-%3E%20String%20%7B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%0A%20%20%20%20s%20//%20La%20funci%C3%B3n%20devuelve%20la%20cadena%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20s%20%3D%20String%3A%3Afrom%28%22hola%22%29%3B%0A%20%20%20%20s%20%3D%20mostrar_cadena%28s%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%20//%20%20Correcto%0A%7D%0A)
+
+:::
+
+Pero este enfoque tiene varios inconvenientes:
+
+- Las funciones se vuelven más complejas.
+
+- Es necesario devolver valores que conceptualmente no son
+  resultados.
+
+- Si la función tiene varios parámetros, hay que devolverlos
+  todos, además de los valores generados por la función. Esto
+  puede suponer tener que devolver grandes tuplas.
+
+Rust tiene prevista una alternativa más cómoda: en muchos casos
+la función no necesita convertirse en propietaria del valor, sino
+únicamente acceder a él de forma temporal. Para ello Rust
+proporciona las referencias y los préstamos.
 
 ## Referencias y préstamos.
 
-## Referencias mutables.
+En la @sec-clone vimos que el método `clone()` permite crear
+copias independientes de un valor. Sin embargo, esta solución
+puede resultar costosa, especialmente cuando los datos son
+grandes, ya que es necesario reservar nueva memoria y copiar su
+contenido.
+
+Afortunadamente, en muchas situaciones no necesitamos una copia
+independiente. Con frecuencia basta con acceder temporalmente a
+un valor para leerlo o modificarlo. Para ello Rust proporciona
+los mecanismos de referencias y préstamos, que permiten utilizar
+un valor sin transferir su propiedad y sin realizar copias
+innecesarias.
+
+Referencias y préstamos son dos aspectos de un mismo mecanismo:
+
+- Una referencia es un valor que permite acceder a otro valor sin
+  convertirse en su propietario. Se declara anteponiendo el `&`
+  al valor original.
+
+- Cuando una referencia se crea, se dice que el valor original ha
+  sido prestado (*borrowed*) temporalmente.
+
+En el siguiente ejemplo podemos ver como pasar una variable a una
+función sin perder su propiedad:
+
+``` rust
+{{< include c09/referencia/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20mostrar_cadena%28s%3A%20%26String%29%20%7B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20s%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20mostrar_cadena%28%26s%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%20//%20Correcto%0A%7D%0A)
+
+:::
+
+- La función `mostrar_cadena` no recibe una cadena, sino una
+  *referencia* a una cadena.
+
+- Por tanto, la llamada a la función pasa una referencia a una
+  cadena, en este caso, `s`.
+
+``` rust
+mostrar_cadena(&s);
+```
+
+La función puede utilizar la cadena a través de la referencia,
+pero no se convierte en su propietaria. Por este motivo, la
+variable `s` sigue siendo válida después de la llamada.
+
+## Préstamos inmutables.
+
+Los préstamos inmutables, como acabamos de ver, se crean mediante
+`&` y permiten leer el valor sin obtener la propiedad.
+
+Tienen otras dos características muy importantes:
+
+- No permiten modificar el valor.
+- Puede haber cualquier número de préstamos inmutables
+  simultáneos.
+
+``` rust
+{{< include c09/prestamo_inmutable/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20s%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%0A%20%20%20%20let%20prestamo1%20%3D%20%26s%3B%0A%20%20%20%20let%20prestamo2%20%3D%20%26s%3B%0A%20%20%20%20let%20prestamo3%20%3D%20%26s%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20prestamo1%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20prestamo2%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20prestamo3%29%3B%0A%7D%0A)
+
+:::
+
+
+En este ejemplo podemos ver cómo los préstamos inmutables permiten
+crear varias referencias al mismo valor sin transferir su
+propiedad. La variable original y todas las referencias pueden utilizarse
+simultáneamente para leer el valor.
+
+
+
+## Préstamos mutables.
+
+Se crean mediante &mut.
+Permiten modificar el valor.
+Solo puede existir un préstamo mutable activo a la vez.
+No puede coexistir con préstamos inmutables.
+
+Ejemplo:
+
+let mut s = String::from("Hola");
+
+let r = &mut s;
+r.push('!');
+
+println!("{}", r);
+
+
+Puede haber cualquier número de préstamos inmutables o un único
+préstamo mutable, pero nunca ambas cosas al mismo tiempo.
