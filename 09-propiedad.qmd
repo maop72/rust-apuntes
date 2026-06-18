@@ -57,7 +57,7 @@ método `push_str()` añade otra cadena al final:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20s%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20s.push_str%28%22%2C%20mundo%22%29%3B%20%20//%20A%C3%B1ade%20cadena%20%28se%20delimita%20con%20comilla%20doble%29%0A%20%20%20%20s.push%28%27%21%27%29%3B%20%20%20%20%20%20%20%20%20%20%20//%20A%C3%B1ade%20car%C3%A1cter%20%28se%20delimita%20con%20comilla%20simple%29%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20s%20%3D%20String%3A%3Afrom%28%22%C2%A1Hola%22%29%3B%0A%20%20%20%20s.push_str%28%22%2C%20mundo%22%29%3B%20%20//%20A%C3%B1ade%20cadena%20%28se%20delimita%20con%20comilla%20doble%29%0A%20%20%20%20s.push%28%27%21%27%29%3B%20%20%20%20%20%20%20%20%20%20%20//%20A%C3%B1ade%20car%C3%A1cter%20%28se%20delimita%20con%20comilla%20simple%29%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%0A%7D%0A)
 
 :::
 
@@ -135,7 +135,7 @@ Por ejemplo:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20let%20s%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%20//%20%C2%A1MAL%21%20aqu%C3%AD%20%27s%27%20ya%20no%20existe%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20let%20s%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%20//%20%C2%A1ERROR%21%20aqu%C3%AD%20%27s%27%20ya%20no%20existe%0A%7D%0A)
 
 :::
 
@@ -168,7 +168,7 @@ el mismo efecto. Consideremos el siguiente ejemplo:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20i1%20%3D%205%3B%0A%20%20%20%20let%20i2%20%3D%20i1%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20i1%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20i2%29%3B%0A%0A%20%20%20%20let%20s1%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20let%20s2%20%3D%20s1%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s2%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s1%29%3B%20//%20%C2%A1MAL%21%20%20s1%20ya%20no%20es%20el%20propietario%20de%20la%20cadena%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20i1%20%3D%205%3B%0A%20%20%20%20let%20i2%20%3D%20i1%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20i1%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20i2%29%3B%0A%0A%20%20%20%20let%20s1%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20let%20s2%20%3D%20s1%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s2%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s1%29%3B%20//%20%C2%A1ERROR%21%20s1%20ya%20no%20es%20el%20propietario%20del%20valor%0A%7D%0A)
 
 :::
 
@@ -363,8 +363,8 @@ innecesarias.
 Referencias y préstamos son dos aspectos de un mismo mecanismo:
 
 - Una referencia es un valor que permite acceder a otro valor sin
-  convertirse en su propietario. Se declara anteponiendo el `&`
-  al valor original.
+  convertirse en su propietario. Se declara anteponiendo `&` al
+  valor original.
 
 - Cuando una referencia se crea, se dice que el valor original ha
   sido prestado (*borrowed*) temporalmente.
@@ -417,30 +417,84 @@ Tienen otras dos características muy importantes:
 
 :::
 
-
-En este ejemplo podemos ver cómo los préstamos inmutables permiten
-crear varias referencias al mismo valor sin transferir su
-propiedad. La variable original y todas las referencias pueden utilizarse
-simultáneamente para leer el valor.
-
-
+En este ejemplo podemos ver cómo los préstamos inmutables
+permiten crear varias referencias al mismo valor sin transferir
+su propiedad. La variable original y todas las referencias pueden
+utilizarse simultáneamente para leer el valor.
 
 ## Préstamos mutables.
 
-Se crean mediante &mut.
-Permiten modificar el valor.
-Solo puede existir un préstamo mutable activo a la vez.
-No puede coexistir con préstamos inmutables.
+Los préstamos mutables se crean anteponiendo `&mut` al valor
+original. Permiten que la referencia modifique dicho valor. Con
+dos limitaciones importantes:
+
+- Solo puede existir un préstamo mutable activo a la vez.
+- No puede coexistir con préstamos inmutables.
 
 Ejemplo:
 
-let mut s = String::from("Hola");
+``` rust
+{{< include c09/prestamo_mutable/src/main.rs >}}
+```
 
-let r = &mut s;
-r.push('!');
+::: {.text-end .small}
 
-println!("{}", r);
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20s%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%0A%20%20%20%20let%20prestamo1%20%3D%20%26mut%20s%3B%0A%20%20%20%20//s.push%28%27%21%27%29%3B%20//%20Ser%C3%ADa%20ilegal%3A%20ya%20hay%20un%20pr%C3%A9stamo%20mutable%20activo%0A%20%20%20%20prestamo1.push%28%27%21%27%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20prestamo1%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%0A%7D%0A)
 
+:::
 
-Puede haber cualquier número de préstamos inmutables o un único
-préstamo mutable, pero nunca ambas cosas al mismo tiempo.
+Veamos ahora un ejemplo similar pero con una función:
+
+``` rust
+{{< include c09/prestamo_mutable2/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20modificar_cadena%28s%3A%20%26mut%20String%29%20%7B%0A%20%20%20%20s.push%28%27%21%27%29%3B%0A%20%20%20%20println%21%28%22Cadena%20prestada%3A%20%7B%7D%22%2C%20s%29%3B%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20s%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20modificar_cadena%28%26mut%20s%29%3B%0A%0A%20%20%20%20//%20Recuperamos%20la%20cadena%20prestada%2C%20podemos%20modficarla%0A%20%20%20%20s.push%28%27%21%27%29%3B%0A%0A%20%20%20%20println%21%28%22Cadena%20original%3A%20%7B%7D%22%2C%20s%29%3B%0A%7D%0A)
+
+:::
+
+- La función `main` pasa un préstamo mutable a la función
+  `modificar_cadena`.
+- Esta función modifica la cadena.
+- Cuando concluye la función también concluye el préstamo, con lo
+  que la variable original recupera el control exclusivo sobre el
+  valor.
+
+Observa también que el modificador `&mut` aparece tanto en la
+llamada a la función como en la declaración de su parámetro, pero
+su uso y significado son distintos en cada caso.
+
+- En la llamada la expresión `&mut s` crea una referencia mutable
+  al valor almacenado en la variable `s`.
+
+  `modificar_cadena(&mut s);`
+
+- Mientras que en la cabecera de la función, el fragmento
+  `&mut String` forma parte del tipo del parámetro. Indica que la
+  función espera recibir una referencia mutable a una cadena.
+
+  `fn modificar_cadena(s: &mut String)`
+
+  Por este motivo, la siguiente sintaxis no es válida:
+
+  `fn modificar_cadena(&mut s: String) // ¡ERROR! `
+
+  Este es un error relativamente frecuente. El programador
+  intenta añadir el modificador `&mut` al nombre del parámetro,
+  cuando en realidad debe formar parte de su tipo.
+
+  El nombre del parámetro sigue siendo `s`; su tipo es
+  `&mut String`.
+
+En resumen, Rust garantiza que mientras exista un préstamo
+mutable no pueda haber ningún otro acceso que permita modificar
+el mismo valor. Por tanto:
+
+- Puede haber cualquier número de préstamos inmutables
+  simultáneos.
+- O bien puede haber un único préstamo mutable.
+- Nunca pueden darse ambas situaciones al mismo tiempo.
+
+O en otras palabras: *muchos lectores o un único escritor*.

@@ -1,0 +1,71 @@
+# Métodos
+
+En el capítulo anterior vimos cómo definir tipos compuestos
+mediante *structs*. Un *struct* permite agrupar datos
+relacionados bajo una misma entidad lógica, pero por sí solo no
+define qué operaciones pueden realizarse sobre esos datos.
+
+En Rust es habitual asociar funciones a los tipos para encapsular
+el comportamiento relacionado con ellos. Estas funciones
+asociadas reciben el nombre de *métodos*.
+
+Los métodos permiten expresar de forma más natural operaciones
+que actúan sobre una instancia concreta de un tipo. Por ejemplo,
+un rectángulo puede calcular su área, una cuenta bancaria puede
+realizar un ingreso y un contador puede incrementarse.
+
+En este capítulo veremos cómo definir métodos, cómo invocarlos y
+cómo Rust utiliza su sistema de propiedad y préstamos para
+controlar el acceso a los datos de una instancia.
+
+## Definición de métodos
+
+Los métodos se definen dentro de bloques `impl`
+(*implementation*), asociados a un tipo concreto.
+
+El siguiente programa define un método `area()` para el tipo
+`Rectangulo`, crea una instancia de dicho tipo y utiliza el
+método para calcular su área:
+
+``` rust
+{{< include c11/rectangulo/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=struct%20Rectangulo%20%7B%0A%20%20%20%20ancho%3A%20u32%2C%0A%20%20%20%20alto%3A%20u32%2C%0A%7D%0A%0Aimpl%20Rectangulo%20%7B%0A%20%20%20%20fn%20area%28%26self%29%20-%3E%20u32%20%7B%0A%20%20%20%20%20%20%20%20self.ancho%20%2A%20self.alto%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20r%20%3D%20Rectangulo%20%7B%0A%20%20%20%20%20%20%20%20ancho%3A%2030%2C%0A%20%20%20%20%20%20%20%20alto%3A%2020%2C%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20println%21%28%22%C3%81rea%3A%20%7B%7D%22%2C%20r.area%28%29%29%3B%0A%7D%0A%0A)
+
+:::
+
+La palabra clave `impl` introduce un bloque que contiene métodos
+y otras funciones asociadas al tipo indicado.
+
+En este ejemplo, el método `area()` calcula y devuelve el área
+del rectángulo. Dentro del método, la variable especial `self`
+representa la instancia sobre la que se está realizando la
+operación.
+
+La llamada:
+
+``` rust
+r.area()
+```
+
+invoca el método `area()` sobre la instancia `r`, y el resultado
+se imprime posteriormente en pantalla.
+
+Más adelante estudiaremos con detalle el significado de `&self`.
+Por el momento basta saber que permite al método acceder a los
+campos de la instancia sin tomar posesión de ella.
+
+## El parámetro self.
+
+## Métodos que modifican el objeto (&mut self).
+
+## Métodos que consumen el objeto (self).
+
+## Métodos asociados (sin self).
+
+## Varios bloques impl.
+
+## Ejemplo completo.

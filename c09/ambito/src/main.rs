@@ -3,5 +3,5 @@ fn main() {
         let s = String::from("Hola");
         println!("{}", s);
     }
-    println!("{}", s); // ¡MAL! aquí 's' ya no existe
+    println!("{}", s); // ¡ERROR! aquí 's' ya no existe
 }
