@@ -68,7 +68,7 @@ let radio = 3.5f32;
 
 Rust dispone de un tipo especial denominado *tipo unitario*
 (*unit type*), cuyo único valor posible es el *valor unitario*.
-Ambos se representan de la misma forma: `()`.
+Ambos se representan de la misma forma, con la tupla vacía: `()`.
 
 ``` rust
 let x = ();
@@ -190,13 +190,13 @@ como segundo argumento.
 
 Las constantes se definen con la palabra reservada `const`.
 
+- Su valor debe conocerse en tiempo de compilación.
+
 - Por convención, se escriben en MAYÚSCULAS.
 
 - Son inmutables. Su valor no puede cambiar.
 
 - Deben indicar explícitamente el tipo.
-
-- Su valor debe conocerse en tiempo de compilación.
 
 Puede tratarse de un valor literal
 
@@ -247,7 +247,7 @@ C#, Java, JavaScript, Go, Kotlin, etc.
 | Mayor que         | `>`      |
 | Mayor o igual que | `>=`     |
 | AND lógico        | `&&`     |
-| OR lógico         | \`       |
+| OR lógico         | \|       |
 | NOT lógico        | `!`      |
 
 : Operador básicos de Rust {#tbl-operadores}

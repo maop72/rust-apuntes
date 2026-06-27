@@ -9,7 +9,6 @@ fn main() {
             break;
         }
     }
-
     println!("Fin del bucle.");
 }
 

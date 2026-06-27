@@ -83,11 +83,11 @@ posibilidades o cuando se desea clasificar valores discretos.
 ### Evitando el anidamiento excesivo
 
 Las sentencias `if` pueden anidarse sin ninguna restricción. Sin
-embargo, un exceso de anidamiento suele dificultar la lectura y
-el mantenimiento del código. Como regla práctica, uno o dos
-niveles de anidamiento suelen ser aceptables. Cuando un fragmento
-de código alcanza tres o más niveles, a menudo es una señal de
-que existe una forma más clara de expresar la misma lógica.
+embargo, un exceso de anidamiento dificulta la lectura y el
+mantenimiento del código. Como regla práctica, uno o dos niveles
+de anidamiento suelen ser aceptables. Cuando un fragmento de
+código alcanza tres o más niveles, a menudo es una señal de que
+existe una forma más clara de expresar la misma lógica.
 
 Muchos programadores siguen la recomendación informal *Flat is
 better than nested* ("mejor plano que anidado"). La idea consiste
@@ -112,9 +112,9 @@ El primero utiliza varias sentencias `if` anidadas.
 
 :::
 
-mientras que el segundo expresa cada caso de forma independiente.
-Aunque ambas soluciones son correctas, muchos programadores
-consideran que la segunda resulta más fácil de leer y mantener.
+El segundo expresa cada caso de forma independiente. Aunque ambas
+soluciones son correctas, preferimos la segunda por considerarla
+más fácil de leer y mantener.
 
 ``` rust
 {{< include c08/ifs_planos/src/main.rs >}}
@@ -201,7 +201,7 @@ mientras no se abandone explícitamente mediante una instrucción
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20contador%20%3D%200%3B%0A%0A%20%20%20%20loop%20%7B%0A%20%20%20%20%20%20%20%20contador%20%2B%3D%201%3B%0A%20%20%20%20%20%20%20%20print%21%28%22hola%20%22%29%3B%0A%0A%20%20%20%20%20%20%20%20if%20contador%20%3D%3D%205%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20break%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20println%21%28%22Fin%20del%20bucle.%22%29%3B%0A%7D%0A%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20contador%20%3D%200%3B%0A%0A%20%20%20%20loop%20%7B%0A%20%20%20%20%20%20%20%20contador%20%2B%3D%201%3B%0A%20%20%20%20%20%20%20%20print%21%28%22hola%20%22%29%3B%0A%0A%20%20%20%20%20%20%20%20if%20contador%20%3D%3D%205%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20break%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%22Fin%20del%20bucle.%22%29%3B%0A%7D%0A%0A)
 
 :::
 
@@ -265,7 +265,7 @@ La construcción `for` permite recorrer secuencias de valores de
 forma sencilla y segura. Es el mecanismo habitual para iterar
 sobre colecciones y rangos.
 
-Un programador procedente de lenguajes como C o Java tal vez 
+Un programador procedente de lenguajes como C o Java tal vez
 haría algo así:
 
 ``` rust

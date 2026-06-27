@@ -22,8 +22,8 @@ módulo, constante, etc.
 ## Mayúsculas y minúsculas
 
 Rust distingue entre mayúsculas y minúsculas (es
-*case-sensitive*), por lo que `edad`, `Edad` y `EDAD` son
-identificadores diferentes. Convenciones habituales:
+*case-sensitive*), por lo que `edad`, `Edad` y `EDAD` serían
+identificadores diferentes. Las convenciones habituales son:
 
 - Variables, funciones y módulos: `snake_case` (letras minúsculas
   separadas por guión bajo).

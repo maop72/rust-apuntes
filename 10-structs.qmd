@@ -1,0 +1,335 @@
+# Structs
+
+Hasta ahora hemos trabajado principalmente con tipos básicos,
+colecciones y funciones. Sin embargo, en programas reales es
+habitual necesitar agrupar varios datos relacionados bajo una
+misma entidad lógica.
+
+Por ejemplo, si estamos representando un usuario de una
+aplicación, podríamos almacenar su nombre, correo electrónico,
+número de accesos y estado de actividad en variables
+independientes. Sin embargo, estas variables forman parte de un
+mismo concepto: el usuario.
+
+Los *structs* permiten definir tipos de datos propios compuestos
+por varios campos. Cada campo puede tener un nombre y un tipo
+diferente, permitiendo modelar de forma clara y segura las
+entidades que aparecen en nuestros programas.
+
+Desde un punto de vista conceptual, un *struct* es un tipo
+definido por el usuario que agrupa varios campos relacionados
+bajo una misma entidad lógica. Desempeña un papel similar al de
+una clase en otros lenguajes, aunque Rust no utiliza herencia y,
+como veremos en el siguiente capítulo, organiza los métodos de
+forma diferente.
+
+## Definición de un struct
+
+Un *struct* se especifica con:
+
+- La palabra reservada `struct`.
+- Su nombre. Por convenio, usando *CamelCase*, esto es,
+  escribiendo con mayúscula la primera letra de cada componente
+  del identificador.
+- La lista de campos que lo componen, entre llaves y separados
+  por comas.
+- Cada campo posee un identificador y un tipo, separados por el
+  carácter `:`.
+
+El compilador utilizará esta información para determinar la
+representación del tipo en memoria y verificar que los valores
+almacenados en cada campo sean compatibles con su tipo declarado.
+
+``` rust
+{{< include c10/struct_1/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=struct%20Ruta%20%7B%0A%20%20%20%20destino%3A%20String%2C%0A%20%20%20%20prefijo%3A%20u8%2C%0A%20%20%20%20siguiente_salto%3A%20String%2C%0A%20%20%20%20interface%3A%20String%2C%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20ruta1%20%3D%20Ruta%20%7B%0A%20%20%20%20%20%20%20%20destino%3A%20String%3A%3Afrom%28%22192.168.1.0%22%29%2C%0A%20%20%20%20%20%20%20%20prefijo%3A%2024%2C%0A%20%20%20%20%20%20%20%20siguiente_salto%3A%20String%3A%3Afrom%28%2210.0.0.1%22%29%2C%0A%20%20%20%20%20%20%20%20interface%3A%20String%3A%3Afrom%28%22eth0%22%29%2C%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20println%21%28%22Destino%3A%20%7B%7D%22%2C%20ruta1.destino%29%3B%0A%20%20%20%20println%21%28%22prefijo%3A%20%7B%7D%22%2C%20ruta1.prefijo%29%3B%0A%20%20%20%20println%21%28%22siguiente_salto%3A%20%7B%7D%22%2C%20ruta1.siguiente_salto%29%3B%0A%20%20%20%20println%21%28%22interface%3A%20%7B%7D%22%2C%20ruta1.interface%29%3B%0A%7D%0A)
+
+:::
+
+Una vez definido el tipo, pueden crearse instancias
+proporcionando valores para cada uno de sus campos: la sintaxis
+es similar a la de los registros (*records*) en otros lenguajes.
+Los nombres de los campos se escriben explícitamente junto con
+sus valores. En este ejemplo hemos mantenido el orden de los
+campos, pero no es necesario.
+
+Para acceder a los campos de una instancia se utiliza el operador
+punto:
+
+``` rust
+println!("{}", ruta1.interface);
+```
+
+La expresión anterior accede al campo `interfaz` de la variable
+`ruta1`.
+
+## Inicialización abreviada de campos
+
+Es frecuente crear funciones cuyo cometido sea construir y
+devolver una instancia de un determinado *struct*.
+
+Supongamos una función que crea una entrada de encaminamiento a
+partir de los valores recibidos como parámetros:
+
+``` rust
+fn crear_ruta(
+    destino: String,
+    prefijo: u8,
+    siguiente_salto: String,
+    interfaz: String,
+) -> Ruta {
+    Ruta {
+        destino: destino,
+        prefijo: prefijo,
+        siguiente_salto: siguiente_salto,
+        interfaz: interfaz,
+    }
+}
+```
+
+Cuando un campo se llama igual que el parámetro de la función que
+le da valor, Rust permite utilizar una sintaxis abreviada:
+
+``` rust
+fn crear_ruta(
+    destino: String,
+    prefijo: u8,
+    siguiente_salto: String,
+    interfaz: String,
+) -> Ruta {
+    Ruta {
+        destino,
+        prefijo,
+        siguiente_salto,
+        interfaz,
+    }
+}
+```
+
+Ambas versiones son equivalentes. La segunda es simplemente más
+compacta y suele ser la preferida cuando los nombres de los
+parámetros coinciden con los de los campos.
+
+## Creación de una instancia a partir de otra
+
+También es frecuente querer crear una nueva instancia
+reutilizando la mayoría de los campos de otra ya existente.
+
+Por ejemplo, a partir de una ruta podemos construir otra idéntica
+salvo por la interfaz de salida:
+
+``` rust
+let ruta1 = Ruta {
+    destino: String::from("192.168.1.0"),
+    prefijo: 24,
+    siguiente_salto: String::from("10.0.0.1"),
+    interfaz: String::from("eth0"),
+};
+
+let ruta2 = Ruta {
+    interfaz: String::from("eth1"),
+    destino: ruta1.destino,
+    prefijo: ruta1.prefijo,
+    siguiente_salto: ruta1.siguiente_salto,
+};
+```
+
+Este código funciona, pero resulta tedioso cuando el *struct*
+posee muchos campos.
+
+Rust proporciona una sintaxis abreviada para copiar
+automáticamente los campos restantes desde otra instancia:
+
+``` rust
+let ruta2 = Ruta {
+    interfaz: String::from("eth1"),
+    ..ruta1
+};
+```
+
+La expresión `..ruta1` indica que todos los campos no
+especificados explícitamente deben obtenerse de `ruta1`.
+
+Tras esta operación, algunos campos pueden haber sido movidos
+desde `ruta1` hacia `ruta2`. En nuestro ejemplo, los campos de
+tipo `String` cambian de propietario, por lo que `ruta1` ya no
+podrá utilizarse posteriormente de forma completa. Este
+comportamiento está directamente relacionado con el sistema de
+propiedad (*ownership*) de Rust.
+
+## Tuple structs
+
+Rust permite definir *structs* cuyos campos no tienen nombre:
+
+``` rust
+struct Puerto(u16);
+```
+
+Las instancias se crean mediante:
+
+``` rust
+let ssh = Puerto(22);
+```
+
+Se accede a sus campos por posición:
+
+``` rust
+println!("{}", ssh.0);
+```
+
+Aunque pueden contener cualquier número de campos, su uso más
+habitual es que tengan uno solo, para implementar el patrón de
+diseño *newtype*:
+
+``` rust
+struct Puerto(u16);
+struct TiempoEspera(u16);
+```
+
+Aunque ambos contienen internamente un valor `u16`, el compilador
+los considera tipos diferentes. Esto aporta *seguridad de tipos*,
+ya que evita mezclar accidentalmente valores con significados
+distintos:
+
+``` rust
+fn conectar(
+    puerto: Puerto,
+    timeout: TiempoEspera,
+) {
+    // ...
+}
+```
+
+La siguiente llamada es correcta:
+
+``` rust
+conectar(
+    Puerto(22),
+    TiempoEspera(5000),
+);
+```
+
+Sin embargo, si por error un programador escribiese los
+argumentos en orden distinto al previsto:
+
+``` rust
+conectar(
+    TiempoEspera(5000),
+    Puerto(22),
+);
+```
+
+el compilador produciría un error, ya que `Puerto` y
+`TiempoEspera` son tipos distintos. De esta forma es posible
+añadir significado semántico y aumentar la seguridad del código
+sin coste adicional en tiempo de ejecución.
+
+## Otras consideraciones sobre los `struct`
+
+### Mutabilidad
+
+El ejemplo anterior es un struct inmutable. Para poder cambiar su
+valor lo haríamos mutable:
+
+``` rust
+
+let mut ruta1 = Ruta {
+      destino: String::from("192.168.1.0"),
+// etc 
+```
+
+Teniendo en cuenta que esto hace mutables todos los campos del
+struct, en Rust no es posible que unos campos sean mutables y
+otros inmutables.
+
+### Propiedad de los campos
+
+El acceso a un campo sigue las mismas reglas de propiedad
+(*ownership*) que cualquier otra variable. Si el campo es de un
+tipo que implementa el trait `Copy`, como `u8`, `u32` o `bool`,
+su valor se copia:
+
+``` rust
+let prefijo = ruta1.prefijo;
+```
+
+Sin embargo, si el campo es de un tipo que no implementa `Copy`,
+como `String`, su valor cambia de propietario:
+
+``` rust
+let destino = ruta1.destino;
+```
+
+Tras esta operación ya no será posible utilizar el campo
+`ruta1.destino`, ya que la propiedad del valor ha sido
+transferida a la variable `destino`. Para evitar la transferencia
+de propiedad puede tomarse una referencia:
+
+``` rust
+let destino = &ruta1.destino;
+```
+
+### Visualización de un `struct` completo
+
+Por defecto, Rust no sabe cómo mostrar una instancia completa de
+un tipo definido por el usuario. Para ello es necesario derivar
+el trait `Debug`:
+
+``` rust
+#[derive(Debug)]
+```
+
+Lo que permite utilizar el especificador de formato `{:?}`:
+
+``` rust
+ println!("struct completo: {:?}", ruta1);
+```
+
+## Ejemplo de uso de `struct`
+
+Veamos ahora un ejemplo sencillo que combina todo lo anterior. Se
+trata de usar `struct` para contener las entradas de una tabla
+NAT.
+
+- Definimos un `struct EntradaNat` con todos los campos
+  necesarios.
+
+- La función `crea_entrada` recibe como parámetros todos los
+  campos individuales y devuelve un `struct EntradaNat`. En Rust
+  es habitual usar funciones similares a esta.
+
+- La función `escribe_entrada` recibe un `struct EntradaNat` y
+  escribe su contenido en pantalla.
+
+- En la función `main`:
+
+  - Creamos, desde cero, una entrada NAT para vincular un puerto
+    TCP de una dirección IP privada con un puerto TCP de una
+    dirección IP pública.
+
+  - Creamos otra entrada, igual a la anterior, pero para el
+    protocolo UDP.
+
+    Observa que es necesario clonar las cadenas con las
+    direcciones IP. Prueba eliminar las llamadas a `.clone()`.
+    Verás que entonces se produce un error de compilación: al
+    mover la cadenas al segundo `struct`, dejan de estar
+    disponibles en el primero.
+
+    Sin embargo, los campos `puerto_privado` y `puerto_publico`
+    no necesitan clonarse. Al ser de tipo `u16`, implementan el
+    trait `Copy`, por lo que su valor se copia automáticamente.
+
+``` rust
+{{< include c10/clona_struct/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=struct%20EntradaNat%20%7B%0A%20%20%20%20ip_privada%3A%20String%2C%0A%20%20%20%20puerto_privado%3A%20u16%2C%0A%20%20%20%20ip_publica%3A%20String%2C%0A%20%20%20%20puerto_publico%3A%20u16%2C%0A%20%20%20%20protocolo%3A%20String%2C%0A%7D%0A%0Afn%20crea_entrada%28%0A%20%20%20%20ip_privada%3A%20String%2C%0A%20%20%20%20puerto_privado%3A%20u16%2C%0A%20%20%20%20ip_publica%3A%20String%2C%0A%20%20%20%20puerto_publico%3A%20u16%2C%0A%20%20%20%20protocolo%3A%20String%2C%0A%29%20-%3E%20EntradaNat%20%7B%0A%20%20%20%20EntradaNat%20%7B%0A%20%20%20%20%20%20%20%20ip_privada%2C%0A%20%20%20%20%20%20%20%20puerto_privado%2C%0A%20%20%20%20%20%20%20%20ip_publica%2C%0A%20%20%20%20%20%20%20%20puerto_publico%2C%0A%20%20%20%20%20%20%20%20protocolo%2C%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20escribe_entrada%28entrada%3A%20%26EntradaNat%29%20%7B%0A%20%20%20%20println%21%28%0A%20%20%20%20%20%20%20%20%22%7B%7D%3A%7B%7D%20-%3E%20%7B%7D%3A%7B%7D%20%28%7B%7D%29%22%2C%0A%20%20%20%20%20%20%20%20entrada.ip_privada%2C%0A%20%20%20%20%20%20%20%20entrada.puerto_privado%2C%0A%20%20%20%20%20%20%20%20entrada.ip_publica%2C%0A%20%20%20%20%20%20%20%20entrada.puerto_publico%2C%0A%20%20%20%20%20%20%20%20entrada.protocolo%0A%20%20%20%20%29%3B%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20entrada_tcp%20%3D%20crea_entrada%28%0A%20%20%20%20%20%20%20%20String%3A%3Afrom%28%22192.168.1.10%22%29%2C%0A%20%20%20%20%20%20%20%2052341%2C%0A%20%20%20%20%20%20%20%20String%3A%3Afrom%28%22203.0.113.1%22%29%2C%0A%20%20%20%20%20%20%20%2040001%2C%0A%20%20%20%20%20%20%20%20String%3A%3Afrom%28%22TCP%22%29%2C%0A%20%20%20%20%29%3B%0A%0A%20%20%20%20let%20entrada_udp%20%3D%20EntradaNat%20%7B%0A%20%20%20%20%20%20%20%20protocolo%3A%20String%3A%3Afrom%28%22UDP%22%29%2C%0A%20%20%20%20%20%20%20%20ip_privada%3A%20entrada_tcp.ip_privada.clone%28%29%2C%0A%20%20%20%20%20%20%20%20ip_publica%3A%20entrada_tcp.ip_publica.clone%28%29%2C%0A%20%20%20%20%20%20%20%20..entrada_tcp%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20escribe_entrada%28%26entrada_tcp%29%3B%0A%20%20%20%20escribe_entrada%28%26entrada_udp%29%3B%0A%7D%0A)
+
+:::

@@ -9,7 +9,8 @@ procesamiento y produce un resultado.
 
 ## Introducción a las funciones.
 
-La utilización de funciones presenta varias ventajas:
+Las funciones constituyen el mecanismo fundamental para
+estructurar cualquier programa:
 
 - Facilita la reutilización de soluciones ya implementadas, sin
   duplicar código.
@@ -91,8 +92,8 @@ esta distinción entre función y procedimiento. Sin embargo, con
 independencia del lenguaje y de la metodología utilizados, es una
 buena práctica limitar los efectos laterales a aquellos casos en
 los que resultan realmente necesarios. Las funciones sin efectos
-laterales suelen ser más fáciles de comprender, probar, depurar y
-reutilizar.
+laterales son generalmente más fáciles de comprender, probar,
+depurar y reutilizar.
 
 Por ello, es recomendable organizar el código de forma que la
 mayor parte del trabajo se realice mediante funciones sin efectos
@@ -259,12 +260,12 @@ siguiente código no compila:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20sumar%28a%3A%20i32%2C%20b%3A%20i32%29%20-%3E%20i32%20%7B%20%0A%20%20%20%20a%20%2B%20b%3B%20%20%20%20//%20%C2%A1%C2%A1MAL%21%21%0A%7D%0A%0Afn%20main%28%29%20%7B%20%0A%20%20%20%20let%20resultado%20%3D%20sumar%282%2C%203%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cresultado%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20sumar%28a%3A%20i32%2C%20b%3A%20i32%29%20-%3E%20i32%20%7B%20%0A%20%20%20%20a%20%2B%20b%3B%20%20%20//%20%C2%A1Error%21%20Al%20a%C3%B1adir%20%27%3B%27%2C%20la%20expresi%C3%B3n%20se%20convierte%20en%0A%20%20%20%20%20%20%20%20%20%20%20%20%20//%20una%20sentencia%20y%20deja%20de%20ser%20la%20expresi%C3%B3n%20final%20del%20bloque.%0A%7D%0A%0Afn%20main%28%29%20%7B%20%0A%20%20%20%20let%20resultado%20%3D%20sumar%282%2C%203%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cresultado%29%3B%0A%7D%0A)
 
 :::
 
 La función declara que debe devolver un valor de tipo `i32`, pero
-la expresión `x * x` ya no constituye el valor devuelto por la
+la expresión `a + b` ya no constituye el valor devuelto por la
 función. Por tanto, lo habitual en Rust es que la última línea de
 una función no termine en punto y coma, permitiendo que dicha
 expresión actúe como valor devuelto.
@@ -282,19 +283,20 @@ una sentencia vacía adicional.
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20sumar%28a%3A%20i32%2C%20b%3A%20i32%29%20-%3E%20i32%20%7B%20%0A%20%20%20%20a%20%2B%20b%0A%7D%3B%20%20%20%20//%20%C2%A1MAL%21%20El%20cuerpo%20de%20una%20funci%C3%B3n%20no%20puede%20llevar%20%27%3B%27%20a%20continuaci%C3%B3n%0A%0Afn%20main%28%29%20%7B%20%0A%20%20%20%20let%20resultado%20%3D%20sumar%282%2C%203%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cresultado%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20sumar%28a%3A%20i32%2C%20b%3A%20i32%29%20-%3E%20i32%20%7B%20%0A%20%20%20%20a%20%2B%20b%0A%7D%3B%20%20//%20%C2%A1Error%21%21%20El%20cuerpo%20de%20una%20funci%C3%B3n%20no%20puede%20llevar%20%27%3B%27%20a%20continuaci%C3%B3n%0A%0Afn%20main%28%29%20%7B%20%0A%20%20%20%20let%20resultado%20%3D%20sumar%282%2C%203%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cresultado%29%3B%0A%7D%0A)
 
 :::
 
-Mientras que en Rust el punto y coma forma parte de la distinción
-entre expresiones y sentencias. Los bloques de código son
-expresiones y, por tanto, producen valores. Cuando se añade un
-punto y coma, la expresión pasa a convertirse en una sentencia y
-su valor se descarta. Como consecuencia, la sentencia produce el
-valor unitario `()`, como adelantamos en la {@sec-tipo-unitario}.
+Como hemos dicho, en Rust el punto y coma forma parte de la
+distinción entre expresiones y sentencias. Los bloques de código
+son expresiones y, por tanto, producen valores. Cuando se añade
+un punto y coma, la expresión pasa a convertirse en una sentencia
+y su valor se descarta. Como consecuencia, la sentencia produce
+el valor unitario `()`, como adelantamos en la
+{@sec-tipo-unitario}.
 
 Por tanto, el punto y coma puede modificar el significado del
-código; no es un mero separador de sentencias. Más adelante
+código, no es un mero separador de sentencias. Más adelante
 veremos que esta diferencia también resulta importante al
 utilizar construcciones como `if` o `match` para producir
 valores.

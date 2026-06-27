@@ -9,5 +9,5 @@ fn main() {
     let s2 = s1;
 
     println!("{}", s2);
-    println!("{}", s1); // ¡MAL!  s1 ya no es el propietario de la cadena
+    println!("{}", s1); // ¡ERROR! s1 ya no es el propietario del valor
 }

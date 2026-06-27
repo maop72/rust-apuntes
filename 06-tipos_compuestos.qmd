@@ -1,10 +1,10 @@
 # Tipos de datos compuestos {#sec-tipos-compuestos}
 
-En la @sec-tipos-basicos ya hemos visto los tipos básicos
-de datos: enteros, reales, booleanos y caracteres. Sin embargo,
-con frecuencia necesitaremos agrupar varios valores para
-representar una entidad o manejar colecciones de datos. Para ello,
-Rust define dos tipos de datos compuestos: las tuplas y los
+En la @sec-tipos-basicos ya hemos visto los tipos básicos de
+datos: reales, enteros, caracteres, booleanos y unitario. Sin
+embargo, con frecuencia necesitaremos agrupar varios valores para
+representar una entidad o manejar colecciones de datos. Para
+ello, Rust define dos tipos de datos compuestos: las tuplas y los
 *arrays*.
 
 ## Tuplas
@@ -57,6 +57,8 @@ vez definida. Se escriben entre paréntesis, separados por comas.
 ## La tupla vacía
 
 La tupla vacía se escribe `()` y no contiene ningún elemento.
+Como vimos en la @sec-tipo-unitario también se le llama *valor
+unitario* y es de *tipo unitario*.
 
 ``` rust
 {{< include c06/tupla_vacia/src/main.rs >}}
@@ -106,7 +108,7 @@ etc.
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20datos%20%3D%20%5B10%2C%2020%2C%20%22azul%22%5D%3B%20//%20%C2%A1%C2%A1MAL%21%21%0A%0A%20%20%20%20println%21%28%22Contenido%20del%20array%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20datos%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20datos%20%3D%20%5B10%2C%2020%2C%20%22azul%22%5D%3B%20//%20%C2%A1ERROR%21%20Los%20tipos%20han%20de%20ser%20iguales.%0A%0A%20%20%20%20println%21%28%22Contenido%20del%20array%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20datos%29%3B%0A%7D%0A)
 
 :::
 
@@ -121,7 +123,6 @@ entre tuplas y arrays.
 | Elementos del mismo tipo | No necesariamente       | Sí                         |
 | Delimitadores            | Paréntesis `()`         | Corchetes `[]`             |
 | Acceso a elementos       | Punto (`.0`, `.1`, ...) | Índice (`[0]`, `[1]`, ...) |
-| Ejemplo                  | `("Ana", 25, true)`     | `[10, 20, 30, 40, 50]`     |
+| Ejemplo                  | `("TCP", 443, true)`     | `[10, 20, 30, 40, 50]`     |
 
 : Comparación entre tuplas y arrays {#tbl-tupla-vs-array}
-
