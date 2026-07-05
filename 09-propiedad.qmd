@@ -26,7 +26,7 @@ previos:
   comprender por qué algunos tipos de datos son más sencillos de
   gestionar que otros y qué papel desempeña la memoria dinámica.
 
-## Introducción al tipo `string`
+## Introducción al tipo `String` {#sec-String}
 
 Hasta ahora hemos trabajado con cadenas literales, como `"Hola"`
 o `"Puerto"`. Su contenido está fijado en el código fuente y no
@@ -237,11 +237,10 @@ asignación.
 
 Los tipos que implementan `Copy` suelen ser pequeños y
 almacenarse íntegramente en memoria *stack*. Algunos ejemplos son
-`i32`, `u64`, `f64`, `bool` y `char`.
-
-Por el contrario, tipos como `String` no implementan `Copy`. En
-estos casos, la asignación produce un movimiento de la propiedad,
-tal y como vimos en la sección anterior.
+`i32`, `u64`, `f64`, `bool` y `char`. Por el contrario, tipos
+como `String` no implementan `Copy`. En estos casos, la
+asignación produce un movimiento de la propiedad, tal y como
+vimos en la sección anterior.
 
 Pero cuidado: aunque muchos tipos que implementan el rasgo `Copy`
 se almacenan íntegramente en memoria *stack*, y muchos tipos que
@@ -287,9 +286,8 @@ operaciones adicionales y resultar más costoso.
 
 Las reglas de propiedad que hemos estudiado hasta ahora no solo
 se aplican a las asignaciones. El paso de argumentos a funciones
-sigue exactamente las mismas reglas.
-
-Consideremos el siguiente ejemplo:
+sigue exactamente las mismas reglas. Consideremos el siguiente
+ejemplo:
 
 ``` rust
 {{< include c09/paso_funciones/src/main.rs >}}
@@ -363,8 +361,15 @@ innecesarias.
 Referencias y préstamos son dos aspectos de un mismo mecanismo:
 
 - Una referencia es un valor que permite acceder a otro valor sin
-  convertirse en su propietario. Se declara anteponiendo `&` al
-  valor original.
+  convertirse en su propietario. Se declara anteponiendo el
+  operador unario `&` al valor original. Por convenio, no se
+  escribe un espacio a la derecha del `&`, aunque el compilador
+  lo admite.
+
+  ``` rust
+  mostrar_cadena(&s);   // Forma recomendada
+  mostrar_cadena(& s);  // También es correcto
+  ```
 
 - Cuando una referencia se crea, se dice que el valor original ha
   sido prestado (*borrowed*) temporalmente.

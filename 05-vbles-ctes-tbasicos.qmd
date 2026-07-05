@@ -64,6 +64,33 @@ let poblacion = 8_000_000u64;
 let radio = 3.5f32;
 ```
 
+### El tipo `&str`
+
+En casi cualquier lenguaje existe un único tipo de datos para
+representar cadenas de caracteres. En Rust, sin embargo, existen
+varios. Podemos considerar `&str` como un tipo básico, en el
+sentido de que es muy habitual. Es una referencia a una cadena ya
+existente y lo usaremos para:
+
+- Cadenas literales. Esto es, cadenas escritas directamente en el
+  código fuente. Por ejemplo `"Hola"`.
+
+- Parámetros que solo necesiten leer una cadena.
+
+También existe `str`, que representa una cadena de caracteres,
+pero no puede utilizarse como valor independiente y es raro
+usarlo de forma directa.
+
+En la @sec-String veremos `String` (con mayúscula), que
+es diferente de `str` (con minúscula). Un `String` es un objeto
+que contiene y gestiona una cadena de caracteres.
+
+En resumen, usaremos
+
+- `&str` para acceder a una cadena que ya existe.
+
+- `String` para crear, almacenar y modificar una cadena.
+
 ### El tipo unitario `()` {#sec-tipo-unitario}
 
 Rust dispone de un tipo especial denominado *tipo unitario*

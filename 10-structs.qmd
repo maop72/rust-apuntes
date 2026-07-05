@@ -20,24 +20,24 @@ Desde un punto de vista conceptual, un *struct* es un tipo
 definido por el usuario que agrupa varios campos relacionados
 bajo una misma entidad lógica. Desempeña un papel similar al de
 una clase en otros lenguajes, aunque Rust no utiliza herencia y,
-como veremos en el siguiente capítulo, organiza los métodos de
-forma diferente.
+como veremos en el @sec-metodos, organiza los métodos de forma
+diferente.
 
 ## Definición de un struct
 
 Un *struct* se especifica con:
 
 - La palabra reservada `struct`.
-- Su nombre. Por convenio, usando *CamelCase*, esto es,
-  escribiendo con mayúscula la primera letra de cada componente
-  del identificador.
+- Su nombre. Como vimos en la @sec-case, el convenio establece
+  que se use *PascalCase*, esto es, escribir con mayúscula la
+  primera letra de cada componente del identificador.
 - La lista de campos que lo componen, entre llaves y separados
   por comas.
-- Cada campo posee un identificador y un tipo, separados por el
-  carácter `:`.
+- Cada campo se define con un identificador y un tipo, separados
+  por dos puntos.
 
-El compilador utilizará esta información para determinar la
-representación del tipo en memoria y verificar que los valores
+A partir de esta información, el compilador determina la
+representación del tipo en memoria y verifica que los valores
 almacenados en cada campo sean compatibles con su tipo declarado.
 
 ``` rust
@@ -54,8 +54,23 @@ Una vez definido el tipo, pueden crearse instancias
 proporcionando valores para cada uno de sus campos: la sintaxis
 es similar a la de los registros (*records*) en otros lenguajes.
 Los nombres de los campos se escriben explícitamente junto con
-sus valores. En este ejemplo hemos mantenido el orden de los
-campos, pero no es necesario.
+sus valores. Obsérvese que, al crear una instancia, los campos se
+inicializan mediante `:`, no mediante `=`. El operador `:` asocia
+cada campo con el valor que tendrá la nueva instancia, mientras
+que `=` se utiliza para inicializar o modificar variables y
+campos.
+
+Observaciones sobre este ejemplo:
+
+- Hemos mantenido el orden de los campos, aunque no es necesario.
+- Los campos `destino` y `siguiente_salto` son de tipo `String`,
+  puesto que será en el struct donde se almacenen las
+  direcciones. Usaríamos `&str` si únicamente necesitáramos hacer
+  referencia a cadenas almacenadas en otro lugar.
+- En una configuración más avanzada, podríamos usar un tipo
+  específico para las direcciones IP, para garantizar que son
+  direcciones legales. En esta versión, por simplicidad, son
+  cadenas de caracteres.
 
 Para acceder a los campos de una instancia se utiliza el operador
 punto:
@@ -64,7 +79,7 @@ punto:
 println!("{}", ruta1.interface);
 ```
 
-La expresión anterior accede al campo `interfaz` de la variable
+La expresión anterior accede al campo `interface` de la variable
 `ruta1`.
 
 ## Inicialización abreviada de campos
@@ -273,21 +288,31 @@ de propiedad puede tomarse una referencia:
 let destino = &ruta1.destino;
 ```
 
-### Visualización de un `struct` completo
+### Mostrar un `struct` completo
 
 Por defecto, Rust no sabe cómo mostrar una instancia completa de
 un tipo definido por el usuario. Para ello es necesario derivar
-el trait `Debug`:
+el trait `Debug`, añadiendo el siguiente atributo inmediatamente
+antes de la definición del `struct`:
 
 ``` rust
 #[derive(Debug)]
+struct Ruta {
+    ...
+}
 ```
 
-Lo que permite utilizar el especificador de formato `{:?}`:
+A continuación, puede utilizar el especificador de formato
+`{:?}`:
 
 ``` rust
  println!("struct completo: {:?}", ruta1);
 ```
+
+Posteriormente veremos otros atributos, como `derive`, `cfg`,
+`allow`, `test`, etc. Todos siguen el mismo principio: un
+atributo se escribe inmediatamente antes del elemento al que
+aplica.
 
 ## Ejemplo de uso de `struct`
 

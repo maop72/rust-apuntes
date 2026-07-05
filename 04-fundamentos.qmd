@@ -19,16 +19,18 @@ módulo, constante, etc.
   profesionales lo habitual y recomendable es emplear solamente
   términos en inglés y caracteres ASCII.
 
-## Mayúsculas y minúsculas
+## Mayúsculas y minúsculas {#sec-case}
 
 Rust distingue entre mayúsculas y minúsculas (es
 *case-sensitive*), por lo que `edad`, `Edad` y `EDAD` serían
 identificadores diferentes. Las convenciones habituales son:
 
-- Variables, funciones y módulos: `snake_case` (letras minúsculas
-  separadas por guión bajo).
-- Tipos, `struct`, `enum` y `trait`: `PascalCase` (primera letra
-  de cada palabra en mayúscula).
+- Variables, funciones y módulos: `snake_case`. Letras minúsculas
+  separadas por guión bajo.
+- Tipos, `struct`, `enum` y `trait`: `PascalCase`. Primera letra
+  de cada palabra en mayúscula. También se le llama UpperCamelCase,
+  para distinguirlo de camelCase, donde la primera palabra va en
+  minúscula.
 - Constantes y variables estáticas: `SCREAMING_SNAKE_CASE`
   (letras mayúsculas, separadas por guión bajo).
 - Parámetros genéricos: normalmente una letra mayúscula (`T`,

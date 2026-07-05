@@ -1,4 +1,4 @@
-# Métodos
+# Métodos {#sec-metodos}
 
 En el capítulo anterior vimos cómo definir tipos compuestos
 mediante *structs*. Un *struct* permite agrupar datos
@@ -7,12 +7,11 @@ define qué operaciones pueden realizarse sobre esos datos.
 
 En Rust es habitual asociar funciones a los tipos para encapsular
 el comportamiento relacionado con ellos. Estas funciones
-asociadas reciben el nombre de *métodos*.
-
-Los métodos permiten expresar de forma más natural operaciones
-que actúan sobre una instancia concreta de un tipo. Por ejemplo,
-un rectángulo puede calcular su área, una cuenta bancaria puede
-realizar un ingreso y un contador puede incrementarse.
+asociadas reciben el nombre de *métodos*. Permiten expresar de
+forma más natural operaciones que actúan sobre una instancia
+concreta de un tipo. Por ejemplo, un contador puede
+incrementarse, un rectángulo puede calcular su área o un nombre
+de dominio puede resolverse para obtener su dirección IP.
 
 En este capítulo veremos cómo definir métodos, cómo invocarlos y
 cómo Rust utiliza su sistema de propiedad y préstamos para
@@ -21,7 +20,40 @@ controlar el acceso a los datos de una instancia.
 ## Definición de métodos
 
 Los métodos se definen dentro de bloques `impl`
-(*implementation*), asociados a un tipo concreto.
+(*implementation*), asociados a un tipo concreto. En este
+capítulo definiremos todos los métodos en un único bloque `impl`.
+En proyectos más complejos es frecuente repartir los métodos
+entre varios bloques distintos.
+
+Podemos clasificar los métodos en dos grandes grupos:
+
+1.  Los vinculados a un struct. Reciben, como primer parámetro,
+    el struct sobre el que actúan, representado mediante la
+    palabra clave `self`. A su vez, se subdividen en:
+
+    - *Métodos con `&self`*. Son métodos de *solo lectura*.
+      Pueden consultar el contenido del struct, pero no
+      modificarlo. Reciben una referencia compartida.
+
+    - *Métodos con `&mut self`*. Son métodos de *lectura y
+      escritura*. Pueden tanto consultar como modificar el
+      struct. Reciben una referencia mutable a él.
+
+    - *Métodos con `self`*. Reciben el struct por valor, toman
+      posesión de él y lo consumen durante la llamada.
+
+2.  Los no vinculados a un struct concreto, sino al propio tipo.
+    Son los *métodos asociados*. Como no actúan sobre ningún
+    struct concreto, no reciben el parámetro `self`. Por ello, se
+    invocan mediante el nombre del tipo. En muchos lenguajes
+    orientados a objetos encontramos un concepto muy parecido:
+    los métodos de clase o métodos estáticos, que se invocan
+    mediante el nombre de la clase en lugar de sobre un objeto
+    concreto.
+
+En total forman cuatro categorías, que trataremos a continuación.
+
+## Métodos `&self` (lectura)
 
 El siguiente programa define un método `area()` para el tipo
 `Rectangulo`, crea una instancia de dicho tipo y utiliza el
@@ -37,35 +69,206 @@ método para calcular su área:
 
 :::
 
-La palabra clave `impl` introduce un bloque que contiene métodos
-y otras funciones asociadas al tipo indicado.
-
-En este ejemplo, el método `area()` calcula y devuelve el área
-del rectángulo. Dentro del método, la variable especial `self`
-representa la instancia sobre la que se está realizando la
-operación.
-
-La llamada:
+En este ejemplo, el método `area()` pertenece a la categoría de
+los métodos con `&self`. Como recibe una referencia compartida al
+struct, puede consultar su contenido, pero no modificarlo. Dentro
+del método, la variable especial self representa el struct sobre
+el que se está realizando la operación. La llamada
 
 ``` rust
 r.area()
 ```
 
-invoca el método `area()` sobre la instancia `r`, y el resultado
-se imprime posteriormente en pantalla.
+invoca el método `area()` del struct `r` y devuelve el resultado.
+Conceptualmente es equivalente a otra llamada en la que la
+instancia se pasa como primer argumento:
 
-Más adelante estudiaremos con detalle el significado de `&self`.
-Por el momento basta saber que permite al método acceder a los
-campos de la instancia sin tomar posesión de ella.
+``` rust
+Rectangulo::area(&r)
+```
 
-## El parámetro self.
+La primera forma no es más que una sintaxis simplificada de la
+segunda, lo que se denomina *azúcar sintático*.
 
-## Métodos que modifican el objeto (&mut self).
+Como self representa una referencia compartida al struct, podemos
+acceder a sus campos mediante la notación habitual:
 
-## Métodos que consumen el objeto (self).
+``` rust
+self.ancho
+self.alto
+```
 
-## Métodos asociados (sin self).
+## Métodos `&mut self` (lectura y escritura)
 
-## Varios bloques impl.
+Un método que recibe `&self` solo puede consultar el contenido
+del struct. Si intenta modificar alguno de sus campos, el
+compilador producirá un error.
+Cuando un método necesita modificar el struct sobre la que se
+invoca, debe recibir una referencia mutable. Para ello, el primer
+parámetro se escribe como `&mut self`.
 
-## Ejemplo completo.
+El siguiente ejemplo añade un método que modifica las dimensiones
+del rectángulo:
+
+``` rust
+{{< include c11/redimensionar/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=struct%20Rectangulo%20%7B%0A%20%20%20%20ancho%3A%20u32%2C%0A%20%20%20%20alto%3A%20u32%2C%0A%7D%0A%0Aimpl%20Rectangulo%20%7B%0A%20%20%20%20fn%20redimensionar%28%26mut%20self%2C%20ancho%3A%20u32%2C%20alto%3A%20u32%29%20%7B%0A%20%20%20%20%20%20%20%20self.ancho%20%3D%20ancho%3B%0A%20%20%20%20%20%20%20%20self.alto%20%3D%20alto%3B%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20r%20%3D%20Rectangulo%20%7B%0A%20%20%20%20%20%20%20%20ancho%3A%2020%2C%0A%20%20%20%20%20%20%20%20alto%3A%2010%2C%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20r.redimensionar%2840%2C%2025%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%20%C3%97%20%7B%7D%22%2C%20r.ancho%2C%20r.alto%29%3B%0A%7D%0A)
+
+:::
+
+Obsérvese que la variable `r` debe declararse como mutable
+(`mut`). De lo contrario, no podría modificarse el struct. O,
+siendo más precisos, no sería posible obtener una referencia
+mutable al struct y, por tanto, invocar un método con
+`&mut self`.
+
+Igual que ocurría con `&self`, una llamada como
+
+``` rust
+r.redimensionar(40, 25)
+```
+
+es conceptualmente equivalente a
+
+``` rust
+Rectangulo::redimensionar(&mut r, 40, 25)
+```
+
+En ambos casos, el método recibe una referencia mutable al
+struct, lo que le permite modificar sus campos.
+
+## Métodos `self` (Consumo)
+
+En algunos casos, aunque son poco frecuentes, un método necesita
+tomar posesión del struct sobre el que se invoca. Por ejemplo,
+cuando el método extrae sus datos para crear otro valor y el
+struct original deja de existir. Para ello, el primer parámetro
+se escribe simplemente como `self`.
+
+Cuando un método recibe `self`, el método toma posesión del
+struct, no de una mera referencia a él. Como consecuencia, el
+struct deja de estar disponible tras la llamada.
+
+El siguiente ejemplo convierte un rectángulo en una tupla con sus
+dimensiones:
+
+``` rust
+{{< include c11/descomponer/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=struct%20Rectangulo%20%7B%0A%20%20%20%20ancho%3A%20u32%2C%0A%20%20%20%20alto%3A%20u32%2C%0A%7D%0A%0Aimpl%20Rectangulo%20%7B%0A%20%20%20%20fn%20descomponer%28self%29%20-%3E%20%28u32%2C%20u32%29%20%7B%0A%20%20%20%20%20%20%20%20%28self.ancho%2C%20self.alto%29%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20r%20%3D%20Rectangulo%20%7B%0A%20%20%20%20%20%20%20%20ancho%3A%2020%2C%0A%20%20%20%20%20%20%20%20alto%3A%2010%2C%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20let%20t%20%3D%20r.descomponer%28%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20t%29%3B%0A%0A%20%20%20%20//%20println%21%28%22%7B%7D%22%2C%20r.ancho%29%3B%20%20//%20Esto%20ser%C3%ADa%20un%20error%2C%20r%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20//%20ya%20no%20existe%0A%7D%0A)
+
+:::
+
+En este ejemplo, el método toma posesión del struct y extrae sus
+datos para construir una tupla. Una vez finalizada la llamada, r
+ya no puede utilizarse. Obsérvese que, a diferencia de los
+ejemplos anteriores, aquí se pasa `r`, no `&r` ni `&mut r`, ya
+que el método recibe el struct por valor.
+
+Como en los casos anteriores, una llamada como
+
+``` rust
+r.descomponer()
+```
+
+es conceptualmente equivalente a
+
+``` rust
+Rectangulo::descomponer(r)
+```
+
+## Métodos asociados (sin `self`)
+
+No todos los métodos definidos dentro de un bloque `impl`
+necesitan trabajar con un struct concreto: hay métodos que
+pertencen al propio tipo, no a una instancia en particular. Se les
+llama *métodos asociados* y tienen dos características
+principales:
+
+- En la definición, no se incluye el parámetro `self`.
+
+- En la invocación, se escribe el nombre del tipo, el operador
+  `::` y el nombre del método.
+
+Un uso muy habitual de los métodos asociados es construir nuevos
+structs. El siguiente ejemplo define un método asociado llamado
+`nuevo`:
+
+``` rust
+{{< include c11/nuevo/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=struct%20Rectangulo%20%7B%0A%20%20%20%20ancho%3A%20u32%2C%0A%20%20%20%20alto%3A%20u32%2C%0A%7D%0A%0Aimpl%20Rectangulo%20%7B%0A%20%20%20%20fn%20nuevo%28ancho%3A%20u32%2C%20alto%3A%20u32%29%20-%3E%20Self%20%7B%20%20//%20sin%20par%C3%A1metro%20%27self%27%0A%20%20%20%20%20%20%20%20Self%20%7B%20ancho%2C%20alto%20%7D%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20r%20%3D%20Rectangulo%3A%3Anuevo%2820%2C%2010%29%3B%20%20//%20tipo%3A%3Am%C3%A9todo%0A%0A%20%20%20%20println%21%28%22%7B%7D%20%C3%97%20%7B%7D%22%2C%20r.ancho%2C%20r.alto%29%3B%0A%7D%0A%0A)
+
+:::
+
+En este ejemplo, `nuevo` no recibe un parámetro `self`, ya que no
+existe todavía ningún struct sobre el que actuar. Su misión es
+construir y devolver un nuevo `Rectangulo`. Y, naturalmente, como
+no existe un parámetro self, la llamada se realiza directamente
+mediante el nombre del tipo.
+
+``` rust
+let r = Rectangulo::nuevo(20, 10);
+```
+
+Por convenio, muchos tipos definen un método asociado llamado
+`new`, que actúa de manera similar a los constructores en otros
+lenguajes. La biblioteca estándar de Rust contiene numerosos
+ejemplos, como:
+
+``` rust
+let v = Vec::new();
+let s = String::new();
+```
+
+Aunque suelen utilizarse para construir srtucts, los métodos
+asociados pueden realizar cualquier otra operación relacionada
+con el tipo que no requiera acceder a a una instancia concreta.
+
+## Ejemplo completo
+
+El siguiente programa reúne la mayoría de los conceptos
+estudiados en este capítulo. Define un tipo `Conexion` con un
+método asociado para crear nuevas conexiones, varios métodos de
+solo lectura para consultar su estado y dos métodos de lectura y
+escritura para conectar y desconectar la instancia.
+
+```rust
+
+``` rust
+{{< include c11/conexion/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=%23%5Bderive%28Debug%29%5D%0Astruct%20Conexion%20%7B%0A%20%20%20%20ip%3A%20String%2C%0A%20%20%20%20puerto%3A%20u16%2C%0A%20%20%20%20activa%3A%20bool%2C%0A%7D%0A%0Aimpl%20Conexion%20%7B%0A%20%20%20%20fn%20new%28ip%3A%20String%2C%20puerto%3A%20u16%29%20-%3E%20Conexion%20%7B%0A%20%20%20%20%20%20%20%20Conexion%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20ip%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20puerto%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20activa%3A%20false%2C%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20conectar%28%26mut%20self%29%20%7B%0A%20%20%20%20%20%20%20%20self.activa%20%3D%20true%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20desconectar%28%26mut%20self%29%20%7B%0A%20%20%20%20%20%20%20%20self.activa%20%3D%20false%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20esta_activa%28%26self%29%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20self.activa%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20direccion%28%26self%29%20-%3E%20String%20%7B%0A%20%20%20%20%20%20%20%20self.ip.clone%28%29%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20puerto%28%26self%29%20-%3E%20u16%20%7B%0A%20%20%20%20%20%20%20%20self.puerto%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20c%20%3D%20Conexion%3A%3Anew%28String%3A%3Afrom%28%22193.147.71.64%22%29%2C%20443%29%3B%0A%20%20%20%20println%21%28%22Conexi%C3%B3n%20reci%C3%A9n%20creada%22%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20c%29%3B%0A%20%20%20%20println%21%28%22Conectamos%22%29%3B%0A%20%20%20%20c.conectar%28%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20c%29%3B%0A%20%20%20%20println%21%28%22Desconectamos%22%29%3B%0A%20%20%20%20c.desconectar%28%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20c%29%3B%0A%20%20%20%20println%21%28%22Activa%3A%20%7B%7D%22%2C%20c.esta_activa%28%29%29%3B%0A%20%20%20%20println%21%28%22Endpoint%3A%20%7B%7D%3A%7B%7D%22%2C%20c.direccion%28%29%2C%20c.puerto%28%29%29%3B%0A%7D%0A)
+
+:::
+
+
+
+En este ejemplo pueden identificarse los distintos tipos de
+métodos estudiados:
+
+- `new` es un método asociado, ya que no recibe `self` y se
+  invoca mediante el nombre del tipo.
+
+- `esta_activa`, `direccion` y `puerto` son métodos con `&self`,
+  pues únicamente consultan el contenido del struct.
+
+- `conectar` y `desconectar` son métodos con `&mut self`, ya que
+  modifican el estado del struct.
+
+No aparece ningún método con `self`, ya que este tipo de métodos
+es menos frecuente y suele reservarse para situaciones en las que
+el método necesita tomar posesión del struct.

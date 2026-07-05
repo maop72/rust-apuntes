@@ -123,6 +123,6 @@ entre tuplas y arrays.
 | Elementos del mismo tipo | No necesariamente       | Sí                         |
 | Delimitadores            | Paréntesis `()`         | Corchetes `[]`             |
 | Acceso a elementos       | Punto (`.0`, `.1`, ...) | Índice (`[0]`, `[1]`, ...) |
-| Ejemplo                  | `("TCP", 443, true)`     | `[10, 20, 30, 40, 50]`     |
+| Ejemplo                  | `("TCP", 443, true)`    | `[10, 20, 30, 40, 50]`     |
 
 : Comparación entre tuplas y arrays {#tbl-tupla-vs-array}
