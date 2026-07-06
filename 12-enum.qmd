@@ -1,0 +1,218 @@
+# Enumeraciones (enum) {#sec-enum}
+
+Este capitulo tratará los `enum` de Rust, abreviatura de
+*enumerations* (enumeraciones). Un `enum` define un tipo cuyos
+valores pueden adoptar una variante entre varias posibles,
+establecidas por el programador. Obsérvese la diferencia con los
+`struct`, estudiados en el @sec-structs, cuyos objetos contienen
+simultáneamente todos sus campos.
+
+Los `enum` son un mecanismo muy versátil y aparecen con
+frecuencia tanto en programas escritos por el usuario como en la
+propia biblioteca estándar de Rust. En este capítulo estudiaremos
+cómo definir `enum` y crear valores de este tipo. En capítulos
+posteriores veremos cómo trabajar con ellos mediante `match` y
+otros mecanismos del lenguaje.
+
+## Definición
+
+La definición de un `enum` se compone de:
+
+- La palabra reservada `enum`.
+- El nombre del tipo. Como vimos en la @sec-case, el convenio
+  establece usar PascalCase.
+- Una lista de variantes encerradas entre llaves. Cada variante
+  identifica uno de los posibles valores que pueden tomar los
+  objetos de ese tipo.
+
+``` {.rust}
+enum EstadoConexion {
+    Free,
+    Listening,
+    Connecting,
+    Connected,
+    Disconnecting,
+}
+```
+
+En este ejemplo, `EstadoConexion` es un nuevo tipo definido por
+el programador. Sus únicos valores posibles son `Free`,
+`Listening`, `Connecting`, `Connected` y `Disconnecting`.
+
+## Creación de valores
+
+Una vez definido un `enum`, pueden crearse objetos de ese tipo
+mediante el operador de resolución de ámbito (`::`), indicando el
+nombre del tipo seguido del nombre de la variante:
+
+``` {.rust}
+let estado1 = EstadoConexion::Free;
+let estado2 = EstadoConexion::Listening;
+let estado3 = EstadoConexion::Connected;
+```
+
+En todos los casos, el objeto creado pertenece al tipo
+`EstadoConexion`; lo único que cambia es la variante elegida.
+
+Obsérvese que el nombre de la variante debe ir precedido por el
+nombre del `enum`. Esto evita posibles conflictos cuando
+distintos `enum` contienen variantes con el mismo nombre.
+
+## Enumeraciones con datos asociados
+
+A diferencia de las enumeraciones tradicionales de lenguajes como
+C, C++, Java o C#, las variantes de un `enum` de Rust no tienen
+por qué limitarse a representar un valor: también pueden
+almacenar datos asociados. Cada variante puede definir sus
+propios tipos de datos, que se especifican entre paréntesis.
+
+El siguiente ejemplo representa distintos eventos que pueden
+producirse en una aplicación de red:
+
+``` {.rust}
+enum Evento {
+    Conexion(String, u16),
+    Desconexion,
+    Error(String),
+}
+```
+
+En este caso, la variante `Conexion` almacena una dirección IP y
+un número de puerto, mientras que `Error` contiene un mensaje de
+error. La variante `Desconexion`, por el contrario, no almacena
+ningún dato adicional.
+
+Los valores se crean proporcionando los datos requeridos por cada
+variante:
+
+``` {.rust}
+let e1 = Evento::Conexion("192.168.1.10".to_string(), 8080);
+let e2 = Evento::Desconexion;
+let e3 = Evento::Error("Tiempo de espera agotado".to_string());
+```
+
+Cada una de estas expresiones crea un objeto del tipo `Evento`,
+aunque la información almacenada sea distinta en cada caso.
+
+## El enumerado `Option` {#sec-enum-option}
+
+En muchos programas es necesario representar la posibilidad de
+que un dato no exista. Por ejemplo, una aplicación diseñada
+suponiendo que todas las personas tienen dos apellidos puede
+mostrar incorrectamente el nombre de un ciudadano de un país
+donde solo se utiliza uno, presentándolo como *John Smith NULL*,
+sustituyendo el segundo apellido por una cadena vacía u
+obligándole a escribir dos apellidos.
+
+Este tipo de situaciones aparecen con frecuencia: una búsqueda
+que no encuentra resultados, un usuario que no ha indicado su
+número de teléfono o un vector al que se intenta acceder con un
+índice fuera de rango. En todos estos casos, la ausencia de un
+valor no debería considerarse un error, sino una posibilidad que
+el programa debe contemplar explícitamente.
+
+Durante décadas, muchos lenguajes de programación han intentado
+resolver este problema introduciendo un valor especial, como
+`nil`, `null` o `None`, para representar la ausencia de un dato.
+Este enfoque supuso un avance respecto a utilizar cadenas vacías,
+números arbitrarios u otros valores de relleno.
+
+Sin embargo, estos valores especiales siguen siendo una fuente
+habitual de errores. El programador debe recordar en todo momento
+que una variable puede contener un dato válido o un valor nulo, y
+olvidar comprobar este último caso puede provocar fallos de
+ejecución o vulnerabilidades de seguridad.
+
+Rust adopta un enfoque diferente, mucho más seguro. En lugar de
+introducir un valor especial, la posibilidad de que un dato
+exista o no forma parte de su propio tipo mediante el enumerado
+`Option<T>`. De este modo, el compilador obliga al programador a
+contemplar explícitamente ambos casos.
+
+Uno de los enumerados más utilizados en Rust es `Option<T>`,
+definido en la biblioteca estándar. Se emplea para representar la
+presencia o ausencia de un valor. Su definición simplificada es
+la siguiente:
+
+``` rust
+enum Option<T> {
+    Some(T),
+    None,
+}
+```
+
+Donde `T` representa el tipo del dato que puede estar contenido en
+el `Option`. Por ejemplo, `Option<i32>` representa un entero que
+puede existir o no, mientras que `Option<String>` representa una
+cadena de texto que también puede estar ausente.
+
+Como cualquier otro enumerado, `Option<T>` puede tomar uno de dos
+valores:
+
+- `Some(valor)`, cuando existe un valor de tipo `T`.
+- `None`, cuando no existe ningún valor.
+
+Por ejemplo:
+
+``` rust
+{{< include c12/option01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20a%3A%20Option%3Ci32%3E%20%3D%20Some%2810%29%3B%0A%20%20%20%20let%20b%3A%20Option%3Ci32%3E%20%3D%20None%3B%0A%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20a%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20b%29%3B%0A%7D%0A%0A)
+
+:::
+
+Esta forma de declarar un `Option` en realidad no es la más
+habitual. Lo normal es dejar que el compilador deduzca el tipo
+cuando el valor es `Some(...)`. Sin embargo, para `None` es
+necesario indicar el tipo de forma explícita, precisamente porque
+no existe ningún valor a partir del cual pueda deducirse.
+
+``` rust
+{{< include c12/option02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20a%20%3D%20Some%2810%29%3B%0A%20%20%20%20let%20b%3A%20Option%3Ci32%3E%20%3D%20None%3B%0A%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20a%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20b%29%3B%0A%7D%0A%0A)
+
+:::
+
+En ambos casos, el tipo de a es exactamente el mismo:
+`Option<i32>`. La única diferencia es que, en el segundo ejemplo,
+el compilador lo deduce automáticamente.
+
+
+## Otras consideraciones
+
+### Derivación de Traits
+
+Al igual que los `struct`, los `enum` también pueden derivar
+*traits*. Por ejemplo, el rasgo `Debug` permite mostrar su valor
+completo durante la ejecución del programa:
+
+``` rust
+{{< include c12/conexion/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=%23%5Bderive%28Debug%29%5D%20%0Aenum%20EstadoConexion%20%7B%0A%20%20%20%20Free%2C%0A%20%20%20%20Listening%2C%0A%20%20%20%20Connecting%2C%0A%20%20%20%20Connected%2C%0A%20%20%20%20Disconnecting%2C%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20estado%20%3D%20EstadoConexion%3A%3AConnected%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20estado%29%3B%0A%7D%0A%0A)
+
+:::
+
+### Bloques `impl`
+
+También es posible asociar métodos y métodos asociados a un
+`enum` mediante bloques `impl`, igual que se hace con los
+`struct`. Sin embargo, estos métodos suelen utilizar la
+construcción `match`, que estudiaremos en el próximo capítulo.
+
+### Variantes heterogéneas
+
+Por último, no todas las variantes de un `enum` tienen por qué
+almacenar el mismo número de datos, ni siquiera datos del mismo
+tipo. Cada variante puede definir libremente la información que
+lleva asociada.

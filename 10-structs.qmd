@@ -1,4 +1,4 @@
-# Structs
+# Structs  {#sec-structs}
 
 Hasta ahora hemos trabajado principalmente con tipos básicos,
 colecciones y funciones. Sin embargo, en programas reales es

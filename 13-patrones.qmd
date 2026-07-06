@@ -1,0 +1,281 @@
+# `match`: coincidencia de patrones
+
+En muchos programas es necesario ejecutar acciones diferentes
+según el valor de una variable. En otros lenguajes esto suele
+resolverse mediante cadenas de instrucciones `if` o con
+construcciones como `switch`.
+
+Rust ofrece una herramienta mucho más potente: la expresión
+`match`. Además de comparar valores concretos, `match` puede
+reconocer la forma de un dato (*pattern matching* o coincidencia
+de patrones), extraer la información que contiene y obligar al
+programador a contemplar todos los casos posibles.
+
+Aunque `match` puede utilizarse con tipos sencillos, como enteros
+o caracteres, resulta especialmente útil al trabajar con `enum`,
+ya que permite distinguir cada una de sus variantes de forma
+clara y segura.
+
+En este capítulo aprenderemos a utilizar `match`, veremos cómo
+devolver valores mediante esta expresión, cómo emplear patrones
+comodín y cómo extraer los datos asociados a una variante.
+Finalmente estudiaremos las formas abreviadas `if let` y
+`while let`, que simplifican algunos usos muy frecuentes.
+
+## Definición de `match`
+
+La expresión `match` permite seleccionar entre varias
+alternativas según el valor de una expresión. Su funcionamiento
+recuerda al de la instrucción `switch` presente en otros
+lenguajes, aunque es mucho más potente gracias al uso de
+patrones.
+
+La expresión `match` comienza con la palabra reservada `match`,
+seguida de una expresión y de un bloque entre llaves que contiene
+una serie de ramas (*arms*). Cada rama está formada por un
+patrón, el operador `=>`, la expresión correspondiente y una
+coma. Excepto la última rama donde la coma es opcional.
+
+El operador `=>` (*fat arrow*) no debe confundirse con el
+operador `->` (*arrow*), utilizado, por ejemplo, para indicar el
+tipo devuelto por una función.
+
+``` rust
+match expresión {
+    patrón1 => expresión1,
+    patrón2 => expresión2,
+    ...
+}
+```
+
+Al ejecutarse, en primer lugar se evalúa la expresión situada
+tras la palabra clave `match`. A continuación, su valor se
+compara con cada uno de los patrones, en el orden en que
+aparecen. Cuando uno de ellos coincide, se evalúa la expresión
+correspondiente y el `match` finaliza.
+
+El siguiente ejemplo identifica algunos de los puertos bien
+conocidos (*well-known ports*) más habituales en las aplicaciones
+de red. Como el valor de `puerto` es `443`, se ejecuta únicamente
+la rama correspondiente al protocolo HTTPS.
+
+``` rust
+{{< include c13/match01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puerto%20%3D%20443%3B%0A%0A%20%20%20%20match%20puerto%20%7B%0A%20%20%20%20%20%20%20%2022%20%3D%3E%20println%21%28%22SSH%22%29%2C%0A%20%20%20%20%20%20%20%2025%20%3D%3E%20println%21%28%22SMTP%22%29%2C%0A%20%20%20%20%20%20%20%2053%20%3D%3E%20println%21%28%22DNS%22%29%2C%0A%20%20%20%20%20%20%20%2080%20%3D%3E%20println%21%28%22HTTP%22%29%2C%0A%20%20%20%20%20%20%20%20443%20%3D%3E%20println%21%28%22HTTPS%22%29%2C%0A%20%20%20%20%20%20%20%20_%20%3D%3E%20println%21%28%22Servicio%20desconocido%22%29%2C%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+En este ejemplo aparece el patrón especial `_`, denominado
+*patrón comodín* (*wildcard pattern*). Este patrón coincide con
+cualquier valor que no haya coincidido con ninguna de las ramas
+anteriores. Su uso resulta muy habitual para proporcionar un caso
+por defecto, equivalente al `default` de otros lenguajes.
+
+``` rust
+_ => println!("Servicio desconocido"),
+```
+
+Además, Rust exige que un `match` contemple todos los valores
+posibles de la expresión que se está evaluando. Esta propiedad se
+conoce como *exhaustividad*. Si falta alguna posibilidad y no
+existe un patrón comodín que la cubra, el programa no compilará.
+Observa que borrando la rama correspondiente al comodín, el
+programa no compila.
+
+## `match` con el enumerado `Option<T>`
+
+Uno de los usos más frecuentes de `match` consiste en procesar
+valores de tipos enumerados como por ejemplo  `Option<T>`. Como vimos en
+la @sec-enum-option, un `Option` puede contener un valor (`Some`)
+o no contener ninguno (`None`). El siguiente programa muestra
+cómo tratar ambos casos:
+
+``` rust
+{{< include c13/match_option/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20numero%20%3D%20Some%2810%29%3B%0A%0A%20%20%20%20match%20numero%20%7B%0A%20%20%20%20%20%20%20%20Some%28n%29%20%3D%3E%20println%21%28%22Valor%3A%20%7B%7D%22%2C%20n%29%2C%0A%20%20%20%20%20%20%20%20None%20%3D%3E%20println%21%28%22No%20hay%20ning%C3%BAn%20valor%22%29%2C%0A%20%20%20%20%7D%0A%7D%0A)
+:::
+
+- Si la variable `numero` contiene un valor, se ejecuta la
+  primera rama del `match`. La variable `n` recibe el valor
+  almacenado en `Some` y puede utilizarse libremente dentro de
+  esa rama.
+
+- Si, por el contrario, `numero` contiene `None`, se ejecuta la
+  segunda rama.
+
+Este patrón aparece con mucha frecuencia en Rust, ya que
+numerosas funciones y métodos devuelven un `Option` para indicar
+que un resultado puede existir o no. En capítulos posteriores
+veremos varios ejemplos de ello, como el método `Vec::get`.
+
+## `match` como expresión
+
+Como vimos en la @sec-if-expresion y en la @sec-loop, `if` y
+`loop` son expresiones. `match` también lo es. Esto significa que
+produce un valor, por lo que puede utilizarse en cualquier
+contexto donde se espere una expresión.
+
+Es habitual emplearlo para inicializar una variable, como en el
+siguiente ejemplo. Observarmos que la expresión `match` devuelve
+una cadena distinta según el valor de `puerto`, que se asigna a
+la variable `servicio`.
+
+``` rust
+{{< include c13/match02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puerto%20%3D%20443%3B%0A%0A%20%20%20%20let%20servicio%20%3D%20match%20puerto%20%7B%0A%20%20%20%20%20%20%20%2022%20%3D%3E%20%22SSH%22%2C%0A%20%20%20%20%20%20%20%2025%20%3D%3E%20%22SMTP%22%2C%0A%20%20%20%20%20%20%20%2053%20%3D%3E%20%22DNS%22%2C%0A%20%20%20%20%20%20%20%2080%20%3D%3E%20%22HTTP%22%2C%0A%20%20%20%20%20%20%20%20443%20%3D%3E%20%22HTTPS%22%2C%0A%20%20%20%20%20%20%20%20_%20%3D%3E%20%22Desconocido%22%2C%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20println%21%28%22Servicio%3A%20%7B%7D%22%2C%20servicio%29%3B%0A%7D%0A)
+
+:::
+
+Como cualquier otra expresión en Rust, todas las ramas de un
+`match` deben producir valores del mismo tipo. De este modo, el
+compilador puede determinar el tipo del valor devuelto por la
+expresión completa.
+
+El ejemplo anterior es correcto porque todas las ramas devuelven
+una cadena de tipo `&str`. En cambio, el siguiente código produce
+un error de compilación, ya que unas ramas devuelven una cadena y
+otras un número entero:
+
+``` rust
+{{< include c13/match03/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puerto%20%3D%20443%3B%0A%0A%20%20%20%20let%20servicio%20%3D%20match%20puerto%20%7B%0A%20%20%20%20%20%20%20%2022%20%3D%3E%20%22SSH%22%2C%0A%20%20%20%20%20%20%20%2023%20%3D%3E%2023%2C%0A%20%20%20%20%20%20%20%2024%20%3D%3E%2023%2C%0A%20%20%20%20%20%20%20%2025%20%3D%3E%20%22SMTP%22%2C%0A%20%20%20%20%20%20%20%2053%20%3D%3E%20%22DNS%22%2C%0A%20%20%20%20%20%20%20%2080%20%3D%3E%20%22HTTP%22%2C%0A%20%20%20%20%20%20%20%20443%20%3D%3E%20%22HTTPS%22%2C%0A%20%20%20%20%20%20%20%20_%20%3D%3E%20%22Desconocido%22%2C%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20println%21%28%22Servicio%3A%20%7B%7D%22%2C%20servicio%29%3B%0A%7D%0A)
+
+:::
+
+## Extracción de datos asociados
+
+En el @sec-enum vimos que las variantes de un `enum` pueden
+llevar asociados uno o varios datos. Una de las principales
+ventajas de `match` es que permite acceder directamente a dichos
+datos cuando una variante coincide con un patrón.
+
+En el siguiente ejemplo, `Mensaje` es un `enum` con tres
+variantes: una que contiene un valor de tipo `String`, otra que
+contiene un valor de tipo `i32` y una tercera que no lleva datos
+asociados.
+
+``` rust
+{{< include c13/match04/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=enum%20Mensaje%20%7B%0A%20%20%20%20Texto%28String%29%2C%0A%20%20%20%20Numero%28i32%29%2C%0A%20%20%20%20Salir%2C%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mensaje%20%3D%20Mensaje%3A%3ATexto%28String%3A%3Afrom%28%22Hola%22%29%29%3B%0A%0A%20%20%20%20match%20mensaje%20%7B%0A%20%20%20%20%20%20%20%20Mensaje%3A%3ATexto%28texto%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22Texto%20recibido%3A%20%7B%7D%22%2C%20texto%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20Mensaje%3A%3ANumero%28n%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22N%C3%BAmero%20recibido%3A%20%7B%7D%22%2C%20n%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20Mensaje%3A%3ASalir%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22Fin%20del%20programa%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+La expresión `match` distingue las tres variantes y extrae los
+datos asociados cuando existen.
+
+- En las dos primeras ramas aparecen los patrones
+  `Mensaje::Texto(texto)` y `Mensaje::Numero(n)`. Cuando la
+  variante coincide, las variables `texto` y `n` se crean
+  automáticamente y reciben los datos asociados al `enum`. Estas
+  variables pueden utilizarse libremente dentro de la expresión
+  correspondiente.
+
+- La variante `Mensaje::Salir` no lleva datos asociados, por lo
+  que su patrón se limita al nombre de la variante.
+
+## `if let`
+
+En ocasiones solo interesa actuar cuando un valor coincide con un
+determinado patrón, ignorando el resto de los casos. Aunque esto
+puede hacerse con `match`, es necesario añadir una rama comodín
+para contemplar las demás posibilidades.
+
+Por ejemplo, el siguiente código muestra el contenido del mensaje
+solo cuando este es de tipo `Texto`:
+
+``` rust
+{{< include c13/match05/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=enum%20Mensaje%20%7B%0A%20%20%20%20Texto%28String%29%2C%0A%20%20%20%20Numero%28i32%29%2C%0A%20%20%20%20Salir%2C%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mensaje%20%3D%20Mensaje%3A%3ANumero%2842%29%3B%0A%0A%20%20%20%20match%20mensaje%20%7B%0A%20%20%20%20%20%20%20%20Mensaje%3A%3ATexto%28texto%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22Texto%20recibido%3A%20%7B%7D%22%2C%20texto%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20_%20%3D%3E%20%7B%7D%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+Como este uso es muy frecuente, Rust proporciona la construcción
+`if let`, que equivale al `match` anterior:
+
+``` rust
+{{< include c13/match06/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=enum%20Mensaje%20%7B%0A%20%20%20%20Texto%28String%29%2C%0A%20%20%20%20Numero%28i32%29%2C%0A%20%20%20%20Salir%2C%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mensaje%20%3D%20Mensaje%3A%3ANumero%2842%29%3B%0A%0A%20%20%20%20if%20let%20Mensaje%3A%3ATexto%28texto%29%20%3D%20mensaje%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22Texto%20recibido%3A%20%7B%7D%22%2C%20texto%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+La sintaxis de `if let` recuerda a una asignación, pero el
+operador `=` no asigna ningún valor. Su función es comprobar si
+la expresión situada a la derecha coincide con el patrón situado
+a la izquierda.
+
+- Si la coincidencia tiene éxito, las variables que aparecen en
+  el patrón quedan inicializadas con los datos extraídos de la
+  expresión.
+
+- Cuando la expresión no coincide con el patrón, el bloque no se
+  ejecuta y la ejecución continúa con la instrucción siguiente.
+
+Al igual que un `if` convencional, `if let` puede ir seguido de
+una cláusula `else`, que se ejecutará cuando la expresión no
+coincida con el patrón: en muchos casos, `if let` con `else`
+constituye una alternativa más legible a un `match` cuando solo
+interesa tratar explícitamente una de las variantes.
+
+``` rust
+if let Mensaje::Texto(texto) = mensaje {
+    println!("Texto recibido: {}", texto);
+} else {
+    println!("El mensaje no contiene texto");
+}
+```
+
+## while let
+
+La construcción `while let` combina un bucle `while` con una
+comprobación mediante patrones. Mientras la expresión coincida
+con el patrón indicado, el cuerpo del bucle se ejecutará
+repetidamente. Su sintaxis es análoga a la de `if let`.
+
+``` rust
+{{< include c13/while_let/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20pila%20%3D%20vec%21%5B10%2C%2020%2C%2030%5D%3B%0A%0A%20%20%20%20while%20let%20Some%28valor%29%20%3D%20pila.pop%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7Bvalor%7D%22%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+Este ejemplo utiliza conceptos que todavía no conocemos, pero
+merece la pena observarlo porque representa uno de los usos más
+habituales de `while let` en Rust. El método `pop()` extrae el
+último elemento del vector, utilizado aquí como como una pila, y
+lo devuelve envuelto en `Some`. Cuando el vector queda vacío,
+devuelve `None`, lo que hace que el bucle termine
+automáticamente.
+
+Más adelante estudiaremos los vectores y el tipo `Option`, y
+retomaremos este ejemplo para ver con precisión cómo funciona.

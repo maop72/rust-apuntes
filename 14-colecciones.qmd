@@ -1,0 +1,169 @@
+# Colecciones
+
+Hasta ahora hemos trabajado con tipos cuyo tamaño es conocido en
+tiempo de compilación: enteros, números en coma flotante, valores
+booleanos, caracteres, tuplas, `struct` y arrays. En el caso de
+los arrays, además, el número de elementos debe fijarse al
+definir la variable.
+
+En muchos programas esta restricción resulta poco realista. Si se
+reserva espacio para pocos elementos, puede no ser suficiente
+durante la ejecución. Si se reserva para demasiados, se
+desperdicia memoria.
+
+Para resolver este problema, la biblioteca estándar de Rust
+proporciona varias *colecciones*. Una colección es un tipo capaz
+de almacenar un número variable de elementos, reservando memoria
+dinámicamente cuando es necesario.
+
+En este capítulo estudiaremos las tres colecciones más
+utilizadas:
+
+- `Vec<T>`, que almacena una secuencia ordenada de elementos del
+  mismo tipo.
+- `String`, utilizada para almacenar y manipular cadenas de texto
+  UTF-8 de longitud variable.
+- `HashMap<K, V>`, que almacena pares clave-valor y permite
+  acceder rápidamente a un valor a partir de su clave.
+
+Las colecciones forman parte de la biblioteca estándar. Basta con
+utilizarlas directamente o, en el caso de `HashMap`, importar el
+tipo desde `std::collections`.
+
+## Vectores (`Vec<T>`)
+
+En muchos lenguajes de programación, como Pascal, C++, Java, C# o
+MATLAB, el término *vector* se utiliza con frecuencia, de manera
+formal o informal, como sinónimo de *array*. En Rust, sin
+embargo, ambos conceptos son distintos.
+
+- Como vimos en la @sec-arrays, un array es una secuencia de elementos 
+  homogéneos, con tamaño prefijado en tiempo de compilación,  no
+  puede cambiar durante la ejecución. 
+
+- Un vector (`Vec<T>`) es una colección que  almacena una
+  secuencia de elementos homogéneos. La diferencia es que su
+  longitud puede variar durante la ejecución: es posible añadir o
+  eliminar elementos según sea necesario.
+
+
+El tipo de un vector se escribe como `Vec<T>`, donde `T`
+representa el tipo de los elementos almacenados. Por ejemplo,
+`Vec<i32>` es un vector de enteros, mientras que `Vec<String>` es
+un vector de cadenas de texto.
+
+Los vectores son probablemente la colección más utilizada en
+Rust. La biblioteca estándar proporciona numerosos métodos para
+crearlos, recorrerlos, modificarlos y consultar su contenido.
+
+### Uso básico
+
+El siguiente ejemplo muestra las operaciones más habituales con
+un vector: crearlo, añadir elementos y acceder a ellos mediante
+un índice.
+
+``` rust
+{{< include c14/vectores01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%20%20%20%0A%20%20%20%20let%20mut%20numeros%20%3D%20Vec%3A%3Anew%28%29%3B%0A%0A%20%20%20%20numeros.push%2810%29%3B%0A%20%20%20%20numeros.push%2820%29%3B%0A%20%20%20%20numeros.push%2830%29%3B%0A%0A%20%20%20%20println%21%28%22N%C3%BAmero%20de%20elementos%3A%20%7B%7D%22%2C%20numeros.len%28%29%29%3B%0A%20%20%20%20println%21%28%22Primer%20elemento%3A%20%7B%7D%22%2C%20numeros%5B0%5D%29%3B%0A%20%20%20%20println%21%28%22Segundo%20elemento%3A%20%7B%7D%22%2C%20numeros%5B1%5D%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20numeros%29%3B%0A%7D%0A%0A)
+
+:::
+
+En este ejemplo:
+
+- Se crea un vector vacío mediante `Vec::new()`. Como el vector
+  va a modificarse posteriormente, se declara con `mut`.
+
+- Los elementos se añaden mediante el método `push`, que
+  incorpora cada nuevo valor al final del vector. Todos los
+  elementos deben ser del mismo tipo; en este caso, el compilador
+  deduce que se trata de un `Vec<i32>`.
+
+- Los elementos pueden accederse mediante un índice, comenzando
+  por el cero, igual que en un array.
+
+Veamos otro programa sencillo:
+
+``` rust
+{{< include c14/vectores02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20numeros%20%3D%20vec%21%5B10%2C%2020%2C%2030%2C%2040%5D%3B%0A%0A%20%20%20%20println%21%28%22N%C3%BAmero%20de%20elementos%3A%20%7B%7D%22%2C%20numeros.len%28%29%29%3B%0A%0A%20%20%20%20for%20n%20in%20%26numeros%20%7B%20%20%20//%20Recorremos%20los%20elementos%2C%20sin%20%C3%ADndice%20%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20n%29%3B%0A%20%0A%20%20%20%20%7D%0A%0A%20%20%20%20for%20i%20in%200..numeros.len%28%29%20%7B%20//%20Recorremos%20los%20elementos%2C%20usando%20el%20%C3%ADndice%20%20%0A%20%20%20%20%20%20%20%20println%21%28%22Elemento%20%7B%7D%3A%20%7B%7D%22%2C%20i%2C%20numeros%5Bi%5D%29%3B%0A%20%20%20%20%7D%0A%7D%0A%0A)
+
+:::
+
+Observaciones:
+
+- Cuando los valores del vector son conocidos en tiempo de
+  compilación, puede resultar más cómodo utilizar la macro `vec!`
+  (en minúsculas), que crea e inicializa el vector con los
+  valores proporcionados, entre corchetes y separados por comas.
+  El compilador deduce automáticamente el tipo de los elementos,
+  en este caso, `Vec<i32>` (en mayúsculas).
+
+- En la @sec-for vimos que hay dos formas de recorrer un array:
+  usando el índice o sin usarlo. Con los vectores sucede lo
+  mismo.
+
+  - Lo más sencillo es recorrer todos los elementos con un bucle
+
+    ``` rust
+    for n in &numeros
+    ```
+
+  - Hemos añadido el `&` para que el bucle itere sobre una
+    referencia a `numeros`. De lo contrario, el `for` consumiría
+    el vector y no podría volver a usarse.
+
+  - Si necesitamos conocer el índice, usaremos el operador `..`,
+    que devuelve un rango. El primer operando es el límite
+    inferior, el segundo el límite superior. El límite inferior
+    está incluido, el superior, no. Esta es la forma típica de
+    usarlo:
+
+    ``` rust
+    for i in 0..numeros.len() 
+    ```
+
+    El método `len()` devuelve el número de elementos almacenados
+    en el vector. En este caso, 4. Por tanto el rango irá desde
+    0, incluido, hasta 4, excluido. Esto es, desde 0 hasta 3.
+
+
+### Acceso seguro a elementos
+
+En lenguajes como C o C++, acceder a un elemento situado fuera de
+los límites de un array constituye un error especialmente peligroso.
+El lenguaje no realiza ninguna comprobación automática y el programa
+puede terminar leyendo o escribiendo memoria que no le pertenece.
+Las consecuencias van desde resultados incorrectos y fallos
+intermitentes hasta vulnerabilidades de seguridad que pueden ser
+aprovechadas por un atacante.
+
+Durante décadas, este tipo de errores ha sido una de las principales
+causas de fallos de software. Diversos estudios de la industria
+atribuyen a los errores relacionados con la gestión de memoria una
+parte muy importante de las vulnerabilidades de seguridad
+descubiertas cada año, con un coste económico global que asciende a
+miles de millones de dólares entre pérdidas, interrupciones del
+servicio y tareas de mantenimiento.
+
+Rust adopta un enfoque diferente. El acceso a un elemento mediante
+el operador `[]` sigue siendo posible, pero el lenguaje también
+proporciona mecanismos seguros que obligan al programador a tratar
+explícitamente el caso en que el índice se encuentra fuera de los
+límites del vector.
+
+
+
+
+### Modificación de elementos.
+
+### Operaciones habituales (pop, len, is_empty, etc.).
+
+### Ejemplo completo.

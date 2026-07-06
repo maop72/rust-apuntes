@@ -17,6 +17,10 @@ book:
     - 09-propiedad.qmd
     - 10-structs.qmd
     - 11-metodos.qmd
+    - 12-enum.qmd
+    - 13-patrones.qmd
+    - 14-colecciones.qmd
+    - 15-genericos.qmd
 
 
 

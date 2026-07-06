@@ -75,7 +75,7 @@ importante en Rust. Por ejemplo, es el valor que devuelven muchas
 funciones cuya finalidad es realizar una acción y no producir un
 resultado.
 
-## Arrays
+## Arrays {#sec-arrays}
 
 Al igual que una tupla, un array es una colección ordenada de
 valores cuya longitud no puede cambiar una vez definido. Pero a

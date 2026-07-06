@@ -141,7 +141,7 @@ condiciones son simples comparaciones. En general, salvo que
 existan requisitos específicos de rendimiento o de otro tipo,
 suele ser preferible la solución más clara y fácil de mantener.
 
-### `if` como expresión
+### `if` como expresión {#sec-if-expresion}
 
 En Rust, `if` no es únicamente una sentencia de control de flujo.
 También puede utilizarse como una expresión que produce un valor.
@@ -187,7 +187,7 @@ elementos de una secuencia. En la práctica, `for` suele ser la
 opción preferida cuando se desea iterar sobre una colección o un
 rango de valores.
 
-### El bucle `loop`
+### El bucle `loop` {#sec-loop}
 
 La construcción `loop` ejecuta repetidamente un bloque de código.
 A diferencia de otros bucles, no incorpora ninguna condición de
@@ -216,8 +216,9 @@ infinito que solo se detendría con una interrupción externa, por
 ejemplo pulsando `Ctrl+c`.
 
 En el siguiente ejemplo vemos cómo, además de finalizar el bucle,
-`break` puede devolver un valor: la construcción loop es una
-expresión y, mediante break, puede producir un valor.
+`break` puede devolver un valor: al igual que `loop`, la
+construcción loop también una expresión y, mediante break, puede
+producir un valor.
 
 ``` rust
 {{< include c08/loop_2/src/main.rs >}}
@@ -259,7 +260,7 @@ Conceptualmente, este bucle es completamente análogo a los
 anteriores con `loop`, pero expresando la condición de
 terminación directamente en la cabecera del bucle.
 
-### El bucle `for`
+### El bucle `for`  {#sec-for}
 
 La construcción `for` permite recorrer secuencias de valores de
 forma sencilla y segura. Es el mecanismo habitual para iterar
