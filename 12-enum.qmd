@@ -1,4 +1,4 @@
-# Enumeraciones (enum) {#sec-enum}
+# `enum` {#sec-enum}
 
 Este capitulo tratará los `enum` de Rust, abreviatura de
 *enumerations* (enumeraciones). Un `enum` define un tipo cuyos
@@ -113,9 +113,9 @@ el programa debe contemplar explícitamente.
 
 Durante décadas, muchos lenguajes de programación han intentado
 resolver este problema introduciendo un valor especial, como
-`nil`, `null` o `None`, para representar la ausencia de un dato.
-Este enfoque supuso un avance respecto a utilizar cadenas vacías,
-números arbitrarios u otros valores de relleno.
+`nil`, `null`, `undefined` o `None`, para representar la ausencia
+de un dato. Este enfoque supuso un avance respecto a utilizar
+cadenas vacías, números arbitrarios u otros valores de relleno.
 
 Sin embargo, estos valores especiales siguen siendo una fuente
 habitual de errores. El programador debe recordar en todo momento
@@ -129,10 +129,10 @@ exista o no forma parte de su propio tipo mediante el enumerado
 `Option<T>`. De este modo, el compilador obliga al programador a
 contemplar explícitamente ambos casos.
 
-Uno de los enumerados más utilizados en Rust es `Option<T>`,
-definido en la biblioteca estándar. Se emplea para representar la
-presencia o ausencia de un valor. Su definición simplificada es
-la siguiente:
+`Option<T>` es uno de los enumerados más utilizados en Rust y
+está definido en la biblioteca estándar. Empleado  para
+representar la presencia o ausencia de un valor, su definición
+simplificada es la siguiente:
 
 ``` rust
 enum Option<T> {
@@ -141,13 +141,13 @@ enum Option<T> {
 }
 ```
 
-Donde `T` representa el tipo del dato que puede estar contenido en
-el `Option`. Por ejemplo, `Option<i32>` representa un entero que
-puede existir o no, mientras que `Option<String>` representa una
-cadena de texto que también puede estar ausente.
+Donde `T` representa el tipo del dato que puede estar contenido
+en el `Option`. Por ejemplo, `Option<i32>` representa un entero
+que puede existir o no, mientras que `Option<String>` representa
+una cadena de texto que también puede estar ausente.
 
-Como cualquier otro enumerado, `Option<T>` puede tomar uno de dos
-valores:
+Como cualquier otro enumerado, `Option<T>` puede tomar un valor
+entre varios, en este caso dos: 
 
 - `Some(valor)`, cuando existe un valor de tipo `T`.
 - `None`, cuando no existe ningún valor.
@@ -181,9 +181,8 @@ no existe ningún valor a partir del cual pueda deducirse.
 :::
 
 En ambos casos, el tipo de a es exactamente el mismo:
-`Option<i32>`. La única diferencia es que, en el segundo ejemplo,
+`Option<i32>`. La única diferencia es que, para la variable `a`,
 el compilador lo deduce automáticamente.
-
 
 ## Otras consideraciones
 

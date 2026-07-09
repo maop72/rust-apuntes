@@ -1,0 +1,298 @@
+# Vectores
+
+Hasta ahora hemos trabajado con tipos cuyo tamaño es conocido en
+tiempo de compilación: enteros, números en coma flotante, valores
+booleanos, caracteres, tuplas, `struct` y arrays. En el caso de
+los arrays, además, el número de elementos debe fijarse al
+definir la variable.
+
+En muchos programas esta restricción resulta poco realista. Si se
+reserva espacio para pocos elementos, puede no ser suficiente
+durante la ejecución. Si se reserva para demasiados, se
+desperdicia memoria.
+
+Para resolver este problema, la biblioteca estándar de Rust
+proporciona varias *colecciones*. Una colección es un tipo capaz
+de almacenar un número variable de elementos, reservando memoria
+dinámicamente cuando es necesario.
+
+En estos apuntes estudiaremos las tres colecciones más
+utilizadas:
+
+- `Vec<T>`, que almacena una secuencia ordenada de elementos del
+  mismo tipo. Les dedicaremos el presente capítulo.
+- `String`, utilizada para almacenar y manipular cadenas de texto
+  UTF-8 de longitud variable. Las trataremos en el @sec-string.
+- `HashMap<K, V>`, que almacena pares clave-valor y permite
+  acceder rápidamente a un valor a partir de su clave. Las
+  trataremos en el @sec-hashmap
+
+Las colecciones forman parte de la biblioteca estándar. Basta con
+utilizarlas directamente o, en el caso de `HashMap`, importar el
+tipo desde `std::collections`.
+
+## Introducción a los vectores (`Vec<T>`)
+
+En muchos lenguajes de programación, como Pascal, C++, Java, C# o
+MATLAB, el término *vector* se utiliza con frecuencia, de manera
+formal o informal, como sinónimo de *array*. En Rust, sin
+embargo, ambos conceptos son distintos.
+
+- Como vimos en la @sec-arrays, un array es una secuencia de
+  elementos homogéneos, con tamaño prefijado en tiempo de
+  compilación, no puede cambiar durante la ejecución.
+
+- Un vector (`Vec<T>`) es una colección que almacena una
+  secuencia de elementos homogéneos. La diferencia es que su
+  longitud puede variar durante la ejecución: es posible añadir o
+  eliminar elementos según sea necesario.
+
+El tipo de un vector se escribe como `Vec<T>`, donde `T`
+representa el tipo de los elementos almacenados. Por ejemplo,
+`Vec<i32>` es un vector de enteros, mientras que `Vec<String>` es
+un vector de cadenas de texto.
+
+Los vectores son probablemente la colección más utilizada en
+Rust. La biblioteca estándar proporciona numerosos métodos para
+crearlos, recorrerlos, modificarlos y consultar su contenido.
+
+## Uso básico de vectores {#sec-uso-basico-vectores}
+
+El siguiente ejemplo muestra las operaciones más habituales con
+un vector: crearlo, añadir elementos y acceder a ellos mediante
+un índice.
+
+``` rust
+{{< include c14/vectores01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%20%20%20%0A%20%20%20%20let%20mut%20numeros%20%3D%20Vec%3A%3Anew%28%29%3B%0A%0A%20%20%20%20numeros.push%2810%29%3B%0A%20%20%20%20numeros.push%2820%29%3B%0A%20%20%20%20numeros.push%2830%29%3B%0A%0A%20%20%20%20println%21%28%22N%C3%BAmero%20de%20elementos%3A%20%7B%7D%22%2C%20numeros.len%28%29%29%3B%0A%20%20%20%20println%21%28%22Primer%20elemento%3A%20%7B%7D%22%2C%20numeros%5B0%5D%29%3B%0A%20%20%20%20println%21%28%22Segundo%20elemento%3A%20%7B%7D%22%2C%20numeros%5B1%5D%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20numeros%29%3B%0A%7D%0A%0A)
+
+:::
+
+En este ejemplo:
+
+- Se crea un vector vacío mediante `Vec::new()`. Como el vector
+  va a modificarse posteriormente, se declara con `mut`.
+
+- Los elementos se añaden mediante el método `push`, que
+  incorpora cada nuevo valor al final del vector. Todos los
+  elementos deben ser del mismo tipo; en este caso, el compilador
+  deduce que se trata de un `Vec<i32>`.
+
+- Los elementos pueden accederse mediante un índice, comenzando
+  por el cero, igual que en un array.
+
+Veamos otro programa sencillo:
+
+``` rust
+{{< include c14/vectores02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20numeros%20%3D%20vec%21%5B10%2C%2020%2C%2030%2C%2040%5D%3B%0A%0A%20%20%20%20println%21%28%22N%C3%BAmero%20de%20elementos%3A%20%7B%7D%22%2C%20numeros.len%28%29%29%3B%0A%0A%20%20%20%20for%20n%20in%20%26numeros%20%7B%20%20%20//%20Recorremos%20los%20elementos%2C%20sin%20%C3%ADndice%20%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20n%29%3B%0A%20%0A%20%20%20%20%7D%0A%0A%20%20%20%20for%20i%20in%200..numeros.len%28%29%20%7B%20//%20Recorremos%20los%20elementos%2C%20usando%20el%20%C3%ADndice%20%20%0A%20%20%20%20%20%20%20%20println%21%28%22Elemento%20%7B%7D%3A%20%7B%7D%22%2C%20i%2C%20numeros%5Bi%5D%29%3B%0A%20%20%20%20%7D%0A%7D%0A%0A)
+
+:::
+
+Observaciones:
+
+- Cuando los valores del vector son conocidos en tiempo de
+  compilación, puede resultar más cómodo utilizar la macro `vec!`
+  (en minúsculas), que crea e inicializa el vector con los
+  valores proporcionados, entre corchetes y separados por comas.
+  El compilador deduce automáticamente el tipo de los elementos,
+  en este caso, `Vec<i32>` (en mayúsculas).
+
+- En la @sec-for vimos que hay dos formas de recorrer un array:
+  usando el índice o sin usarlo. Con los vectores sucede lo
+  mismo.
+
+  - Lo más sencillo es recorrer todos los elementos con un bucle
+
+    ``` rust
+    for n in &numeros
+    ```
+
+  - Hemos añadido el `&` para que el bucle itere sobre una
+    referencia a `numeros`. De lo contrario, el `for` consumiría
+    el vector y no podría volver a usarse.
+
+  - Si necesitamos conocer el índice, usaremos el operador `..`,
+    que devuelve un rango. El primer operando es el límite
+    inferior, el segundo el límite superior. El límite inferior
+    está incluido, el superior, no. Esta es la forma típica de
+    usarlo:
+
+    ``` rust
+    for i in 0..numeros.len() 
+    ```
+
+    El método `len()` devuelve el número de elementos almacenados
+    en el vector. En este caso, 4. Por tanto el rango irá desde
+    0, incluido, hasta 4, excluido. Esto es, desde 0 hasta 3.
+
+## El operador `[]` con índices fuera de rango {#sec-corchetes-fuera-rango}
+
+En lenguajes como C o C++, acceder a un elemento situado fuera de
+los límites de un array constituye un error especialmente
+peligroso. El lenguaje no realiza ninguna comprobación automática
+y el programa puede terminar leyendo o escribiendo memoria que no
+le pertenece. Las consecuencias van desde resultados incorrectos
+y fallos intermitentes hasta vulnerabilidades de seguridad que
+pueden ser aprovechadas por un atacante.
+
+Durante décadas, este tipo de errores ha sido una de las
+principales causas de fallos de software. Diversos estudios de la
+industria atribuyen a los errores relacionados con la gestión de
+memoria una parte muy importante de las vulnerabilidades de
+seguridad descubiertas cada año, con un coste económico global
+que asciende a miles de millones de dólares entre pérdidas,
+interrupciones del servicio y tareas de mantenimiento.
+
+Uno de los principales objetivos de diseño de Rust es minimizar
+este tipo de problemas. Como hemos visto en la
+@sec-uso-basico-vectores, Rust permite acceder a los elementos de
+un vector mediante el operador `[]`. Si el índice está fuera de
+rango, el programa provoca un *panic*, muestra un mensaje de
+diagnóstico y finaliza inmediatamente. De este modo, se evita que
+el programa continúe ejecutándose tras acceder a memoria que no
+le pertenece, como puede ocurrir en lenguajes como C o C++.
+
+``` rust
+{{< include c14/vectores_error/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20protocolos%20%3D%20vec%21%5B%22tcp%22%2C%20%22ip%22%5D%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20protocolos%5B0%5D%29%3B%20//%20tcp%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20protocolos%5B1%5D%29%3B%20//%20ip%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20protocolos%5B2%5D%29%3B%20//%20%C2%A1Error%21%20%0A%7D%0A)
+
+:::
+
+El programa mostrará los dos primeros elementos del vector y, al
+intentar acceder al tercero, finalizará con un panic.
+
+## El método `get()`
+
+Además del operador `[]`, Rust también permite acceder a los
+elementos de un vector mediante el método `get()`, que devuelve
+un valor de tipo `Option` (que estudiamos en la
+@sec-enum-option). Si el índice es válido, el resultado es
+`Some(&T)`; en caso contrario, `None`. Esto permite al programa
+detectar y tratar explícitamente la situación sin necesidad de
+finalizar su ejecución.
+
+El siguiente programa intenta acceder al tercer elemento del
+vector. Como no existe, `get()` devuelve `None`, permitiendo que
+el programa trate esta situación sin finalizar su ejecución:
+
+``` rust
+{{< include c14/vector_get/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20protocolos%20%3D%20vec%21%5B%22tcp%22%2C%20%22ip%22%5D%3B%0A%0A%20%20%20%20let%20indice%20%3D%202%3B%0A%0A%20%20%20%20match%20protocolos.get%28indice%29%20%7B%0A%20%20%20%20%20%20%20%20Some%28nombre%29%20%3D%3E%20println%21%28%22Protocolo%3A%20%7B%7D%22%2C%20nombre%29%2C%0A%20%20%20%20%20%20%20%20None%20%3D%3E%20println%21%28%22%C3%8Dndice%20fuera%20de%20rango%22%29%2C%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+El método `get()` devuelve un valor de tipo `Option<&str>`. La
+sentencia `match` distingue los dos casos posibles:
+
+- Si el índice es válido, `get()` devuelve `Some(nombre)`, donde
+  `nombre` es una referencia al elemento del vector.
+
+- Si el índice está fuera de rango, devuelve `None`, permitiendo
+  que el programa continúe ejecutándose y decida cómo actuar.
+
+En general, el operador `[]` resulta adecuado cuando sabemos con
+certeza que el índice es válido. En cambio, `get()` es preferible
+cuando el índice procede de datos externos o existe la
+posibilidad de que esté fuera de rango.
+
+## Modificación de elementos
+
+Los elementos de un vector pueden modificarse mediante el
+operador `[]`, siempre que el vector haya sido declarado como
+mutable.
+
+- Como en cualquier asignación en Rust, el compilador comprobará
+  que el nuevo valor tenga el tipo de los elementos del vector.
+
+- Naturalmente, este acceso mediante `[]` está sujeto a las
+  mismas comprobaciones que al leer un elemento. Si el índice
+  está fuera de rango, el programa provocará un *panic* y
+  finalizará inmediatamente, tal y como vimos en la
+  @sec-corchetes-fuera-rango .
+
+En este ejemplo, el vector contiene cadenas de texto (`&str`). El
+programa sustituye el primer elemento por un nuevo valor:
+
+``` rust
+{{< include c14/vector_modifica/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20protocolos%20%3D%20vec%21%5B%22tcp%22%2C%20%22ip%22%5D%3B%0A%20%20%20%20protocolos%5B0%5D%20%3D%20%22udp%22%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%7D%0A)
+
+:::
+
+## Operaciones habituales
+
+La biblioteca estándar proporciona numerosos métodos para
+manipular vectores. La siguiente tabla resume algunos de los más
+utilizados:
+
+| Método               | Descripción                                          |
+|----------------------|------------------------------------------------------|
+| `push(valor)`        | Añade un elemento al final del vector.               |
+| `pop()`              | Elimina y devuelve el último elemento del vector.    |
+| `len()`              | Devuelve el número de elementos almacenados.         |
+| `is_empty()`         | Indica si el vector está vacío.                      |
+| `clear()`            | Elimina todos los elementos del vector.              |
+| `insert(pos, valor)` | Inserta un elemento en la posición indicada.         |
+| `remove(pos)`        | Elimina el elemento situado en la posición indicada. |
+| `contains(&valor)`   | Indica si el vector contiene un determinado valor.   |
+
+El siguiente programa muestra el uso de todos estos métodos:
+
+``` rust
+{{< include c14/operaciones/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20protocolos%20%3D%20vec%21%5B%22HTTP%22%2C%20%22HTTPS%22%2C%20%22FTP%22%5D%3B%0A%0A%20%20%20%20protocolos.push%28%22SSH%22%29%3B%20%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20protocolos.insert%281%2C%20%22SMTP%22%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20protocolos.remove%282%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20println%21%28%22N%C3%BAmero%20de%20protocolos%3A%20%7B%7D%22%2C%20protocolos.len%28%29%29%3B%0A%20%20%20%20println%21%28%22%C2%BFContiene%20HTTPS%3F%20%7B%7D%22%2C%20protocolos.contains%28%26%22HTTPS%22%29%29%3B%0A%20%20%0A%20%20%20%20let%20ultimo%20%3D%20protocolos.pop%28%29%3B%0A%20%20%20%20println%21%28%22Extraemos%20%7B%3A%3F%7D%22%2C%20ultimo%29%3B%0A%20%20%20%20println%21%28%22Queda%20%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20protocolos.clear%28%29%3B%0A%20%20%20%20println%21%28%22%C2%BFVector%20vac%C3%ADo%3F%20%7B%7D%22%2C%20protocolos.is_empty%28%29%29%3B%0A%7D%20%0A)
+
+:::
+
+Obsérvese que `pop()` tiene dos efectos:
+
+- Devuelve el último elemento del vector. En este caso un `Option`
+  con el valor `Some("SSH")`.
+- Elimina este elemento del vector.
+
+
+En la práctica, lo habitual es procesar el valor devuelto mediante
+una sentencia `match`, distinguiendo los casos `Some` y `None`,
+como muestra el siguiente ejemplo:
+
+
+``` rust
+{{< include c14/pop/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20direcciones%20%3D%20vec%21%5B%22192.168.1.1%22%5D%3B%0A%0A%20%20%20%20println%21%28%22Direcciones%3A%20%7B%3A%3F%7D%22%2C%20direcciones%29%3B%0A%20%20%20%20match%20direcciones.pop%28%29%20%7B%0A%20%20%20%20%20%20%20%20Some%28d%29%20%3D%3E%20println%21%28%22Extraemos%3A%20%7B%7D%22%2C%20d%29%2C%0A%20%20%20%20%20%20%20%20None%20%3D%3E%20println%21%28%22No%20quedan%20direcciones%20que%20extraer%22%29%2C%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%22Direcciones%3A%20%7B%3A%3F%7D%22%2C%20direcciones%29%3B%0A%0A%20%20%20%20match%20direcciones.pop%28%29%20%7B%0A%20%20%20%20%20%20%20%20Some%28d%29%20%3D%3E%20println%21%28%22Extraemos%3A%20%7B%7D%22%2C%20d%29%2C%0A%20%20%20%20%20%20%20%20None%20%3D%3E%20println%21%28%22No%20quedan%20direcciones%20que%20extraer%22%29%2C%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%22Direcciones%3A%20%7B%3A%3F%7D%22%2C%20direcciones%29%3B%0A%7D%0A)
+
+:::
+
+La documentación oficial de Rust describe muchos otros métodos
+para ordenar, buscar, dividir o transformar vectores. Puede
+consultarse en:
+
+<https://doc.rust-lang.org/std/vec/struct.Vec.html>

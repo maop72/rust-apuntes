@@ -19,8 +19,9 @@ book:
     - 11-metodos.qmd
     - 12-enum.qmd
     - 13-patrones.qmd
-    - 14-colecciones.qmd
-    - 15-genericos.qmd
+    - 14-vectores.qmd
+    - 15-string.qmd
+    - 16-hashmap.qmd
 
 
 

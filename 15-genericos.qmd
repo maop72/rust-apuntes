@@ -1,7 +1,0 @@
-# Tipos genéricos de uso habitual
-
-# Option<T>
-
-# Result\<T,E\>
-
-# Tratamiento básico de errores
