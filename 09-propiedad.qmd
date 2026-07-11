@@ -26,7 +26,7 @@ previos:
   comprender por qué algunos tipos de datos son más sencillos de
   gestionar que otros y qué papel desempeña la memoria dinámica.
 
-## Introducción al tipo `String` {#sec-String}
+## Introducción al tipo `String` {#sec-intro-string}
 
 Hasta ahora hemos trabajado con cadenas literales, como `"Hola"`
 o `"Puerto"`. Su contenido está fijado en el código fuente y no
@@ -68,7 +68,7 @@ sistema de propiedad.
 El acceso a caracteres individuales requiere algunas
 consideraciones adicionales relacionadas con la representación de
 texto en Unicode. Por este motivo pospondremos su estudio hasta
-más adelante.
+el @sec-string .
 
 ## Stack y heap
 

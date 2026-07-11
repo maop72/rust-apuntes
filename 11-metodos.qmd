@@ -17,7 +17,7 @@ En este capítulo veremos cómo definir métodos, cómo invocarlos y
 cómo Rust utiliza su sistema de propiedad y préstamos para
 controlar el acceso a los datos de una instancia.
 
-## Definición de métodos
+## Definición de métodos {#sec-def-metodos}
 
 Los métodos se definen dentro de bloques `impl`
 (*implementation*), asociados a un tipo concreto. En este

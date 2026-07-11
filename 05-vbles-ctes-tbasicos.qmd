@@ -1,4 +1,4 @@
-# Variables y constantes
+# Tipos básicos, variables y constantes
 
 En este capítulo aprenderemos a declarar variables y constantes,
 a distinguir entre datos mutables e inmutables y a utilizar los
@@ -64,7 +64,7 @@ let poblacion = 8_000_000u64;
 let radio = 3.5f32;
 ```
 
-### El tipo `&str`
+### El tipo `&str` {#sec-str}
 
 En casi cualquier lenguaje existe un único tipo de datos para
 representar cadenas de caracteres. En Rust, sin embargo, existen

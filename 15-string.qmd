@@ -1,1 +1,379 @@
-# `String` {#sec-string}
+# El tipo `String` {#sec-string}
+
+En la @sec-str vimos que &str es una referencia a una cadena ya
+existente, normalmente una cadena literal o una cadena prestada
+temporalmente por otro objeto. Posteriormente, en la
+@sec-intro-string, presentamos el tipo String, cómo crear cadenas
+de este tipo y los métodos `push()` y `push_str()`, que permiten
+modificar su contenido durante la ejecución del programa.
+
+En este capítulo estudiaremos el tipo `String` con más detalle.
+Aprenderemos cómo crear y modificar cadenas, qué operaciones
+pueden realizarse sobre ellas y, al mismo tiempo, veremos algunos
+aspectos fundamentales del sistema de propiedad y de la gestión
+de memoria de Rust.
+
+Aunque `String` representa texto, el acceso a caracteres
+individuales requiere algunas consideraciones adicionales debido
+a la codificación Unicode. Por ello, ese tema se tratará en una
+sección posterior, una vez comprendido el funcionamiento básico
+del tipo.
+
+## Creación de cadenas
+
+Existen varias formas de crear un valor de tipo `String`. Las más
+habituales son:
+
+- `String::new()`, que crea una cadena vacía.
+
+- `String::from()`, que crea un `String` a partir de una cadena
+  literal o de otra referencia de tipo `&str`.
+
+- El método `to_string()`, que convierte un valor en un `String`.
+  Está disponible para muchos tipos, como números, caracteres o
+  valores booleanos; en general, para cualquier tipo que
+  implemente el rasgo (*trait*) `Display`. Estudiaremos los
+  *traits* más adelante.
+
+Los siguientes ejemplos muestran estos tres casos:
+
+``` rust
+{{< include c15/string01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20s1%20%3D%20String%3A%3Anew%28%29%3B%0A%20%20%20%20let%20s2%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20let%20s3%20%3D%20%22Adi%C3%B3s%22.to_string%28%29%3B%0A%20%20%20%20let%20n%20%3D%2042%3B%0A%20%20%20%20let%20s4%20%3D%20n.to_string%28%29%3B%0A%20%20%20%20let%20s5%20%3D%20true.to_string%28%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cs1%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cs2%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cs3%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cs4%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cs5%29%3B%0A%7D%0A%0A%0A)
+
+:::
+
+Las expresiones `String::from("Hola")` y `"Hola".to_string()`
+producen el mismo resultado: crean un `String` a partir de una
+cadena literal. Sin embargo, lo hacen de formas diferentes:
+
+- `String::from()` es una función asociada específica del tipo
+  `String`, cuyo propósito es construir un objeto de este tipo a
+  partir de un valor dado.
+
+- `to_string()` es un método mucho más general, disponible para
+  cualquier tipo que implemente el rasgo `Display`.
+
+Ambas formas son habituales y la elección entre una u otra es,
+principalmente, una cuestión de estilo.
+
+## Concatenación de cadenas
+
+El tipo `String` ofrece varias formas de combinar cadenas. Las
+más habituales son:
+
+- El operador `+`, que crea un nuevo `String` concatenando dos
+  cadenas.
+
+- El operador `+=`, que añade una cadena al final de un `String`
+  existente.
+
+- La macro `format!`, que construye un `String` a partir de una
+  plantilla, de forma similar a `println!`, pero devolviendo la
+  cadena en lugar de escribirla por la salida estándar.
+
+Comenzaremos estudiando el operador `+`, ya que nos permitirá
+introducir algunos aspectos importantes del sistema de propiedad
+de Rust.
+
+### El operador `+`
+
+Como en muchos otros lenguajes, el operador `+` permite
+concatenar cadenas. Pero en Rust existen dos tipos para
+representarlas: `String` y `&str`. ¿Sobre cuál de ellos está
+definido este operador? Probemos a concatenar dos `String`.
+
+``` rust
+{{< include c15/plus01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20s1%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20let%20s2%20%3D%20String%3A%3Afrom%28%22%2C%20mundo%22%29%3B%0A%0A%20%20%20%20let%20s3%20%3D%20s1%20%2B%20s2%3B%20%20//%20%C2%A1Error%21.%20El%20segundo%20operando%20no%20puede%20ser%20un%20String%0A%0A%20%20%20%20println%21%28%22s1%3A%7B%7D%22%2C%20s1%29%3B%0A%20%20%20%20println%21%28%22s2%3A%7B%7D%22%2C%20s2%29%3B%0A%20%20%20%20println%21%28%22s3%3A%7B%7D%22%2C%20s3%29%3B%0A%7D%0A)
+
+:::
+
+El compilador da un error y nos informa de que el segundo
+operando debería ser de tipo `&str`. Probemos entonces a
+concatenar dos `&str`.
+
+``` rust
+{{< include c15/plus02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20s1%20%3D%20%22Hola%22%3B%0A%20%20%20%20let%20s2%20%3D%20%22%2C%20mundo.%22%3B%0A%0A%20%20%20%20let%20s3%20%3D%20s1%20%2B%20s2%3B%20%20%20//%20%C2%A1Error%21.%20%2B%20no%20puede%20concatenar%20dos%20%26str%0A%0A%20%20%20%20println%21%28%22s1%3A%7B%7D%22%2C%20s1%29%3B%0A%20%20%20%20println%21%28%22s2%3A%7B%7D%22%2C%20s2%29%3B%0A%20%20%20%20println%21%28%22s3%3A%7B%7D%22%2C%20s3%29%3B%0A%7D%0A)
+
+:::
+
+También genera un error. ¿Cómo es posible? El mensaje del
+compilador indica que el operador `+` no está definido para dos
+valores de tipo `&str`. El motivo es que este operador,
+internamente, es un método cuya firma simplificada es:
+
+``` rust
+fn add(self, rhs: &str) -> String
+```
+
+Ahora podemos entender por qué fallan los ejemplos previos:
+
+- El primer operando ha de ser un `String`.
+- El segundo operando, un `&str`.
+
+En esta definición también debemos fijarnos en algo importante:
+
+- El primer operando es `self`, no `&self`. Como vimos en la
+  @sec-def-metodos , esto significa que el método consume el
+  primer operando. La operación de concatenación consume la
+  cadena `s1`. Internamente, Rust reutiliza el almacenamiento de
+  `s1` para construir el resultado, añadiendo el contenido de la
+  segunda cadena. De este modo evita copiar innecesariamente el
+  contenido del primer operando, lo que hace la operación más
+  eficiente. Si por alguna razón necesitáramos conservar `s1`,
+  podríamos clonarla.
+
+El siguiente ejemplo ya produce el resultado deseado.
+
+``` rust
+{{< include c15/plus03/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20s1%20%3D%20String%3A%3Afrom%28%22%C2%A1Hola%22%29%3B%0A%20%20%20%20let%20s2%20%3D%20String%3A%3Afrom%28%22%2C%20mundo%22%29%3B%0A%20%20%20%20let%20s3%20%3D%20s1%20%2B%20%26s2%3B%20%20%20%20//%20String%20y%20%26String.%20Correcto.%0A%0A%20%20%20%20//%20println%21%28%22s1%3A%7B%7D%22%2C%20s1%29%3B%20%20%20//%20s1%20se%20ha%20consumido.%20Ya%20no%20existe.%0A%20%20%20%20println%21%28%22s2%3A%7B%7D%22%2C%20s2%29%3B%0A%20%20%20%20println%21%28%22s3%3A%7B%7D%22%2C%20s3%29%3B%0A%0A%20%20%20%20let%20s3%20%3D%20s3%20%2B%20%22%21%22%3B%20%20%20%20%20//%20String%20y%20cadena%20literal%20%28%26str%29.%20Correcto.%0A%20%20%20%20println%21%28%22s3%3A%7B%7D%22%2C%20s3%29%3B%0A%7D%0A)
+
+:::
+
+En estas dos asignaciones, el operador `+` recibe un segundo
+operando de tipo `&str`:
+
+``` rust
+  let s3 = s1 + &s2
+  let s3 = s3 + "!";  
+```
+
+- En el primer caso, `&s2` es de tipo `&String`, que Rust
+  convierte automáticamente en `&str`.
+
+- En el segundo caso, `"!"` ya es una cadena literal y, por
+  tanto, tiene tipo `&str`.
+
+### El operador `+=`
+
+El operador `+=` añade una cadena al final de un `String`
+existente. A diferencia del operador `+`, no crea un nuevo
+`String`, sino que modifica el primero. Su funcionamiento es muy
+similar al del método `push_str()`, presentado en la
+@sec-intro-string. De hecho, ambas expresiones producen el mismo
+efecto: la cadena original se modifica añadiendo al final el
+contenido de un `&str`.
+
+``` rust
+{{< include c15/plus_equal01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20s%20%3D%20String%3A%3Afrom%28%22%C2%A1Hola%22%29%3B%0A%0A%20%20%20%20s.push_str%28%22%2C%20mundo%22%29%3B%20//%20A%C3%B1ade%20el%20%26str%20al%20string.%0A%20%20%20%20s%20%2B%3D%20%22%21%20%22%3B%20//%20De%20nuevo%2C%20a%C3%B1ade%20el%20%26str%20al%20string.%20%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%0A%7D%0A)
+
+:::
+
+Al igual que ocurría con el operador `+`, el segundo operando ha
+de ser de tipo `&str`, por tanto, si tenemos un `String` será
+necesario prestar una referencia anteponiendo `&`.
+
+``` rust
+{{< include c15/plus_equal02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20s1%20%3D%20String%3A%3Afrom%28%22%C2%A1Hola%22%29%3B%0A%20%20%20%20let%20s2%20%3D%20String%3A%3Afrom%28%22%2C%20mundo%21%22%29%3B%0A%0A%20%20%20%20s1%20%2B%3D%20%26s2%3B%0A%0A%20%20%20%20println%21%28%22s1%3A%7B%7D%22%2Cs1%29%3B%0A%20%20%20%20println%21%28%22s2%3A%7B%7D%22%2Cs2%29%3B%0A%7D%0A)
+
+:::
+
+A diferencia de `+`, el operador `+=` no consume el primer
+`String`, sino que lo recibe por referencia mutable y lo modifica
+directamente. Por ello, después de la operación tanto `s1` como
+`s2` siguen siendo válidos.
+
+### La macro `format!`
+
+Cuando queremos concatenar varias cadenas, el operador `+` puede
+hacer que el código resulte poco legible. En estos casos suele
+ser preferible utilizar la macro `format!`. Como todas las macros
+de Rust, su nombre acaba en `!`.
+
+Su funcionamiento es muy similar al de `println!`.
+
+- Al igual que `println!`, `format!` admite cadenas literales con
+  marcadores (`{}`) y una lista de valores que sustituyen a
+  dichos marcadores.
+
+- La diferencia es que, en lugar de escribir el resultado por la
+  salida estándar, `format!` devuelve un `String` con el texto
+  generado.
+
+``` rust
+{{< include c15/format01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20direccion%20%3D%20%22192.168.1.5%22%3B%0A%20%20%20%20let%20puerto%20%3D%2022%3B%0A%0A%20%20%20%20let%20s%20%3D%20format%21%28%22Endpoint%3A%20%7B%7D%3A%7B%7D%22%2C%20direccion%2C%20puerto%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cs%29%3B%0A%7D%0A)
+
+:::
+
+A diferencia del operador `+`, una ventaja importante de
+`format!` es que no consume ninguna de las cadenas utilizadas
+para construir el resultado. Por tanto, es una forma muy práctica
+de construir una nueva cadena a partir de varios valores.
+
+``` rust
+{{< include c15/format02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20s1%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20let%20s2%20%3D%20String%3A%3Afrom%28%22mundo%22%29%3B%0A%0A%20%20%20%20let%20saludo%20%3D%20format%21%28%22%21%7B%7D%2C%20%7B%7D%21%22%2C%20s1%2C%20s2%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cs1%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cs2%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Csaludo%29%3B%0A%7D%0A)
+
+:::
+
+## Recorrido de una cadena
+
+### Codificaciones
+
+Durante muchos años, aproximadamente hasta la década de 1990, era
+habitual asumir que un carácter ocupaba exactamente un byte. Esta
+suposición era válida para codificaciones como ASCII, que
+permitían representar letras, números, signos de puntuación y
+otros caracteres habituales mediante un único byte.
+
+Sin embargo, esa aproximación dejó de ser suficiente cuando fue
+necesario representar simultáneamente caracteres procedentes de
+distintos alfabetos y sistemas de escritura.
+
+Hoy es habitual que un mismo documento contenga, por ejemplo,
+texto en español, griego, árabe, chino y japonés, además de
+símbolos matemáticos o emojis. Esto era imposible con ASCII y con
+las numerosas codificaciones derivadas de él, como ISO-8859-1
+(Latin-1), para los idiomas de Europa occidental; ISO-8859-5,
+para el alfabeto cirílico; ISO-8859-7, para el griego;
+ISO-8859-6, para el árabe; o Windows-1252, muy utilizada en
+Microsoft Windows. Cada una de ellas solo podía representar un
+conjunto limitado de caracteres.
+
+Para resolver este problema se desarrolló Unicode. Puede
+entenderse como una gran tabla que asigna un número a
+prácticamente cualquier carácter utilizado en los lenguajes
+humanos, naturales o artificiales.
+
+Una vez asignados esos números, todavía es necesario decidir cómo
+almacenarlos en memoria mediante bytes. Existen varias formas de
+hacerlo, denominadas codificaciones Unicode. La más utilizada en
+la actualidad es UTF-8, que es la empleada por Rust para
+almacenar las cadenas. En UTF-8, un mismo carácter puede ocupar
+uno, dos, tres o cuatro bytes. Por este motivo conviene
+distinguir entre recorrer una cadena por caracteres y recorrerla
+por bytes.
+
+### `chars()` y `bytes()`
+
+Los métodos `chars()` y `bytes()` permiten recorrer una cadena de
+dos formas distintas:
+
+- El método `chars()` devuelve un iterador cuyos elementos son de
+  tipo `char`. Recorre la cadena carácter a carácter.
+
+- El método `bytes()` devuelve un iterador cuyos elementos son de
+  tipo `u8`. Recorre la representación UTF-8 de la cadena byte a
+  byte.
+
+En la mayoría de los programas utilizaremos `chars()`, ya que
+normalmente nuestro objetivo es procesar texto y no su
+representación en memoria.
+
+``` rust
+{{< include c15/char_bytes/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20s%20%3D%20String%3A%3Afrom%28%22%C2%A1Hola%21%22%29%3B%0A%0A%20%20%20%20println%21%28%22Recorrido%20por%20caracteres%3A%22%29%3B%0A%20%20%20%20for%20c%20in%20s.chars%28%29%20%7B%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%2C%20%22%2C%20c%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%0A%20%20%20%20println%21%28%22Recorrido%20por%20bytes%3A%22%29%3B%0A%20%20%20%20for%20b%20in%20s.bytes%28%29%20%7B%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%2C%20%22%2C%20b%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%7D%0A)
+
+:::
+
+Obsérvese que el recorrido por caracteres produce seis valores,
+mientras que el recorrido por bytes produce siete. El motivo es
+que el carácter `¡` ocupa dos bytes en la codificación UTF-8.
+
+### Acceso por índice
+
+En muchos lenguajes es posible acceder a los caracteres de una
+cadena mediante un índice. Por ejemplo `cadena[i]`. Si intentamos
+hacer algo similar en Rust el compilador genera un error
+indicando que un valor de tipo `String` no puede indexarse
+mediante el operador `[]`.
+
+``` rust
+{{< include c15/recorrido_mal/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20s%20%3D%20String%3A%3Afrom%28%22%C2%A1Hola%21%22%29%3B%0A%0A%20%20%20%20for%20i%20in%200..s.len%28%29%20%7B%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%22%2C%20s%5Bi%5D%29%3B%20%20//%20%C2%A1Error%21%20En%20Rust%20no%20se%20puede%20usar%20%5Bi%5D%20con%20cadenas%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%7D%0A)
+
+:::
+
+¿Por qué? La explicación está relacionada con lo que acabamos de
+ver. En Rust, un `String` se almacena utilizando la codificación
+UTF-8, en la que un carácter puede ocupar entre uno y cuatro
+bytes. Por tanto, el byte situado en una posición determinada no
+tiene por qué corresponder al comienzo de un carácter. En
+consecuencia, un índice entero no basta para identificar un
+carácter de la cadena.
+
+## Longitud de una cadena
+
+¿Qué entendemos por longitud de una cadena? ¿Su número de bytes o
+su número de caracteres? Según la respuesta que necesitemos,
+usaremos el método correspondiente:
+
+- El método `len()` devuelve la longitud de una cadena en bytes.
+
+- El método `chars()` devuelve un iterador que recorre los
+  caracteres de la cadena uno a uno. El método `count()` cuenta
+  cuántos caracteres produce ese iterador. La expresión
+  `chars().count()` devuelve, por tanto, la longitud en
+  caracteres.
+
+En muchos casos ambos valores coinciden, ya que los caracteres
+ASCII ocupan un único byte. Sin embargo, cuando la cadena
+contiene caracteres que requieren varios bytes en UTF-8, la
+longitud en bytes es mayor que el número de caracteres. El
+siguiente ejemplo ilustra esta diferencia:
+
+``` rust
+{{< include c15/len/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20s1%20%3D%20String%3A%3Afrom%28%22Hello%21%22%29%3B%0A%20%20%20%20println%21%28%22Cadena%3A%20%7B%7D%22%2C%20s1%29%3B%0A%20%20%20%20println%21%28%22Longitud%20%28bytes%29%3A%20%7B%7D%22%2C%20s1.len%28%29%29%3B%0A%20%20%20%20println%21%28%22N%C3%BAmero%20de%20caracteres%3A%20%7B%7D%5Cn%22%2C%20s1.chars%28%29.count%28%29%29%3B%0A%0A%20%20%20%20let%20s2%20%3D%20String%3A%3Afrom%28%22%C2%A1Hola%21%22%29%3B%0A%20%20%20%20println%21%28%22Cadena%3A%20%7B%7D%22%2C%20s2%29%3B%0A%20%20%20%20println%21%28%22Longitud%20%28bytes%29%3A%20%7B%7D%22%2C%20s2.len%28%29%29%3B%0A%20%20%20%20println%21%28%22N%C3%BAmero%20de%20caracteres%3A%20%7B%7D%22%2C%20s2.chars%28%29.count%28%29%29%3B%0A%7D%0A)
+
+:::
+
+- En una cadena que solo contenga caracteres ASCII (letras
+  inglesas, dígitos y los símbolos de puntuación y operadores más
+  habituales), la codificación UTF-8 coincide con ASCII y cada
+  carácter ocupa exactamente un byte. Habrá tantos caracteres
+  como bytes.
+
+- Pero la mayoría de caracteres no ingleses ocupan más de un
+  byte. En este ejemplo hay un carácter español,`¡`, que ocupa
+  dos bytes. Por tanto, son 6 caracteres pero 7 bytes.
