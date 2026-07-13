@@ -1,0 +1,175 @@
+# Entrada/Salida {#sec-es}
+
+## Entrada y salida por consola
+
+En los capítulos anteriores hemos utilizado repetidamente las
+macros `print!` y `println!` para escribir información en la
+consola. En esta sección veremos cómo leer datos introducidos por
+el usuario mediante el teclado.
+
+``` rust
+{{< include c18/consola/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Aio%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20nombre%20%3D%20String%3A%3Anew%28%29%3B%0A%0A%20%20%20%20println%21%28%22%C2%BFC%C3%B3mo%20te%20llamas%3F%22%29%3B%0A%0A%20%20%20%20io%3A%3Astdin%28%29%0A%20%20%20%20%20%20%20%20.read_line%28%26mut%20nombre%29%0A%20%20%20%20%20%20%20%20.expect%28%22Error%20al%20leer%20la%20entrada%22%29%3B%0A%0A%20%20%20%20println%21%28%22Hola%2C%20%7B%7D.%22%2C%20nombre.trim%28%29%29%3B%0A%7D%0A)
+
+:::
+
+- Las funciones relacionadas con la entrada y salida por consola
+  se encuentran en el módulo `std::io`. Por ello, el primer paso
+  consiste en importar dicho módulo mediante la sentencia `use`.
+
+- La función `io::stdin()` devuelve un objeto que representa la
+  entrada estándar del programa. El método `read_line()` lee una
+  línea completa de texto y la añade a un objeto de tipo
+  `String`.
+
+- La variable `nombre` debe declararse como mutable porque
+  `read_line()` modifica su contenido. El método recibe una
+  referencia mutable (`&mut String`) en la que almacena los
+  caracteres leídos.
+
+- El método `expect()` se aplica sobre el valor devuelto por
+  `read_line()`, que es de tipo `Result`. Si la lectura se
+  realiza correctamente, el programa continúa su ejecución. En
+  caso contrario, finaliza mostrando el mensaje indicado. Tal y
+  como vimos en @sec-expect.
+
+  En un programa interactivo es poco frecuente que `read_line()`
+  produzca un error. Sin embargo, Rust obliga a tratar esta
+  posibilidad porque la entrada estándar no siempre corresponde
+  al teclado.
+
+  Un programa puede recibir los datos desde un fichero, desde
+  otro programa o incluso ejecutarse en un entorno sin un
+  terminal interactivo, como un servicio o un contenedor. En
+  estas situaciones, la entrada estándar puede no estar
+  disponible o producirse algún error durante la lectura. Por
+  ello, el método `read_line()` devuelve un valor de tipo
+  `Result` y Rust exige que el programa trate explícitamente la
+  posibilidad de error.
+
+- Al pulsar la tecla Intro, el salto de línea también pasa a
+  formar parte de la cadena. En muchas ocasiones interesa
+  eliminarlo antes de utilizar el texto. El método `trim()`
+  devuelve una vista de la cadena sin los espacios en blanco
+  situados al principio y al final, incluido el salto de línea
+  final.
+
+## Escritura de ficheros
+
+La forma más sencilla de escribir un fichero consiste en utilizar
+la función `std::fs::write()`. Esta función crea el fichero si no
+existe y sobrescribe su contenido si ya existe.
+
+En los ejemplos de este capítulo utilizaremos el directorio
+`/tmp`, presente en los sistemas Linux. Se trata de un directorio
+destinado a almacenar ficheros temporales, por lo que resulta
+adecuado para realizar pruebas. Su contenido puede eliminarse
+automáticamente al reiniciar el sistema o mediante tareas
+periódicas de limpieza.
+
+
+
+``` rust
+{{< include c18/escritura/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Afs%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20texto%20%3D%20%22Rust%20es%20un%20lenguaje%20moderno.%22%3B%0A%0A%20%20%20%20fs%3A%3Awrite%28%22/tmp/mensaje.txt%22%2C%20texto%29.expect%28%22Error%20al%20escribir%20el%20fichero%22%29%3B%0A%0A%20%20%20%20println%21%28%22Fichero%20escrito%20correctamente.%22%29%3B%0A%7D%0A)
+
+:::
+
+
+
+La función `write()` recibe dos argumentos: el nombre del fichero
+y los datos que se desean escribir. El valor devuelto es de tipo
+`Result`, por lo que es necesario tratar la posible aparición de
+un error. Por ejemplo, la operación puede fallar si el usuario no
+tiene permisos de escritura sobre el directorio o si el disco
+está lleno.
+
+Si el nombre del fichero no incluyera una ruta, por ejemplo
+`"mensaje.txt"`, el fichero se crearía en el directorio de
+trabajo actual del programa. Cuando un proyecto se ejecuta
+mediante `cargo run`, dicho directorio suele ser el directorio
+raíz del proyecto, es decir, donde se encuentra el fichero
+`Cargo.toml`. Por tanto, el fichero aparecería junto a este.
+
+En el caso de Rust Playground, el programa se ejecuta en un
+entorno temporal gestionado por el servidor. Aunque el programa
+puede crear ficheros durante su ejecución, estos no permanecen
+almacenados una vez finaliza.
+
+## Lectura de ficheros
+
+Para leer el contenido completo de un fichero puede utilizarse la
+función `std::fs::read_to_string()`.
+
+
+
+``` rust
+{{< include c18/lectura01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Afs%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20contenido%20%3D%20fs%3A%3Aread_to_string%28%22/tmp/mensaje.txt%22%29%0A%20%20%20%20%20%20%20%20.expect%28%22Error%20al%20leer%20el%20fichero%22%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20contenido%29%3B%0A%7D%0A%0A)
+
+:::
+
+
+La función `read_to_string()` recibe el nombre del fichero y
+devuelve su contenido en un objeto de tipo `String`. Al igual que
+ocurre con `write()`, el valor devuelto es de tipo `Result`, ya
+que la lectura puede fallar por distintos motivos, como la
+inexistencia del fichero o la falta de permisos para acceder a
+él.
+
+Si ejecutamos este programa en el *Rust Playground*, la lectura
+fallará porque el fichero escrito en una ejecución anterior no se
+conserva. Cada ejecución tiene lugar en un entorno temporal e
+independiente.
+
+
+## Propagación de errores en E/S.
+
+En los ejemplos anteriores hemos utilizado el método `expect()` para
+finalizar el programa cuando se produce un error. Como vimos en
+@sec-question-mark, otra posibilidad consiste en propagar el error al
+código que llamó a la función mediante el operador `?`.
+
+
+``` rust
+{{< include c18/lectura02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0A%0Afn%20main%28%29%20-%3E%20io%3A%3AResult%3C%28%29%3E%20%7B%0A%20%20%20%20let%20contenido%20%3D%20fs%3A%3Aread_to_string%28%22/tmp/mensaje.txt%22%29%3F%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20contenido%29%3B%0A%20%20%20%20Ok%28%28%29%29%0A%7D%0A%0A)
+
+:::
+
+El operador `?` se aplica sobre un valor de tipo `Result`. Si la
+operación tiene éxito, extrae el valor contenido en `Ok` y la
+ejecución continúa normalmente. Si se produce un error, la función
+finaliza inmediatamente devolviendo dicho error.
+
+
+Es importante recordar que una función solo puede utilizar el
+operador `?` si devuelve un tipo de error compatible con el de la
+operación que está realizando. En este ejemplo,
+`read_to_string()` devuelve un `io::Result<String>`, por lo que
+`main()` debe devolver también un `io::Result<()>` (o un tipo compatible).
+
+En otro caso, 
+el compilador produciría un
+error. Este es uno de los problemas más habituales cuando se comienza
+a utilizar el operador `?`. 
+
+
+
+

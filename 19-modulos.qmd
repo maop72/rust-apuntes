@@ -1,0 +1,7 @@
+# Módulos
+
+## Definición de módulos
+## Visibilidad: `pub`
+## Rutas absolutas y relativas
+## `use`
+## Organización en varios archivos

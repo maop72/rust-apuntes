@@ -1,4 +1,4 @@
-# `match`: coincidencia de patrones
+# Coincidencia de patrones   {#sec-patrones}
 
 En muchos programas es necesario ejecutar acciones diferentes
 según el valor de una variable. En otros lenguajes esto suele

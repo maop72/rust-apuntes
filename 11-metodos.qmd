@@ -235,6 +235,37 @@ Aunque suelen utilizarse para construir srtucts, los métodos
 asociados pueden realizar cualquier otra operación relacionada
 con el tipo que no requiera acceder a a una instancia concreta.
 
+
+## Cadenas de llamadas a métodos   {#sec-metodos-encadenados}
+
+Es frecuente que una expresión esté formada por una cadena de
+llamadas a métodos. Cuando dicha cadena es larga, resulta más
+legible escribir cada llamada en una línea distinta.
+
+Rust permite hacerlo sin necesidad de utilizar un carácter de
+continuación de línea, ya que el compilador reconoce que la
+expresión continúa mientras su sintaxis no haya finalizado.
+
+Por ejemplo:
+
+
+``` rust
+{{< include c11/encadenados/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20saludo%20%3D%20String%3A%3Afrom%28%22Hola%22%29%0A%20%20%20%20%20%20%20%20.to_uppercase%28%29%0A%20%20%20%20%20%20%20%20.replace%28%22HOLA%22%2C%20%22Buenos%20d%C3%ADas%22%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20saludo%29%3B%0A%7D%0A)
+
+:::
+
+
+Obsérvese que cada línea comienza con un punto (`.`), indicando
+que la llamada al método forma parte de la misma expresión. Este
+es un estilo muy habitual en el código Rust y mejora notablemente
+la legibilidad cuando se encadenan varias operaciones.
+
+
 ## Ejemplo completo
 
 El siguiente programa reúne la mayoría de los conceptos

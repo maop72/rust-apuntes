@@ -22,7 +22,11 @@ book:
     - 14-vectores.qmd
     - 15-string.qmd
     - 16-hashmap.qmd
-
+    - 17-manejo_errores.qmd
+    - 18-entrada_salida.qmd
+    - 19-modulos.qmd
+    - 20-lifetimes.qmd
+    - 21-test_automaticos.qmd
 
 
 lang: es-ES
@@ -45,11 +49,11 @@ format:
     classoption:
       - twoside
 
-    fontsize: 12pt
+    fontsize: 13pt
 
     geometry:
-      - top=2cm
-      - bottom=2cm
+      - top=3.0cm
+      - bottom=2.5cm
       - left=2.2cm
       - right=2.2cm
 

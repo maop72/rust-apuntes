@@ -81,9 +81,9 @@ También existe `str`, que representa una cadena de caracteres,
 pero no puede utilizarse como valor independiente y es raro
 usarlo de forma directa.
 
-En la @sec-String veremos `String` (con mayúscula), que
-es diferente de `str` (con minúscula). Un `String` es un objeto
-que contiene y gestiona una cadena de caracteres.
+En la @sec-string veremos el tipo `String` (con mayúscula), que
+es diferente del tipo `str` (con minúscula). Un `String` es un
+objeto que contiene y gestiona una cadena de caracteres.
 
 En resumen, usaremos
 

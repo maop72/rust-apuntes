@@ -1,0 +1,394 @@
+# Manejo de errores {#sec-errores}
+
+En el @sec-enum vimos los tipos eumerados, estudiaremos ahora uno
+de los más importantes de la biblioteca estándar: `Result<T, E>`.
+
+Durante la ejecución de un programa pueden producirse situaciones
+que impidan continuar una operación con normalidad. En muchos
+lenguajes de programación estas situaciones se gestionan mediante
+excepciones. Rust adopta un enfoque diferente, distingue entre
+errores recuperables y errores no recuperables.
+
+- Los errores recuperables son aquellos que pueden tratarse de
+  forma razonable. Suelen ser situaciones relativamente
+  habituales, que cabe esperar en cualquier ejecución cotidiana
+  del programa. Por ejemplo:
+
+  - El usuario puede equivocarse al introducir datos. Cualquier
+    programa debería contemplar esta posibilidad. Normalmente
+    estas situaciones se resuelven informando del problema y
+    solicitando nuevos datos. Por ejemplo, introducir una letra
+    cuando se espera un número, escribir una fecha con un formato
+    incorrecto o indicar un fichero que no existe.
+
+  - Las operaciones de entrada/salida pueden fallar. Un fichero
+    puede no existir, no tener permisos de lectura o encontrarse
+    bloqueado por otro programa.
+
+  - Las comunicaciones por red también pueden fallar. Un servidor
+    puede no estar disponible, una conexión puede interrumpirse o
+    una petición puede exceder el tiempo de espera establecido.
+    Habitualmente el programa puede informar del problema y
+    volver a intentarlo más adelante.
+
+- Un error no recuperable es mucho más severo. Indica que el
+  programa ha alcanzado un estado del que no puede continuar de
+  forma segura. En principio, estas situaciones no deberían
+  producirse durante una ejecución normal y suelen indicar un
+  error de programación o un estado interno inconsistente. Por
+  ejemplo, una condición que el programador consideraba
+  imposible, una violación de una precondición imprescindible
+  para continuar o un fallo que compromete la integridad de los
+  datos. En estos casos Rust utiliza la macro `panic!`, que
+  finaliza inmediatamente la ejecución mostrando un mensaje de
+  error.
+
+Este enfoque obliga al programador a considerar explícitamente la
+posibilidad de que una operación falle. Como consecuencia, el
+código resulta más robusto y es menos probable que un error pase
+inadvertido.
+
+## Errores recuperables: `Result<T, E>`
+
+Las operaciones que pueden fallar de forma recuperable devuelven
+un valor de tipo `Result<T, E>`, que representa explícitamente
+que la operación puede tener éxito o fracasar. De forma
+simplificada, la definición de `Result` es la siguiente:
+
+``` rust
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+```
+
+El significado de sus dos parámetros genéricos es:
+
+- `T` representa el tipo del valor devuelto cuando la operación
+  tiene éxito.
+- `E` representa el tipo que describe el error cuando la
+  operación falla.
+
+Por tanto, un valor de tipo `Result<T, E>` siempre estará en uno
+de estos dos estados:
+
+- `Ok(valor)`, si la operación se ha realizado correctamente.
+- `Err(error)`, si la operación ha fallado.
+
+En los siguientes apartados veremos distintas formas de procesar
+un valor de tipo `Result<T, E>` y actuar de forma diferente según
+la operación haya tenido éxito o haya producido un error.
+
+Por ejemplo, la función `parse()` convierte una cadena de
+caracteres en un número entero. Como la conversión puede fallar,
+devuelve un `Result`.
+
+``` rust
+{{< include c17/error01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20numero%20%3D%20%22125%22.parse%3A%3A%3Ci32%3E%28%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20numero%29%3B%20%20%20//%20ok%0A%0A%20%20%20%20numero%20%3D%20%22abc%22.parse%3A%3A%3Ci32%3E%28%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20numero%29%3B%20%20//%20Error%20%28recuperable%29.%20%0A%7D%0A%0A)
+
+:::
+
+Obsérvese que la función no devuelve directamente un entero, sino
+un `Result<i32, ParseIntError>`. En este caso el resultado es:
+
+- `Ok(125)`, si la conversión se realiza correctamente.
+
+- `Err(ParseIntError { kind: InvalidDigit })`, si la cadena no
+  representa un número entero válido.
+
+De esta forma, el compilador obliga al programador a considerar
+explícitamente ambos casos: el éxito de la operación (`Ok`) y el
+posible error (`Err`).
+
+Es importante observar que un `Err` no representa un fallo del
+programa ni una excepción. Simplemente indica que una determinada
+operación no pudo realizarse. El programa continúa ejecutándose
+con normalidad y es el propio código quien decide cómo actuar
+ante esa situación.
+
+## `match` con `Result`
+
+En el @sec-patrones vimos que la instrucción `match` permite
+distinguir entre las distintas variantes de un tipo enumerado.
+Como `Result<T, E>` es también un tipo enumerado, se procesa
+exactamente del mismo modo.
+
+El siguiente ejemplo intenta convertir una cadena en un número
+entero. Si la conversión tiene éxito, muestra el valor obtenido.
+En caso contrario, informa del error.
+
+``` rust
+{{< include c17/match_result01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Anum%3A%3AParseIntError%3B%0A%0Afn%20obtiene_numero%28cadena%3A%20%26str%29%20-%3E%20Result%3Ci32%2C%20ParseIntError%3E%20%7B%0A%20%20%20%20let%20numero%20%3D%20match%20cadena.parse%3A%3A%3Ci32%3E%28%29%20%7B%0A%20%20%20%20%20%20%20%20Ok%28valor%29%20%3D%3E%20valor%2C%0A%20%20%20%20%20%20%20%20Err%28error%29%20%3D%3E%20return%20Err%28error%29%2C%0A%20%20%20%20%7D%3B%0A%20%20%20%20Ok%28numero%29%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20obtiene_numero%28%22125%22%29%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20obtiene_numero%28%22hola%22%29%29%3B%0A%7D%0A)
+
+:::
+
+Al ejecutar el programa, la primera llamada a `extrae_numero()`
+produce un `Ok`, por lo que se ejecuta la primera rama del
+`match`. La segunda llamada produce un `Err`, ejecutándose la
+segunda rama.
+
+Obsérvese que, al igual que ocurría con `Option<T>`, los patrones
+`Ok(numero)` y `Err(error)` no solo permiten distinguir la
+variante del enumerado, sino también extraer el valor asociado a
+cada una de ellas.
+
+## El operador `?` {#sec-question-mark}
+
+Al escribir una función, es frecuente llamar a otra función que
+devuelve un `Result`. En muchas ocasiones interesa hacer lo
+siguiente:
+
+- Si la operación tiene éxito, continuar la ejecución utilizando
+  el valor obtenido.
+- Si la operación produce un error, devolver ese mismo error al
+  llamador.
+
+Veamos un ejemplo con esta estructura, utilizando `match`. La
+función `obtiene_numero()` intentará convertir una cadena en un
+valor de tipo `i32` mediante el método `parse()`. Si la
+conversión tiene éxito, escribirá el número obtenido en pantalla.
+En caso contrario, devolverá al llamador el mismo error que
+proporciona `parse()`, de tipo `ParseIntError`.
+
+Para ello debemos importar este tipo de error:
+
+``` rust
+use std::num::ParseIntError;
+```
+
+Además, como la función puede tener éxito o producir un error, su
+valor de retorno será:
+
+``` rust
+Result<i32, ParseIntError>
+```
+
+Con `match`, podríamos escribirlo así:
+
+``` rust
+{{< include c17/match_result01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Anum%3A%3AParseIntError%3B%0A%0Afn%20obtiene_numero%28cadena%3A%20%26str%29%20-%3E%20Result%3Ci32%2C%20ParseIntError%3E%20%7B%0A%20%20%20%20let%20numero%20%3D%20match%20cadena.parse%3A%3A%3Ci32%3E%28%29%20%7B%0A%20%20%20%20%20%20%20%20Ok%28valor%29%20%3D%3E%20valor%2C%0A%20%20%20%20%20%20%20%20Err%28error%29%20%3D%3E%20return%20Err%28error%29%2C%0A%20%20%20%20%7D%3B%0A%20%20%20%20Ok%28numero%29%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20obtiene_numero%28%22125%22%29%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20obtiene_numero%28%22hola%22%29%29%3B%0A%7D%0A)
+
+:::
+
+Obsérvese especialmente la siguiente rama del `match`:
+
+``` rust
+Err(error) => return Err(error),
+```
+
+Si `parse()` falla, la función no continúa ejecutándose. En su
+lugar, finaliza inmediatamente y devuelve ese mismo error al
+llamador.
+
+Este patrón aparece con tanta frecuencia que Rust proporciona el
+operador `?`, es *azúcar sintáctico* que ofrece el mismo
+comportamiento, pero permite expresarlo de forma mucho más
+concisa. El ejemplo anterior queda así.
+
+``` rust
+{{< include c17/match_result02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Anum%3A%3AParseIntError%3B%0A%0Afn%20obtiene_numero%28cadena%3A%20%26str%29%20-%3E%20Result%3Ci32%2C%20ParseIntError%3E%20%7B%0A%20%20%20%20let%20numero%20%3D%20cadena.parse%3A%3A%3Ci32%3E%28%29%3F%3B%0A%20%20%20%20Ok%28numero%29%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20obtiene_numero%28%22125%22%29%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20obtiene_numero%28%22hola%22%29%29%3B%0A%7D%0A)
+
+:::
+
+El comportamiento del operador `?` es el siguiente:
+
+- Si el resultado es `Ok(valor)`, extrae el valor contenido y la
+  ejecución continúa normalmente.
+
+- Si el resultado es `Err(error)`, la función finaliza
+  inmediatamente devolviendo dicho error al llamador.
+
+Por tanto, el operador `?` solo puede utilizarse en funciones que
+devuelven un `Result` (o tipos compatibles). Por tanto, un
+intento de usar `?` en funciones que devuelvan algún tipo
+diferente, provocará un error de compilación.
+
+Esta es la forma idiomática de propagar errores en Rust y aparece
+con gran frecuencia en el código escrito por la biblioteca
+estándar y por la mayoría de los proyectos.
+
+Para quien se acerca a Rust, este operador puede resultar
+sorprendente. En unas ocasiones produce un valor y en otras
+finaliza inmediatamente la función devolviendo un error. Cabría
+esperar un comportamiento más homogéneo: o que siempre produzca
+un valor o que siempre finalice devolviendo algo.
+
+La aparente asimetría viene de que `?` no es un operador *de
+expresiones*, su propósito no es *producir un valor*. Realmente
+es un mecanismo de propagación de errores.
+
+- Si todo va bien, produce el valor contenido en `Ok`.
+- Si algo va mal, abandona la función actual devolviendo el
+  contenido de `Err`.
+
+Rust no tiene excepciones, pero semánticamente este operador se
+parece al `throw` de otros lenguajes, no a un operador
+convencional.
+
+Aunque aún no hemos estudiado el manejo de ficheros, el siguiente
+ejemplo resulta suficientemente intuitivo y permite apreciar la
+utilidad del operador `?`. Sin él, escribiríamos como este:
+
+``` rust
+let f = match File::open("datos.txt") {
+    Ok(f) => f,
+    Err(e) => return Err(e),
+};
+
+let s = match f.read_to_string() {
+    Ok(s) => s,
+    Err(e) => return Err(e),
+};
+```
+
+La alternativa, con `?`, es así:
+
+``` rust
+let f = File::open("datos.txt")?;
+let s = f.read_to_string()?;
+```
+
+La reducción de ruido es enorme. La filosofía de Rust es muy
+clara: el código correspondiente a la ejecución normal (el
+llamado *happy path*) debe verse limpio, mientras que la
+propagación de errores debe ser automática, pero seguir siendo
+visible. Precisamente eso es lo que consigue el operador `?`.
+
+Si bien, una misma función puede llamar a varias operaciones que
+devuelven tipos de error diferentes. En ese caso, no siempre es
+posible aplicar el operador `?` a todas ellas directamente, ya
+que la función debe devolver un tipo de error compatible con cada
+una de esas operaciones. Una solución habitual consiste en
+convertir todos los errores a un mismo tipo, aunque esta técnica
+queda fuera del alcance de este curso.
+
+## `panic!` y errores no recuperables
+
+Como vimos en la introducción del capítulo, un error no
+recuperable indica que el programa ha alcanzado un estado del que
+no puede continuar de forma segura. En estos casos Rust utiliza
+la macro `panic!`, que finaliza inmediatamente la ejecución del
+programa mostrando un mensaje de error.
+
+La forma más sencilla de provocar un `panic!` consiste en llamar
+directamente a esta macro:
+
+``` rust
+{{< include c17/panic01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20panic%21%28%22Se%20ha%20producido%20un%20error%20irrecuperable.%22%29%3B%0A%7D%0A)
+
+:::
+
+Además del mensaje indicado por el programador, Rust informa del
+archivo y de la línea en la que se produjo el error. Esta
+información resulta muy útil para localizar el origen del
+problema.
+
+En la práctica, la mayoría de los `panic!` no son escritos
+directamente por el programador, sino que son generados por la
+biblioteca estándar cuando detecta una situación de la que no es
+posible recuperarse.
+
+Un ejemplo es intentar acceder a una posición inexistente de un
+vector mediante el operador `[]`. Este programa finaliza con un
+`panic!`, ya que el vector tiene elementos desde la posición `0`
+hasta la `2`, pero no en la posición `3`.
+
+``` rust
+{{< include c17/panic02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20numeros%20%3D%20vec%21%5B10%2C%2020%2C%2030%5D%3B%20%0A%20%20%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20numeros%5B3%5D%29%3B%20%20//%20%C2%A1Error%21%20%C3%8Dndice%20fuera%20de%20rango.%0A%7D%0A)
+
+:::
+
+En general, un `panic!` suele indicar un error de programación o
+una situación que el programa considera imposible durante una
+ejecución correcta. Cuando una operación puede fallar de forma
+habitual, Rust prefiere utilizar `Result<T, E>`, permitiendo que
+sea el propio programa quien decida cómo actuar.
+
+## `unwrap()` y `expect()` sobre `Result` {#sec-expect}
+
+En la sección @sec-unwrap vimos que el método `unwrap()` permitía
+extraer el valor contenido en un `Option<T>`, provocando un
+`panic!` cuando el valor era `None`.
+
+El tipo `Result<T, E>` dispone del mismo método:
+
+- Si el resultado es `Ok(valor)`, `unwrap()` devuelve el valor
+  contenido.
+- Si el resultado es `Err(error)`, provoca un `panic!`.
+
+Por ejemplo:
+
+``` rust
+{{< include c17/unwrap/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20numero%20%3D%20%22125%22.parse%3A%3A%3Ci32%3E%28%29.unwrap%28%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20numero%29%3B%0A%0A%20%20%20%20numero%20%3D%20%22hola%22.parse%3A%3A%3Ci32%3E%28%29.unwrap%28%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20numero%29%3B%0A%7D%0A%0A)
+
+:::
+
+Este programa escribe el valor `125`. Sin embargo, cuando la
+cadena no representa un número entero válido, el programa
+finaliza con un `panic!`.
+
+El método `expect()` se comporta de forma similar a `unwrap()`.
+Pero, en caso de fallo, además del mensaje habitual del `panic!`,
+muestra un mensaje personalizado indicado por el programador. Un
+buen programa no solo detecta los errores, sino que también
+proporciona mensajes claros y útiles que ayuden a comprender su
+causa y faciliten su depuración.
+
+``` rust
+{{< include c17/expect/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20numero%20%3D%20%22hola%22%0A%20%20%20%20%20%20%20%20.parse%3A%3A%3Ci32%3E%28%29%0A%20%20%20%20%20%20%20%20.expect%28%22La%20cadena%20deber%C3%ADa%20contener%20un%20n%C3%BAmero%20entero%22%29%3B%0A%0A%20%20%20%20println%21%28%22%7Bnumero%7D%22%29%3B%0A%7D%0A)
+
+:::
+
+Obsérvese que este ejemplo aprovecha la característica de la
+sintaxis de Rust que permite escribir una cadena de métodos en
+líneas distintas, tal y como describimos en
+@sec-metodos-encadenados.
+
+En general, cuando una operación puede fallar durante una
+ejecución normal del programa es preferible tratar el error
+mediante `Result<T, E>`. Los métodos `unwrap()` y `expect()`
+deberían reservarse para situaciones en las que el programador
+considera que el error no debería producirse. Si esa suposición
+resulta ser incorrecta, `expect()` suele ser preferible, ya que
+el mensaje proporcionado por el programador facilita comprender
+qué suposición ha fallado y localizar el origen del problema.

@@ -1,1 +1,249 @@
 # `HashMap` {#sec-hashmap}
+
+Un `HashMap<K, V>` es una colección que almacena pares formados
+por una clave y un valor. `K` representa el tipo de las claves y
+`V` el tipo de los valores. A diferencia de un vector, cuyos
+elementos se identifican por su posición, en un `HashMap` cada
+valor se asocia a una clave única, que se utiliza para
+insertarlo, buscarlo o modificarlo.
+
+Este tipo de colección resulta especialmente adecuado cuando el
+acceso a los datos se realiza a partir de un identificador en
+lugar de una posición. Por ejemplo, una agenda telefónica que
+asocia nombres con números de teléfono, un diccionario que asocia
+palabras con sus definiciones o una tabla que asocia direcciones
+MAC con direcciones IP.
+
+`HashMap` está implementado mediante una estructura de datos
+denominada *tabla hash*. Para cada clave se calcula un número
+entero mediante una *función hash*, y ese número se utiliza para
+determinar la posición donde se almacenará el elemento dentro de
+una tabla.
+
+Gracias a este mecanismo, cuando se desea buscar un elemento no
+es necesario recorrer toda la colección. Basta con volver a
+aplicar la función hash a la clave para localizar la posición
+donde probablemente se encuentra el valor. Decimos
+*probablemente* porque dos claves distintas pueden producir el
+mismo valor hash y, por tanto, corresponder a la misma posición.
+
+Cuando dos claves distintas producen el mismo valor hash se dice
+que se ha producido una *colisión*. Las implementaciones modernas
+de las tablas hash incorporan mecanismos para resolver estas
+colisiones de forma eficiente. Como consecuencia, las operaciones
+de inserción, búsqueda y eliminación tienen, en promedio, una
+complejidad temporal constante, es decir, (O(1)).
+
+Desde el punto de vista del programador, todos estos detalles son
+completamente transparentes. Basta con proporcionar una clave
+para insertar, buscar o eliminar un elemento, sin preocuparse por
+cómo se almacena internamente.
+
+## Uso básico de un `HashMap`
+
+El siguiente ejemplo ilustra las operaciones básicas sobre un
+`HashMap`:
+
+``` rust
+{{< include c16/hash01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Acollections%3A%3AHashMap%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20tabla%20%3D%20HashMap%3A%3Anew%28%29%3B%0A%0A%20%20%20%20//%20Insertamos%20dos%20elementos.%0A%20%20%20%20tabla.insert%28%2200%3A11%3A22%3A33%3A44%3A55%22%2C%20%22192.168.1.10%22%29%3B%0A%20%20%20%20tabla.insert%28%22AA%3ABB%3ACC%3ADD%3AEE%3AFF%22%2C%20%22192.168.1.20%22%29%3B%0A%0A%20%20%20%20//%20Mostramos%20la%20tabla%20completa.%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20tabla%29%3B%20%20%20%0A%0A%20%20%20%20//%20Mostramos%20el%20elemento%20asociado%20a%20una%20clave%0A%20%20%20%20println%21%28%22IP%3A%20%7B%7D%22%2C%20tabla.get%28%2200%3A11%3A22%3A33%3A44%3A55%22%29.unwrap%28%29%29%3B%0A%0A%20%20%20%20//%20Reemplazamos%20el%20valor%20de%20un%20elemento%0A%20%20%20%20tabla.insert%28%2200%3A11%3A22%3A33%3A44%3A55%22%2C%20%22192.168.1.100%22%29%3B%0A%0A%20%20%20%20//%20Eliminamos%20un%20elemento%0A%20%20%20%20tabla.remove%28%22AA%3ABB%3ACC%3ADD%3AEE%3AFF%22%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20tabla%29%3B%20%20%20%0A%7D%0A)
+
+:::
+
+
+- La sentencia `use std::collections::HashMap;` importa el tipo
+  `HashMap` de la biblioteca estándar. A diferencia de tipos como
+  `i32`, `bool`, `char`, `String` o `Vec`, es necesario importar
+  `HashMap` antes de poder utilizarlo.
+
+- Crea un `HashMap` vacío mediante el método asociado
+  `HashMap::new()`. La variable se declara como `mut` porque su
+  contenido va a modificarse.
+
+- Inserta dos elementos mediante el método `insert()`. Obsérvese
+  que no es necesario indicar los tipos de las claves ni de los
+  valores, ya que Rust los deduce a partir de los datos
+  insertados.
+
+  El método `insert()` devuelve un `Option` con el valor 
+  anterior asociado a la clave. Si la clave no existía,
+  devuelve `None`. Pero en muchos casos, como en este ejemplo,
+  el valor devuelto por `insert()` es ignorado. 
+
+- Muestra el contenido completo del `HashMap` utilizando el
+  especificador de formato `{:?}`. Como ocurre con los vectores,
+  `HashMap` implementa el trait `Debug`, lo que permite mostrar
+  su contenido con `println!()`. El orden en que aparecen los
+  elementos no está definido y puede variar entre ejecuciones.
+
+- Recupera el valor asociado a una clave mediante el método
+  `get()`. Este método devuelve un `Option`, por lo que en este
+  ejemplo se utiliza `unwrap()` al saber que la clave existe. Tal
+  y como vimos en la @sec-unwrap.
+
+  El método `get()` devuelve un `Option<&V>`, es decir, una
+  referencia al valor almacenado. De este modo, el elemento
+  permanece dentro del `HashMap` y puede seguir utilizándose
+  posteriormente.
+
+- Reemplaza el valor asociado a una clave existente. Para ello
+  basta con volver a llamar a `insert()` utilizando la misma
+  clave y un nuevo valor. El valor anterior se sustituye
+  automáticamente.
+
+- Elimina un elemento mediante el método `remove()`. Si la clave
+  no existe, el método no produce ningún error y simplemente no
+  modifica el contenido del `HashMap`.
+
+
+## Acceso mediante el operador `[]`
+
+
+Además del método `get()`, también es posible acceder a un valor
+mediante el operador `[]`.
+
+```rust
+println!("{}", tabla["00:11:22:33:44:55"]);
+```
+
+A diferencia de `get()`, el operador `[]` devuelve directamente
+una referencia al valor asociado a la clave. Si la clave no
+existe, el programa finaliza produciendo un *panic*.
+Por este motivo, en la mayoría de las situaciones se prefiere
+utilizar `get()`, que devuelve un `Option` y permite tratar de
+forma segura el caso en que la clave no exista.
+
+
+El operador `[]` solo puede utilizarse para leer un valor. No es
+posible modificar un elemento mediante una asignación.
+Para modificar el valor asociado a una clave debe utilizarse el
+método `insert()`, que reemplaza el valor anterior si la clave ya
+existe.
+
+
+``` rust
+{{< include c16/hash_mal/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Acollections%3A%3AHashMap%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20tabla%20%3D%20HashMap%3A%3Anew%28%29%3B%0A%0A%20%20%20%20tabla.insert%28%2200%3A11%3A22%3A33%3A44%3A55%22%2C%20%22192.168.1.10%22%29%3B%0A%20%20%20%20tabla.insert%28%22AA%3ABB%3ACC%3ADD%3AEE%3AFF%22%2C%20%22192.168.1.20%22%29%3B%0A%0A%20%20%20%20//%20Lectura%20mediante%20el%20operador%20%5B%5D%0A%20%20%20%20println%21%28%0A%20%20%20%20%20%20%20%20%22IP%3A%20%7B%7D%22%2C%0A%20%20%20%20%20%20%20%20tabla%5B%2200%3A11%3A22%3A33%3A44%3A55%22%5D%0A%20%20%20%20%29%3B%0A%0A%20%20%20%20//%20El%20operador%20%5B%5D%20no%20puede%20utilizarse%20para%20modificar%20un%20elemento.%0A%20%20%20%20tabla%5B%2200%3A11%3A22%3A33%3A44%3A55%22%5D%20%3D%20%22192.168.1.100%22%3B%20//%20%C2%A1Error%21%0A%7D%0A)
+
+:::
+
+
+## La API `entry()`
+
+En ocasiones es necesario realizar una operación distinta según
+que una clave exista o no en el `HashMap`. Por ejemplo, puede ser
+necesario insertar un valor únicamente si la clave no existe,
+inicializar un contador o modificar el valor asociado a una clave
+existente.
+
+Una posibilidad sería comprobar primero si la clave existe y, a
+continuación, actuar en consecuencia. Sin embargo, este enfoque no
+es el más eficiente, ya que obliga a buscar la misma clave dos
+veces: una para comprobar si existe y otra para insertar o
+modificar el valor.
+
+Para resolver este problema, `HashMap` proporciona la API
+`entry()`, que realiza una única búsqueda y permite actuar sobre
+la entrada correspondiente, tanto si la clave ya existe como si
+no.
+
+### El método `or_insert()`
+
+El método `or_insert()` se utiliza junto con `entry()`. Recibe un
+valor que se insertará únicamente si la clave indicada en
+`entry()` no existe previamente en el `HashMap`.
+
+- Si la clave ya existe, no sucede nada y el valor asociado se
+  conserva.
+
+- Si la clave no existe, se inserta un nuevo elemento con dicha
+  clave y el valor indicado.
+
+Este comportamiento resulta útil para inicializar valores sin
+tener que comprobar previamente si la clave existe.
+
+``` rust
+{{< include c16/hash02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Acollections%3A%3AHashMap%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20contador%20%3D%20HashMap%3A%3Anew%28%29%3B%0A%0A%20%20%20%20contador.insert%28%22HTTP%22%2C%20443%29%3B%0A%0A%20%20%20%20contador.entry%28%22HTTP%22%29.or_insert%28443%29%3B%0A%20%20%20%20contador.entry%28%22SSH%22%29.or_insert%2822%29%3B%0A%0A%20%20%20%20println%21%28%22%7Bcontador%3A%3F%7D%22%29%3B%0A%7D%0A)
+
+:::
+
+En este ejemplo, la clave `"HTTP"` ya existe, por lo que conserva
+el valor `443`. En cambio, la clave `"SSH"` no existía y se
+inserta con el valor `22`.
+
+
+## Recorrido de un `HashMap`
+
+Los elementos de un `HashMap` pueden recorrerse mediante un bucle
+`for`. Dependiendo de la información que interese obtener, existen
+tres posibilidades:
+
+- `iter()`, que recorre pares formados por la clave y el valor.
+- `keys()`, que recorre únicamente las claves.
+- `values()`, que recorre únicamente los valores.
+
+El siguiente ejemplo muestra las tres formas de recorrer un
+`HashMap`.
+
+
+
+``` rust
+{{< include c16/recorrido_hash/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Acollections%3A%3AHashMap%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20tabla%20%3D%20HashMap%3A%3Anew%28%29%3B%0A%0A%20%20%20%20tabla.insert%28%22HTTP%22%2C%2080%29%3B%0A%20%20%20%20tabla.insert%28%22HTTPS%22%2C%20443%29%3B%0A%20%20%20%20tabla.insert%28%22SSH%22%2C%2022%29%3B%0A%0A%20%20%20%20//%20Recorremos%20claves%20y%20valores.%0A%20%20%20%20for%20%28protocolo%2C%20puerto%29%20in%20tabla.iter%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7Bprotocolo%7D%3A%20%7Bpuerto%7D%22%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%0A%20%20%20%20//%20Recorremos%20%C3%BAnicamente%20las%20claves.%0A%20%20%20%20for%20protocolo%20in%20tabla.keys%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7Bprotocolo%7D%22%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%0A%20%20%20%20//%20Recorremos%20%C3%BAnicamente%20los%20valores.%0A%20%20%20%20for%20puerto%20in%20tabla.values%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7Bpuerto%7D%22%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%7D%0A%0A)
+
+:::
+
+
+Al igual que ocurre al mostrar un `HashMap` mediante `println!("{:?}")`,
+el orden en que se recorren los elementos no está definido y puede
+variar entre ejecuciones.
+
+
+
+## Otras operaciones habituales
+
+Además de las operaciones vistas hasta ahora, `HashMap`
+proporciona otros métodos de uso frecuente.
+
+``` rust
+{{< include c16/hash03/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Acollections%3A%3AHashMap%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20tabla%20%3D%20HashMap%3A%3Anew%28%29%3B%0A%0A%20%20%20%20tabla.insert%28%22HTTP%22%2C%2080%29%3B%0A%20%20%20%20tabla.insert%28%22HTTPS%22%2C%20443%29%3B%0A%20%20%20%20tabla.insert%28%22SSH%22%2C%2022%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20tabla%29%3B%0A%20%20%20%20println%21%28%22%C2%BFLa%20tabla%20est%C3%A1%20vac%C3%ADa%3F%20%7B%7D%22%2C%20tabla.is_empty%28%29%29%3B%0A%20%20%20%20println%21%28%22N%C3%BAmero%20de%20elementos%3A%20%7B%7D%22%2C%20tabla.len%28%29%29%3B%0A%20%20%20%20println%21%28%22%C2%BFContiene%20HTTP%3F%20%7B%7D%22%2C%20tabla.contains_key%28%22HTTP%22%29%29%3B%0A%20%20%20%20println%21%28%22%C2%BFContiene%20FTP%3F%20%7B%7D%22%2C%20tabla.contains_key%28%22FTP%22%29%29%3B%0A%0A%20%20%20%20println%21%28%29%3B%0A%20%20%20%20tabla.clear%28%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20tabla%29%3B%0A%20%20%20%20println%21%28%22%C2%BFLa%20tabla%20est%C3%A1%20vac%C3%ADa%3F%20%7B%7D%22%2C%20tabla.is_empty%28%29%29%3B%0A%7D%0A)
+
+:::
+
+- `len()` devuelve el número de elementos almacenados en el
+  `HashMap`.
+
+- `is_empty()` devuelve `true` si el `HashMap` no contiene ningún
+  elemento y `false` en caso contrario.
+
+- `contains_key()` comprueba si una determinada clave existe en
+  el `HashMap`. Devuelve `true` si existe y `false` en caso
+  contrario.
+
+- `clear()` elimina todos los elementos del `HashMap`, dejándolo
+  vacío.
+
+
+

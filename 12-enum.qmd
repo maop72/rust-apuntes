@@ -96,6 +96,8 @@ aunque la información almacenada sea distinta en cada caso.
 
 ## El enumerado `Option` {#sec-enum-option}
 
+### El problema de representar datos inexistentes
+
 En muchos programas es necesario representar la posibilidad de
 que un dato no exista. Por ejemplo, una aplicación diseñada
 suponiendo que todas las personas tienen dos apellidos puede
@@ -129,8 +131,10 @@ exista o no forma parte de su propio tipo mediante el enumerado
 `Option<T>`. De este modo, el compilador obliga al programador a
 contemplar explícitamente ambos casos.
 
+### Uso de `Option`
+
 `Option<T>` es uno de los enumerados más utilizados en Rust y
-está definido en la biblioteca estándar. Empleado  para
+está definido en la biblioteca estándar. Empleado para
 representar la presencia o ausencia de un valor, su definición
 simplificada es la siguiente:
 
@@ -147,7 +151,7 @@ que puede existir o no, mientras que `Option<String>` representa
 una cadena de texto que también puede estar ausente.
 
 Como cualquier otro enumerado, `Option<T>` puede tomar un valor
-entre varios, en este caso dos: 
+entre varios, en este caso dos:
 
 - `Some(valor)`, cuando existe un valor de tipo `T`.
 - `None`, cuando no existe ningún valor.
@@ -184,23 +188,31 @@ En ambos casos, el tipo de a es exactamente el mismo:
 `Option<i32>`. La única diferencia es que, para la variable `a`,
 el compilador lo deduce automáticamente.
 
-## Otras consideraciones
+### El método `unwrap()` {#sec-unwrap}
 
-### Derivación de Traits
+En muchas ocasiones sabemos con certeza que un `Option` contiene
+un valor, es decir, que es `Some`. En esos casos puede utilizarse
+el método `unwrap()`, que devuelve el valor contenido en el
+`Option`.
 
-Al igual que los `struct`, los `enum` también pueden derivar
-*traits*. Por ejemplo, el rasgo `Debug` permite mostrar su valor
-completo durante la ejecución del programa:
 
 ``` rust
-{{< include c12/conexion/src/main.rs >}}
+{{< include c12/unwrap/src/main.rs >}}
 ```
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=%23%5Bderive%28Debug%29%5D%20%0Aenum%20EstadoConexion%20%7B%0A%20%20%20%20Free%2C%0A%20%20%20%20Listening%2C%0A%20%20%20%20Connecting%2C%0A%20%20%20%20Connected%2C%0A%20%20%20%20Disconnecting%2C%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20estado%20%3D%20EstadoConexion%3A%3AConnected%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20estado%29%3B%0A%7D%0A%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20x%20%3D%20Some%2842%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20x%29%3B%20//%20Enumerado%20completo%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20x.unwrap%28%29%29%3B%20//%20Valor%20Some%0A%0A%20%20%20%20let%20y%3A%20Option%3Ci32%3E%20%3D%20None%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20y.unwrap%28%29%29%3B%20//%20Panic%0A%7D%0A)
 
 :::
+
+
+Si `unwrap()` se aplica sobre un valor `None`, el programa
+finaliza inmediatamente produciendo un *panic*. Por tanto, si
+existe la posibilidad de que el `Option` contenga `None`, es
+preferible utilizar otras construcciones del lenguaje, como
+`match` o `if let`, que permiten tratar explícitamente ambos
+casos. Las estudiaremos en el @sec-patrones.
 
 ### Bloques `impl`
 
