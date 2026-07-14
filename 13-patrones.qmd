@@ -49,7 +49,7 @@ match expresión {
 ```
 
 Al ejecutarse, en primer lugar se evalúa la expresión situada
-tras la palabra clave `match`. A continuación, su valor se
+tras la palabra reservada `match`. A continuación, su valor se
 compara con cada uno de los patrones, en el orden en que
 aparecen. Cuando uno de ellos coincide, se evalúa la expresión
 correspondiente y el `match` finaliza.

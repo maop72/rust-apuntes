@@ -37,7 +37,7 @@ al mismo ámbito o a un ámbito accesible desde él.
 
 :::
 
-La palabra clave `fn` indica la definición de una función. A
+La palabra reservada `fn` indica la definición de una función. A
 continuación aparece el nombre de la función y, entre paréntesis,
 la lista de parámetros. En este ejemplo ninguna de las funciones
 reciben parámetros.
@@ -304,7 +304,7 @@ valores.
 ## Uso de `Return`
 
 Aunque no es necesario, también es posible utilizar la palabra
-clave `return` para devolver un valor:
+reservada `return` para devolver un valor:
 
 ``` rust
 {{< include c07/fn_return/src/main.rs >}}

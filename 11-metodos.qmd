@@ -29,7 +29,7 @@ Podemos clasificar los métodos en dos grandes grupos:
 
 1.  Los vinculados a un struct. Reciben, como primer parámetro,
     el struct sobre el que actúan, representado mediante la
-    palabra clave `self`. A su vez, se subdividen en:
+    palabra reservada `self`. A su vez, se subdividen en:
 
     - *Métodos con `&self`*. Son métodos de *solo lectura*.
       Pueden consultar el contenido del struct, pero no

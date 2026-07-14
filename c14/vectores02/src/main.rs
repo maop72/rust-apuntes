@@ -8,7 +8,7 @@ fn main() {
  
     }
 
-    for i in 0..numeros.len() { // Recorremos los elementos, usando el índice  
+    for i in 0..numeros.len() { // Ahora usando el índice  
         println!("Elemento {}: {}", i, numeros[i]);
     }
 }

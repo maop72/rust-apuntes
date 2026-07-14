@@ -1,7 +1,312 @@
-# Módulos
+# Módulos {#sec-modulos}
+
+En programas pequeños es habitual escribir todo el código en un
+único archivo. Sin embargo, cuando un proyecto crece resulta
+conveniente dividirlo en varios archivos. Un módulo permite
+precisamente agrupar código relacionado y, si se desea, ponerlo a
+disposición de otras partes del programa.
+
+Rust organiza el código mediante *módulos*. Un módulo agrupa
+elementos relacionados, como funciones, estructuras,
+enumeraciones o constantes, formando una unidad lógica. Además,
+los módulos permiten controlar qué elementos pueden utilizarse
+desde otras partes del programa y cuáles permanecen ocultos.
+
+Un programa puede estar formado por un único módulo o por una
+jerarquía de módulos anidados. Habitualmente, cada módulo
+importante se define en un archivo independiente, lo que
+contribuye a mantener una organización clara del proyecto.
+
+En este capítulo aprenderemos a definir módulos, controlar la
+visibilidad de sus elementos mediante la palabra reservada `pub`,
+organizar los módulos en distintos archivos y acceder a ellos
+utilizando rutas y la sentencia `use`.
 
 ## Definición de módulos
-## Visibilidad: `pub`
-## Rutas absolutas y relativas
-## `use`
-## Organización en varios archivos
+
+De manera informal, puede pensarse en un módulo como una unidad
+de código reutilizable. Más adelante veremos cómo distribuir los
+módulos en distintos archivos, pero por el momento los
+definiremos dentro de un único archivo para centrarnos en la
+sintaxis.
+
+Los módulos se definen mediante la palabra reservada `mod`,
+seguida del nombre del módulo y de un bloque delimitado por
+llaves. En el interior del módulo pueden declararse funciones,
+estructuras, enumeraciones, constantes e incluso otros módulos.
+
+``` rust
+{{< include c19/geometria/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=mod%20geometria%20%7B%0A%20%20%20%20pub%20fn%20area_cuadrado%28lado%3A%20f64%29%20-%3E%20f64%20%7B%0A%20%20%20%20%20%20%20%20lado%20%2A%20lado%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20area_rectangulo%28base%3A%20f64%2C%20altura%3A%20f64%29%20-%3E%20f64%20%7B%0A%20%20%20%20%20%20%20%20base%20%2A%20altura%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20println%21%28%0A%20%20%20%20%20%20%20%20%22%C3%81rea%20del%20cuadrado%3A%20%7B%7D%22%2C%0A%20%20%20%20%20%20%20%20geometria%3A%3Aarea_cuadrado%285.0%29%0A%20%20%20%20%29%3B%0A%0A%20%20%20%20println%21%28%0A%20%20%20%20%20%20%20%20%22%C3%81rea%20del%20rect%C3%A1ngulo%3A%20%7B%7D%22%2C%0A%20%20%20%20%20%20%20%20geometria%3A%3Aarea_rectangulo%283.0%2C%204.0%29%0A%20%20%20%20%29%3B%0A%7D%0A)
+
+:::
+
+Para acceder a un elemento definido en un módulo se escribe el
+nombre del módulo, seguido del operador `::` y del nombre del
+elemento. En el ejemplo anterior, las funciones se invocan como
+`geometria::area_cuadrado()` y `geometria::area_rectangulo()`.
+
+El operador `::` se utiliza en Rust para indicar que un elemento
+pertenece a un determinado espacio de nombres.
+
+Los módulos también pueden anidarse para organizar el código de
+forma jerárquica.
+
+``` rust
+{{< include c19/universidad/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=mod%20universidad%20%7B%0A%20%20%20%20pub%20mod%20alumnos%20%7B%0A%20%20%20%20%20%20%20%20pub%20fn%20matricular%28%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22Alumno%20matriculado%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20universidad%3A%3Aalumnos%3A%3Amatricular%28%29%3B%0A%7D%0A)
+
+:::
+
+En este caso, la función `matricular()` pertenece al módulo
+`alumnos`, que a su vez está contenido en el módulo
+`universidad`. Para acceder a ella es necesario recorrer toda la
+jerarquía de módulos mediante el operador `::`.
+
+## Visibilidad y la palabra reservada `pub`
+
+En Rust, todos los elementos definidos dentro de un módulo son
+*privados por defecto*. Esto significa que solo pueden utilizarse
+desde el propio módulo y desde los módulos contenidos en él. Si
+se desea que un elemento pueda utilizarse desde el exterior del
+módulo, es necesario marcarlo con la palabra reservada `pub`.
+
+Si en cualquiera de las funciones del apartado anterior
+eliminamos `pub`, la función pasa a ser privada y deja de ser
+accesible desde el exterior del módulo. En consecuencia, el
+programa ya no compila.
+
+La palabra reservada `pub` puede aplicarse a la mayoría de los
+elementos que pueden declararse dentro de un módulo: funciones,
+estructuras, enumeraciones, constantes, tipos y también a otros
+módulos.
+
+En general, para poder acceder a un elemento deben ser públicos
+todos los elementos que forman el camino hasta él. Si cualquiera
+de ellos es privado, el acceso queda impedido.
+
+Esta política de visibilidad permite ocultar los detalles
+internos de implementación de un módulo y exponer únicamente la
+interfaz que se desea ofrecer al resto del programa.
+
+## Organización del código en ficheros
+
+Hasta ahora hemos definido todos los módulos dentro de un único
+fichero. Pero es más habitual distribuir los módulos en varios
+ficheros para facilitar su organización y mantenimiento.
+
+Supongamos que el fichero principal del proyecto, `main.rs`,
+contiene el siguiente código:
+
+``` rust
+mod geometria;
+
+fn main() {
+    println!("{}", geometria::area_cuadrado(5.0));
+}
+```
+
+La sentencia
+
+``` rust
+mod geometria;
+```
+
+indica al compilador que el contenido del módulo `geometria` se
+encuentra en otro fichero. En este caso, Rust buscará un fichero
+llamado `geometria.rs` situado en el mismo directorio que
+`main.rs`.
+
+El fichero `geometria.rs` podría contener el siguiente código:
+
+``` rust
+pub fn area_cuadrado(lado: f64) -> f64 {
+    lado * lado
+}
+```
+
+Obsérvese que el contenido del fichero no está rodeado por un
+bloque `mod geometria { ... }`. El propio fichero constituye el
+contenido del módulo.
+
+De esta forma, el proyecto queda organizado en dos ficheros:
+
+``` text
+src/
+├── main.rs
+└── geometria.rs
+```
+
+La organización en varios ficheros no modifica la forma de
+acceder a los elementos del módulo. Desde `main.rs` se sigue
+invocando la función mediante su ruta completa:
+
+``` rust
+geometria::area_cuadrado(5.0)
+```
+
+Si un módulo contiene otros módulos, es habitual crear un
+directorio con el mismo nombre. Por ejemplo, la siguiente
+estructura permite definir los submódulos `figuras` y
+`transformaciones` del módulo `geometria`.
+
+``` text
+src/
+├── main.rs
+├── geometria.rs
+└── geometria/
+    ├── figuras.rs
+    └── transformaciones.rs
+```
+
+- En el fichero `geometria.rs` se definen los elementos que
+  pertenecen directamente al módulo `geometria`, como funciones,
+  estructuras, enumeraciones o constantes.
+
+- En el directorio `geometria` se encuentran los ficheros
+  correspondientes a los submódulos de `geometria`. Cada fichero
+  define uno de esos submódulos.
+
+En versiones antiguas de Rust era habitual utilizar un fichero
+llamado `mod.rs` como fichero principal de un módulo. Aunque esta
+organización sigue siendo válida y aún puede encontrarse en
+proyectos existentes, actualmente se recomienda utilizar un
+fichero con el mismo nombre que el módulo, como en los ejemplos
+anteriores.
+
+Respecto al *Rust Playground*, el servicio en línea que
+utilizamos para ejecutar programas en Rust sin necesidad de
+instalarlo en nuestro ordenador, debemos tener en cuenta que solo
+permite trabajar con un único fichero. Los proyectos organizados
+en varios ficheros deben desarrollarse localmente mediante Cargo.
+
+## Ubicación de los ficheros de los módulos
+
+Como indicamos en la sección anterior, la ubicación de los
+ficheros que contienen los módulos viene determinada por la
+estructura del proyecto y por las sentencias `mod`.
+
+En otros lenguajes es habitual indicar al compilador o al
+intérprete directorios adicionales donde buscar módulos o
+bibliotecas, por ejemplo mediante variables de entorno o mediante
+opciones de la línea de órdenes.
+
+Rust adopta un enfoque diferente. La ubicación de los módulos de
+un proyecto viene determinada por la propia estructura de
+directorios y por las sentencias `mod`, siguiendo las
+convenciones descritas en este capítulo.
+
+Cuando se desea reutilizar código situado fuera del proyecto, no
+se amplía el camino de búsqueda de módulos. En su lugar, dicho
+código se organiza como un *crate* independiente y se declara
+como dependencia en el fichero `Cargo.toml` del proyecto. Cargo
+se encarga entonces de localizarlo y ponerlo a disposición del
+compilador.
+
+## La sentencia `use`
+
+En los ejemplos anteriores hemos accedido a los elementos de un
+módulo escribiendo su ruta completa. Por ejemplo:
+
+``` rust
+geometria::area_cuadrado(5.0)
+```
+
+Cuando un programa utiliza con frecuencia un mismo módulo,
+repetir continuamente la ruta completa puede hacer que el código
+resulte más largo y difícil de leer. Para evitarlo, Rust
+proporciona la sentencia `use`, que permite importar un elemento
+y utilizarlo directamente.
+
+Por ejemplo, el siguiente programa:
+
+``` rust
+mod geometria {
+    pub fn area_cuadrado(lado: f64) -> f64 {
+        lado * lado
+    }
+}
+
+use geometria::area_cuadrado;
+
+fn main() {
+    println!("{}", area_cuadrado(5.0));
+}
+```
+
+produce exactamente el mismo resultado que si se hubiera escrito
+
+``` rust
+geometria::area_cuadrado(5.0)
+```
+
+La sentencia `use` también puede emplearse para importar otros
+tipos de elementos, como estructuras, enumeraciones o constantes.
+
+También es posible importar un módulo completo:
+
+``` rust
+use geometria;
+
+fn main() {
+    println!("{}", geometria::area_cuadrado(5.0));
+}
+```
+
+En este caso, las funciones siguen invocándose mediante el nombre
+del módulo, pero ya no es necesario escribir la ruta completa si
+el módulo pertenece a otro módulo de nivel superior.
+
+La sentencia `use` también permite importar varios elementos de
+una sola vez:
+
+``` rust
+use geometria::{area_cuadrado, area_rectangulo};
+```
+
+o incluso todos los elementos públicos de un módulo:
+
+``` rust
+use geometria::*;
+```
+
+Esta última posibilidad debe utilizarse con moderación, ya que
+puede dificultar la lectura del código y provocar conflictos
+entre nombres. En general, es preferible importar únicamente los
+elementos que realmente se van a utilizar.
+
+## Otras posibilidades de los módulos
+
+En este capítulo hemos visto el uso más habitual de los módulos:
+organizar un programa en varios ficheros y controlar la
+visibilidad de sus elementos mediante la palabra reservada `pub`.
+
+Sin embargo, Rust ofrece otras posibilidades relacionadas con los
+módulos, entre ellas:
+
+- Importar elementos con nombres alternativos mediante la palabra
+  reservada `as`.
+
+- Reexportar elementos de un módulo mediante `pub use`, lo que
+  permite simplificar la interfaz pública de una biblioteca.
+
+- Utilizar rutas relativas mediante `self`, `super` y `crate`,
+  especialmente en jerarquías de módulos complejas.
+
+- Crear bibliotecas reutilizables que puedan emplearse desde
+  otros proyectos.
+
+- Publicar bibliotecas en el registro oficial de paquetes de
+  Rust, denominado *crates.io*.
+
+En la mayoría de los programas sencillos no es necesario utilizar
+estas características. No obstante, resultan muy útiles en
+proyectos de gran tamaño y en el desarrollo de bibliotecas.
