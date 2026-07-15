@@ -260,7 +260,7 @@ Conceptualmente, este bucle es completamente análogo a los
 anteriores con `loop`, pero expresando la condición de
 terminación directamente en la cabecera del bucle.
 
-### El bucle `for`  {#sec-for}
+### El bucle `for` {#sec-for}
 
 La construcción `for` permite recorrer secuencias de valores de
 forma sencilla y segura. Es el mecanismo habitual para iterar
@@ -322,3 +322,29 @@ valores enteros.
 
 - El método `rev()` devuelve los elementos del rango en sentido
   descendente.
+
+## Resumen
+
+En este capítulo hemos estudiado las estructuras de control de
+flujo que permiten decidir qué instrucciones ejecutar y repetir
+un conjunto de acciones.
+
+Las ideas principales son las siguientes:
+
+- La sentencia `if` permite ejecutar código de forma condicional.
+- En Rust, `if` también es una expresión, por lo que puede
+  devolver un valor.
+- Las cadenas `if`–`else if` permiten expresar decisiones con
+  múltiples alternativas.
+- El bucle `loop` repite un bloque de código indefinidamente
+  hasta que se ejecuta un `break`.
+- El bucle `while` repite una acción mientras se cumpla una
+  condición.
+- El bucle `for` es la forma más habitual de recorrer los
+  elementos de una colección o los valores de un rango.
+- Las sentencias `break` y `continue` permiten modificar el
+  comportamiento de los bucles cuando es necesario.
+
+Estas estructuras constituyen la base para desarrollar algoritmos
+capaces de tomar decisiones y realizar tareas repetitivas de
+forma clara, segura y expresiva.

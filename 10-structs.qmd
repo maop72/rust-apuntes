@@ -1,4 +1,4 @@
-# Structs  {#sec-structs}
+# Structs {#sec-structs}
 
 Hasta ahora hemos trabajado principalmente con tipos básicos,
 colecciones y funciones. Sin embargo, en programas reales es
@@ -358,3 +358,32 @@ NAT.
 [Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=struct%20EntradaNat%20%7B%0A%20%20%20%20ip_privada%3A%20String%2C%0A%20%20%20%20puerto_privado%3A%20u16%2C%0A%20%20%20%20ip_publica%3A%20String%2C%0A%20%20%20%20puerto_publico%3A%20u16%2C%0A%20%20%20%20protocolo%3A%20String%2C%0A%7D%0A%0Afn%20crea_entrada%28%0A%20%20%20%20ip_privada%3A%20String%2C%0A%20%20%20%20puerto_privado%3A%20u16%2C%0A%20%20%20%20ip_publica%3A%20String%2C%0A%20%20%20%20puerto_publico%3A%20u16%2C%0A%20%20%20%20protocolo%3A%20String%2C%0A%29%20-%3E%20EntradaNat%20%7B%0A%20%20%20%20EntradaNat%20%7B%0A%20%20%20%20%20%20%20%20ip_privada%2C%0A%20%20%20%20%20%20%20%20puerto_privado%2C%0A%20%20%20%20%20%20%20%20ip_publica%2C%0A%20%20%20%20%20%20%20%20puerto_publico%2C%0A%20%20%20%20%20%20%20%20protocolo%2C%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20escribe_entrada%28entrada%3A%20%26EntradaNat%29%20%7B%0A%20%20%20%20println%21%28%0A%20%20%20%20%20%20%20%20%22%7B%7D%3A%7B%7D%20-%3E%20%7B%7D%3A%7B%7D%20%28%7B%7D%29%22%2C%0A%20%20%20%20%20%20%20%20entrada.ip_privada%2C%0A%20%20%20%20%20%20%20%20entrada.puerto_privado%2C%0A%20%20%20%20%20%20%20%20entrada.ip_publica%2C%0A%20%20%20%20%20%20%20%20entrada.puerto_publico%2C%0A%20%20%20%20%20%20%20%20entrada.protocolo%0A%20%20%20%20%29%3B%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20entrada_tcp%20%3D%20crea_entrada%28%0A%20%20%20%20%20%20%20%20String%3A%3Afrom%28%22192.168.1.10%22%29%2C%0A%20%20%20%20%20%20%20%2052341%2C%0A%20%20%20%20%20%20%20%20String%3A%3Afrom%28%22203.0.113.1%22%29%2C%0A%20%20%20%20%20%20%20%2040001%2C%0A%20%20%20%20%20%20%20%20String%3A%3Afrom%28%22TCP%22%29%2C%0A%20%20%20%20%29%3B%0A%0A%20%20%20%20let%20entrada_udp%20%3D%20EntradaNat%20%7B%0A%20%20%20%20%20%20%20%20protocolo%3A%20String%3A%3Afrom%28%22UDP%22%29%2C%0A%20%20%20%20%20%20%20%20ip_privada%3A%20entrada_tcp.ip_privada.clone%28%29%2C%0A%20%20%20%20%20%20%20%20ip_publica%3A%20entrada_tcp.ip_publica.clone%28%29%2C%0A%20%20%20%20%20%20%20%20..entrada_tcp%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20escribe_entrada%28%26entrada_tcp%29%3B%0A%20%20%20%20escribe_entrada%28%26entrada_udp%29%3B%0A%7D%0A)
 
 :::
+
+## Resumen
+
+En este capítulo hemos introducido los `struct`, el mecanismo que
+ofrece Rust para definir nuevos tipos de datos formados por
+varios campos relacionados.
+
+Las ideas principales son las siguientes:
+
+- Un `struct` permite agrupar datos de distintos tipos bajo un
+  único nombre.
+- Cada instancia de un `struct` almacena sus propios valores para
+  cada uno de sus campos.
+- Los campos se acceden mediante la notación con el operador
+  punto.
+- Rust ofrece una sintaxis abreviada para inicializar campos cuyo
+  nombre coincide con el de una variable existente.
+- Es posible crear una nueva instancia a partir de otra mediante
+  la sintaxis de actualización de estructuras (`..`).
+- Los *tuple structs* permiten definir nuevos tipos cuando los
+  nombres de los campos no aportan información relevante.
+- Un `struct` puede contener cualquier tipo de dato, incluidos
+  otros `struct`, lo que facilita la construcción de modelos de
+  datos complejos.
+
+Los `struct` constituyen el principal mecanismo de Rust para
+representar entidades del mundo real. En el siguiente capítulo
+veremos cómo asociar funciones a estos tipos mediante métodos,
+dotándolos de comportamiento además de datos.

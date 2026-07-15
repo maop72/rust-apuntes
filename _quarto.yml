@@ -71,9 +71,24 @@ format:
     include-in-header:
       text: |
         \usepackage{fancyhdr}
+        \usepackage{fvextra}
 
+         % Código fuente a 11 puntos
+         \RecustomVerbatimEnvironment{Highlighting}{Verbatim}{
+          fontsize=\fontsize{11}{13}\selectfont,
+          breaklines=true,
+          commandchars=\\\{\}
+         }
+
+        \fancypagestyle{plain}{
+           \fancyhf{}           % Borra encabezado y pie
+           \renewcommand{\headrulewidth}{0pt}
+           \renewcommand{\footrulewidth}{0pt}
+        }
         \pagestyle{fancy}
         \fancyhf{}
+
+
 
         % Título del libro en páginas pares
         \fancyhead[LE]{Apuntes de programación en Rust}

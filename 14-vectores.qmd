@@ -296,3 +296,32 @@ para ordenar, buscar, dividir o transformar vectores. Puede
 consultarse en:
 
 <https://doc.rust-lang.org/std/vec/struct.Vec.html>
+
+## Resumen
+
+En este capítulo hemos introducido el tipo `Vec<T>`, la colección
+dinámica más utilizada en Rust.
+
+Las ideas principales son las siguientes:
+
+- Un vector almacena una secuencia de elementos del mismo tipo y
+  puede aumentar o disminuir de tamaño durante la ejecución del
+  programa.
+- Los vectores se crean habitualmente mediante `Vec::new()` o la
+  macro `vec!`.
+- Los elementos pueden añadirse y eliminarse con métodos como
+  `push()` y `pop()`.
+- El acceso mediante el operador `[]` es directo, pero provoca un
+  `panic!` si el índice está fuera de rango.
+- El método `get()` ofrece una alternativa segura al devolver un
+  valor de tipo `Option<&T>`.
+- Los vectores pueden recorrerse de forma sencilla mediante
+  bucles `for`, tanto por referencia como por referencia mutable.
+- La biblioteca estándar proporciona numerosos métodos para
+  buscar, modificar y transformar el contenido de un vector.
+
+Los vectores son una de las estructuras de datos más importantes
+de Rust y aparecen en una gran cantidad de programas. En el
+siguiente capítulo estudiaremos el tipo `String`, que internamente
+utiliza un `Vec<u8>` para almacenar sus caracteres codificados en
+UTF-8.

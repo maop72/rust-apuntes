@@ -272,10 +272,40 @@ repetidamente. Su sintaxis es análoga a la de `if let`.
 Este ejemplo utiliza conceptos que todavía no conocemos, pero
 merece la pena observarlo porque representa uno de los usos más
 habituales de `while let` en Rust. El método `pop()` extrae el
-último elemento del vector, utilizado aquí como como una pila, y
+último elemento del vector, utilizado aquí como una pila, y
 lo devuelve envuelto en `Some`. Cuando el vector queda vacío,
 devuelve `None`, lo que hace que el bucle termine
 automáticamente.
 
 Más adelante estudiaremos los vectores y el tipo `Option`, y
 retomaremos este ejemplo para ver con precisión cómo funciona.
+
+
+## Resumen
+
+En este capítulo hemos estudiado la coincidencia de patrones, uno
+de los mecanismos más potentes y característicos de Rust.
+
+Las ideas principales son las siguientes:
+
+- La expresión `match` permite ejecutar un bloque de código
+  distinto para cada posible patrón.
+- Todos los casos deben quedar cubiertos, lo que garantiza la
+  exhaustividad y evita errores durante la compilación.
+- `match` también es una expresión, por lo que puede devolver un
+  valor.
+- Los patrones pueden utilizarse para descomponer valores
+  complejos, como los almacenados en un `enum`.
+- Las construcciones `if let` y `while let` proporcionan una forma
+  más concisa de trabajar con patrones cuando solo interesa una
+  posibilidad.
+- Estas construcciones son especialmente útiles para manipular
+  valores de tipo `Option<T>` y `Result<T, E>`.
+
+La coincidencia de patrones es una de las características que
+hacen que Rust resulte especialmente expresivo y seguro. A medida
+que avancemos en el lenguaje, aparecerá con frecuencia como una
+herramienta fundamental para trabajar con tipos de datos
+complejos.
+
+

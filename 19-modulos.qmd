@@ -285,12 +285,10 @@ elementos que realmente se van a utilizar.
 
 ## Otras posibilidades de los módulos
 
-En este capítulo hemos visto el uso más habitual de los módulos:
-organizar un programa en varios ficheros y controlar la
-visibilidad de sus elementos mediante la palabra reservada `pub`.
-
-Sin embargo, Rust ofrece otras posibilidades relacionadas con los
-módulos, entre ellas:
+En este capítulo hemos presentado únicamente los aspectos más
+básicos del sistema de módulos de Rust. El lenguaje ofrece otras
+posibilidades que resultan muy útiles en proyectos de mayor
+tamaño, entre ellas:
 
 - Importar elementos con nombres alternativos mediante la palabra
   reservada `as`.
@@ -310,3 +308,29 @@ módulos, entre ellas:
 En la mayoría de los programas sencillos no es necesario utilizar
 estas características. No obstante, resultan muy útiles en
 proyectos de gran tamaño y en el desarrollo de bibliotecas.
+
+## Resumen
+
+En este capítulo hemos estudiado el sistema de módulos de Rust,
+que permite organizar programas de mayor tamaño y controlar la
+visibilidad de sus elementos.
+
+Las ideas principales son las siguientes:
+
+- Un programa puede dividirse en varios módulos para organizar el
+  código de forma más clara.
+- Cada módulo puede definirse en el mismo fichero o en un fichero
+  independiente.
+- Los elementos de un módulo son privados por defecto.
+- La palabra reservada `pub` permite hacer públicos los elementos
+  que deban utilizarse desde otros módulos.
+- Los elementos públicos se acceden mediante rutas que indican su
+  posición dentro de la jerarquía de módulos.
+- La sentencia `use` permite importar elementos y evitar escribir
+  repetidamente sus rutas completas.
+
+Una buena organización en módulos facilita el mantenimiento del
+código, mejora su legibilidad y favorece la reutilización de sus
+componentes. Estos mecanismos constituyen la base sobre la que se
+estructuran tanto las aplicaciones como las bibliotecas escritas
+en Rust.
