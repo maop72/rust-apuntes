@@ -13,7 +13,7 @@ html: common
 pdf: common
 	quarto render --to pdf
 
-all: common 
+all: common
 	quarto render
 
 clean:

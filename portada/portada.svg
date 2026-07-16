@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="210mm" height="297mm" viewBox="0 0 210 297">
+<style>
+.title{font-family:Inter,Arial,sans-serif;font-size:11px;font-weight:700;fill:#333}
+.rust{font-family:Inter,Arial,sans-serif;font-size:24px;font-weight:800;fill:#C55A2D}
+.author{font-family:Inter,Arial,sans-serif;font-size:5.3px;fill:#444}
+.code{font-family:"JetBrains Mono","Consolas",monospace;font-size:3px;fill:#B7B7B7;opacity:.55}
+</style>
+
+<rect width="210" height="297" fill="#f7f3ed"/>
+<circle cx="173" cy="168" r="43" fill="none" stroke="#d8d2ca" stroke-width="6" opacity=".22"/>
+
+<g fill="#C55A2D">
+<circle cx="180" cy="34" r=".55"/><circle cx="184" cy="34" r=".55"/><circle cx="188" cy="34" r=".55"/><circle cx="192" cy="34" r=".55"/><circle cx="196" cy="34" r=".55"/><circle cx="180" cy="38" r=".55"/><circle cx="184" cy="38" r=".55"/><circle cx="188" cy="38" r=".55"/><circle cx="192" cy="38" r=".55"/><circle cx="196" cy="38" r=".55"/><circle cx="180" cy="42" r=".55"/><circle cx="184" cy="42" r=".55"/><circle cx="188" cy="42" r=".55"/><circle cx="192" cy="42" r=".55"/><circle cx="196" cy="42" r=".55"/><circle cx="180" cy="46" r=".55"/><circle cx="184" cy="46" r=".55"/><circle cx="188" cy="46" r=".55"/><circle cx="192" cy="46" r=".55"/><circle cx="196" cy="46" r=".55"/><circle cx="180" cy="50" r=".55"/><circle cx="184" cy="50" r=".55"/><circle cx="188" cy="50" r=".55"/><circle cx="192" cy="50" r=".55"/><circle cx="196" cy="50" r=".55"/>
+</g>
+
+<text class="title" x="25" y="40">
+<tspan x="25">Apuntes de</tspan>
+<tspan x="25" dy="13">programación en</tspan>
+</text>
+
+<text class="rust" x="25" y="82">Rust</text>
+<line x1="25" y1="91" x2="120" y2="91" stroke="#C55A2D" stroke-width=".5"/>
+
+<image x="35" y="90" width="140" height="140" xlink:href="cangrejo.png"/>
+
+<text class="code">
+<tspan x="18" y="176">#[derive(Debug)]</tspan><tspan x="18" dy="4.2">struct Conexion {</tspan><tspan x="24" dy="4.2">    ip: String,</tspan><tspan x="24" dy="4.2">    puerto: u16,</tspan><tspan x="24" dy="4.2">    activa: bool,</tspan><tspan x="18" dy="4.2">}</tspan><tspan x="18" dy="4.2"/><tspan x="18" dy="4.2">impl Conexion {</tspan><tspan x="24" dy="4.2">    fn new(ip: String, puerto: u16) -&gt; Conexion {</tspan><tspan x="30" dy="4.2">        Conexion {</tspan><tspan x="36" dy="4.2">            ip,</tspan><tspan x="36" dy="4.2">            puerto,</tspan><tspan x="36" dy="4.2">            activa: false,</tspan><tspan x="30" dy="4.2">        }</tspan><tspan x="24" dy="4.2">    }</tspan><tspan x="18" dy="4.2">}</tspan>
+</text>
+
+<path d="M210 247 C186 248 171 260 163 297 L210 297 Z" fill="#e8ddd0"/>
+
+<text class="author" x="138" y="246">
+<tspan x="128">Miguel A. Ortuño Pérez</tspan>
+<tspan x="128" dy="8">Universidad Rey Juan Carlos</tspan>
+<tspan x="128" dy="14">Curso 2026–2027</tspan>
+</text>
+
+</svg>

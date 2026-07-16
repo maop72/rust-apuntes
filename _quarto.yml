@@ -5,6 +5,7 @@ book:
   title: "Apuntes de programación en Rust"
   author: "Miguel A. Ortuño Pérez"
   date: today
+  cover-image: portada.png
   chapters:
     - index.qmd
     - 02-intro_rust.qmd
@@ -45,9 +46,13 @@ format:
     code-copy: true
 
   pdf:
+    include-in-header: templates/header.tex
+    template-partials:
+      - templates/before-body.tex
     documentclass: scrreprt
     classoption:
       - twoside
+      - titlepage
 
     fontsize: 13pt
 
@@ -67,37 +72,3 @@ format:
     toc-title: Índice
 
     lot: true
-
-    include-in-header:
-      text: |
-        \usepackage{fancyhdr}
-        \usepackage{fvextra}
-
-         % Código fuente a 11 puntos
-         \RecustomVerbatimEnvironment{Highlighting}{Verbatim}{
-          fontsize=\fontsize{11}{13}\selectfont,
-          breaklines=true,
-          commandchars=\\\{\}
-         }
-
-        \fancypagestyle{plain}{
-           \fancyhf{}           % Borra encabezado y pie
-           \renewcommand{\headrulewidth}{0pt}
-           \renewcommand{\footrulewidth}{0pt}
-        }
-        \pagestyle{fancy}
-        \fancyhf{}
-
-
-
-        % Título del libro en páginas pares
-        \fancyhead[LE]{Apuntes de programación en Rust}
-
-        % Capítulo actual en páginas impares
-        \fancyhead[RO]{\nouppercase{\leftmark}}
-
-        % Número de página en el exterior
-        \fancyhead[RE,LO]{\thepage}
-
-        \renewcommand{\headrulewidth}{0.4pt}
-        \renewcommand{\footrulewidth}{0pt}

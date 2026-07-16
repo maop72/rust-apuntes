@@ -276,7 +276,6 @@ escritura para conectar y desconectar la instancia.
 
 ```rust
 
-``` rust
 {{< include c11/conexion/src/main.rs >}}
 ```
 

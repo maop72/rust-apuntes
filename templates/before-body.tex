@@ -1,0 +1,37 @@
+$if(has-frontmatter)$
+\frontmatter
+$endif$
+
+%-------------------------
+% Portada
+%-------------------------
+\thispagestyle{empty}
+
+\AddToShipoutPictureFG*{%
+  \AtPageLowerLeft{%
+    \includegraphics[
+      width=\paperwidth,
+      height=\paperheight
+    ]{portada.pdf}%
+  }%
+}
+
+\null
+\clearpage
+
+%-------------------------
+% Página en blanco
+%-------------------------
+\pagestyle{empty}
+\thispagestyle{empty}
+\null
+\clearpage
+
+%-------------------------
+% Volver al estilo normal
+%-------------------------
+\pagestyle{fancy}
+
+$if(title)$
+% Sin \maketitle
+$endif$
