@@ -114,7 +114,7 @@ etc.
 
 ## Comparación entre tuplas y arrays
 
-La tabla @tbl-tupla-vs-array resume las similitudes y diferencias
+La @tbl-tupla-vs-array resume las similitudes y diferencias
 entre tuplas y arrays.
 
 | Característica           | Tupla                   | Array                      |

@@ -243,7 +243,7 @@ programa sustituye el primer elemento por un nuevo valor:
 ## Operaciones habituales
 
 La biblioteca estándar proporciona numerosos métodos para
-manipular vectores. La siguiente tabla resume algunos de los más
+manipular vectores. La @tbl-manipula-vectores tabla resume algunos de los más
 utilizados:
 
 | Método               | Descripción                                          |
@@ -256,6 +256,10 @@ utilizados:
 | `insert(pos, valor)` | Inserta un elemento en la posición indicada.         |
 | `remove(pos)`        | Elimina el elemento situado en la posición indicada. |
 | `contains(&valor)`   | Indica si el vector contiene un determinado valor.   |
+
+
+: Métodos más habituales para manipular vectores {#tbl-manipula-vectores}
+
 
 El siguiente programa muestra el uso de todos estos métodos:
 
