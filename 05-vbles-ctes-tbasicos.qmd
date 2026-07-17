@@ -7,6 +7,113 @@ lenguajes, Rust considera la inmutabilidad como la opción por
 defecto, una característica que suele resultar sorprendente a los
 principiantes. También veremos los operadores más habituales.
 
+## Salida por pantalla
+
+Antes de comenzar a estudiar las variables y los tipos básicos,
+mostraremos cómo escribir en la salida estándar (pantalla), ya
+que nos será útil en prácticamente todos los ejemplos de este y
+de los siguientes capítulos.
+
+Las construcciones `print!` y `println!` son *macros* de Rust que
+permiten escribir texto y valores en la salida estándar. La
+diferencia entre ambas es que `println!` añade un salto de línea
+al final, mientras que `print!` no lo hace.
+
+Una macro es un mecanismo que permite al compilador generar
+código a partir de una plantilla, proporcionando una sintaxis más
+flexible que la de una función convencional. En este curso no
+estudiaremos cómo definir nuestras propias macros, pero
+utilizaremos con frecuencia algunas de las que proporciona la
+biblioteca estándar.
+
+Por convenio, los nombres de las macros terminan con un signo de
+exclamación (`!`), lo que permite distinguirlas fácilmente de las
+funciones.
+
+``` rust
+{{< include c05/print01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20print%21%28%22Hola%20%22%29%3B%0A%20%20%20%20println%21%28%22mundo.%22%29%3B%0A%20%20%20%20println%21%28%22Adi%C3%B3s%20mundo.%22%29%3B%0A%7D%0A%0A)
+
+:::
+
+### Formato de salida
+
+Las macros `print!` y `println!` pueden recibir uno o varios
+argumentos. El primero es siempre una *cadena de formato*, que
+indica cómo debe mostrarse el texto. Los argumentos restantes son
+los valores que se insertarán en esa cadena.
+
+Dentro de la cadena de formato, cada marcador `{}` se sustituye
+por el valor del argumento correspondiente. El primer marcador
+`{}` se reemplaza por el segundo argumento de la macro, el
+segundo marcador (si existe) por el tercer argumento, y así
+sucesivamente.
+
+``` rust
+{{< include c05/print02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20x%20%3D%205.23%3B%0A%20%20%20%20println%21%28%22x%3A%20%7B%7D%22%2C%20x%29%3B%0A%0A%20%20%20%20let%20a%20%3D%202%3B%0A%20%20%20%20let%20b%20%3D%203%3B%0A%20%20%20%20println%21%28%22a%3A%7B%7D%20b%3A%7B%7D%20a%2Bb%3A%7B%7D%22%2C%20a%2C%20b%2C%20a%20%2B%20b%29%3B%0A%7D%0A)
+
+:::
+
+- En la primera llamada a `println!`, el único marcador `{}` se
+  sustituye por el valor de la variable `x`.
+
+- En la segunda llamada aparecen tres marcadores. El primero se
+  sustituye por el valor de `a`, el segundo por el de `b` y el
+  tercero por el resultado de la expresión `a + b`.
+
+Esta es la *sintaxis general*. Rust permite una *sintaxis
+abreviada*, que consiste en escribir una variable directamente
+dentro de las llaves,
+
+``` rust
+println!("{x}");  // Sintaxis abreviada.
+```
+
+Aunque podremos encontrar documentación y programas que usan la
+sintaxis abreviada, en estos apuntes utilizaremos siempre la
+forma general
+
+``` rust
+println!("{}", x);  // Sintaxis general
+```
+
+La preferimos porque funciona en todos los casos y resulta más
+uniforme. Por el contrario, la forma abreviada solo puede
+utilizarse cuando dentro de las llaves solo aparece el nombre de
+una variable (o una constante). En cuanto queremos imprimir una
+expresión, debemos utilizar la forma general.
+
+Por ejemplo:
+
+``` rust
+println!("{}", a + b);
+println!("{}", v[0]);
+println!("{}", persona.nombre);
+println!("{}", texto.len());
+println!("{}", *r);
+```
+
+En todos estos casos la forma abreviada no sería válida.
+
+``` rust
+{{< include c05/print_mal/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20s%20%3D%20%22hola-hola%22%3B%0A%20%20%20%20let%20v%20%3D%20%5B%22hola%22%2C%20%22mundo%22%5D%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20s%29%3B%20//%20Forma%20general.%20ok.%0A%20%20%20%20println%21%28%22%7Bs%7D%22%29%3B%20%20%20//%20Forma%20abreviada.%20Aqu%C3%AD%2C%20ok.%0A%20%20%20%20//println%21%28%22%7Bv%5B0%5D%7D%22%29%3B%20//%20%C2%A1Error%21%20La%20forma%20abreviada%20no%20es%20v%C3%A1lida%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20v%5B0%5D%29%3B%20//%20Forma%20general.%20ok.%0A%7D%0A)
+
+:::
+
 ## Tipos de datos básicos {#sec-tipos-basicos}
 
 Las variables se declaran mediante la palabra reservada `let`. Lo
@@ -203,16 +310,6 @@ cualquier otro lenguaje de programación, debe declararse con
 
 :::
 
-La macro `println!` muestra texto por pantalla. En este ejemplo:
-
-``` rust
-println!("x:{}", x);
-```
-
-la cadena `"x:{}"` indica el formato de salida. El especificador
-`{}` será sustituido por el valor de la variable `x`, que se pasa
-como segundo argumento.
-
 ## Constantes
 
 Las constantes se definen con la palabra reservada `const`.
@@ -274,10 +371,36 @@ C#, Java, JavaScript, Go, Kotlin, etc.
 | Mayor que         | `>`      |
 | Mayor o igual que | `>=`     |
 | AND lógico        | `&&`     |
-| OR lógico         | \|       |
+| OR lógico         | \|\|     |
 | NOT lógico        | `!`      |
 
 : Operador básicos de Rust {#tbl-operadores}
 
 Los operadores de asignación compuesta (`+=`, `-=`, `*=`, etc.)
 también están disponibles.
+
+## Resumen
+
+En este capítulo hemos presentado los elementos básicos con los
+que se construyen los programas en Rust.
+
+Las ideas principales son las siguientes:
+
+- Las variables se declaran con `let` y, por defecto, son
+  inmutables.
+- Una variable puede hacerse mutable mediante la palabra clave
+  `mut`.
+- Rust dispone de un sistema de inferencia de tipos, aunque
+  también es posible indicar el tipo explícitamente cuando sea
+  conveniente.
+- Los tipos básicos incluyen enteros, números en coma flotante,
+  valores booleanos y caracteres.
+- Las constantes se declaran con `const`, deben tener un tipo
+  explícito y su valor debe conocerse en tiempo de compilación.
+- Rust proporciona los operadores aritméticos, relacionales y
+  lógicos habituales en la mayoría de los lenguajes de
+  programación.
+
+Estos conceptos constituyen la base sobre la que se apoyarán los
+capítulos siguientes, donde comenzaremos a trabajar con tipos más
+complejos y con las estructuras fundamentales del lenguaje.

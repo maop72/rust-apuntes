@@ -377,3 +377,30 @@ siguiente ejemplo ilustra esta diferencia:
 - Pero la mayoría de caracteres no ingleses ocupan más de un
   byte. En este ejemplo hay un carácter español,`¡`, que ocupa
   dos bytes. Por tanto, son 6 caracteres pero 7 bytes.
+
+## Resumen
+
+En este capítulo hemos estudiado el tipo `String`, la estructura
+que utiliza Rust para representar cadenas de texto cuyo contenido
+puede modificarse.
+
+Las ideas principales son las siguientes:
+
+- `String` almacena una secuencia de bytes codificada en UTF-8 y
+  puede aumentar o disminuir de tamaño dinámicamente.
+- Las cadenas pueden crearse de distintas formas, como mediante
+  `String::new()`, `String::from()` o el método `to_string()`.
+- Rust ofrece varias formas de concatenar cadenas, entre ellas
+  los operadores `+` y `+=` y la macro `format!`.
+- Debido a la codificación UTF-8, no es posible acceder a un
+  carácter mediante un índice como en otros lenguajes.
+- Para recorrer una cadena pueden utilizarse los iteradores
+  `chars()` y `bytes()`, según se desee trabajar con caracteres o
+  con los bytes que los representan.
+- La longitud obtenida mediante `len()` corresponde al número de
+  bytes almacenados, no necesariamente al número de caracteres.
+
+Comprender cómo representa Rust las cadenas de texto resulta
+fundamental para escribir programas correctos y eficientes,
+especialmente cuando trabajan con texto internacional o con
+caracteres Unicode.

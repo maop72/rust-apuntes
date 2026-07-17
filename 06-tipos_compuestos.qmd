@@ -126,3 +126,28 @@ entre tuplas y arrays.
 | Ejemplo                  | `("TCP", 443, true)`    | `[10, 20, 30, 40, 50]`     |
 
 : Comparación entre tuplas y arrays {#tbl-tupla-vs-array}
+
+## Resumen
+
+En este capítulo hemos presentado los dos tipos de datos
+compuestos básicos que proporciona Rust: las tuplas y los
+*arrays*. 
+
+Las ideas principales son las siguientes:
+
+- Una tupla agrupa un número fijo de valores que pueden ser de
+  tipos diferentes.
+- Los elementos de una tupla se acceden mediante su posición,
+  utilizando la notación `.0`, `.1`, `.2`, etc.
+- La tupla vacía `()` representa el valor unitario y suele
+  utilizarse como valor de retorno de funciones que realizan una
+  acción pero no producen un resultado.
+- Un *array* almacena un número fijo de elementos del mismo tipo.
+- Los elementos de un *array* se acceden mediante un índice entre
+  corchetes, comenzando por el índice `0`.
+- Tanto las tuplas como los *arrays* tienen un tamaño fijo, pero
+  las tuplas permiten mezclar tipos mientras que los *arrays* no.
+
+En los próximos capítulos estudiaremos nuevos tipos de datos que
+permiten representar estructuras más complejas y colecciones de
+tamaño variable.

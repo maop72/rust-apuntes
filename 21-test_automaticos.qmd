@@ -1,1 +1,243 @@
 # Tests automáticos
+
+Cuando desarrollamos un programa es habitual comprobar
+manualmente que funciona correctamente. Ejecutamos el programa,
+introducimos algunos datos y verificamos que el resultado es el
+esperado. Aunque este método puede ser suficiente para programas
+pequeños, resulta lento, propenso a errores y difícil de repetir
+de forma sistemática.
+
+Los tests automáticos permiten que sea el propio programa quien
+realice estas comprobaciones. Un test es una función que ejecuta
+una parte del código y verifica automáticamente que el resultado
+obtenido coincide con el esperado. Si la comprobación tiene
+éxito, el test se considera superado; en caso contrario, se
+informa del error.
+
+En muchos lenguajes de programación, los tests se escriben
+utilizando bibliotecas o herramientas externas. Por ejemplo, en
+Java es muy habitual emplear *JUnit*, en Python se utilizan
+`unittest` o `pytest`, y en C++ son frecuentes *GoogleTest* o
+*Catch2*.
+
+Rust adopta un enfoque diferente. El lenguaje y la herramienta
+`cargo` incorporan un sistema de tests integrado, de modo que no
+es necesario instalar bibliotecas adicionales para escribir y
+ejecutar pruebas sencillas. Esto facilita empezar a comprobar el
+funcionamiento del código desde las primeras etapas del
+desarrollo.
+
+En este capítulo aprenderemos a escribir tests sencillos para
+verificar el comportamiento de nuestras funciones utilizando las
+herramientas básicas que proporciona Rust.
+
+## La función `#[test]`
+
+En Rust, un test no es más que una función marcada con el
+atributo `#[test]`. Este atributo indica al compilador y a
+`cargo` que la función forma parte del conjunto de pruebas del
+programa y debe ejecutarse cuando se solicite.
+
+Como cualquier otra función, un test puede contener variables,
+llamadas a funciones, estructuras de control y cualquier otro
+elemento del lenguaje. La diferencia es que su finalidad no es
+realizar un cálculo útil para el programa, sino comprobar que
+otro código se comporta como se espera.
+
+El siguiente ejemplo define una función que calcula el producto
+de dos números enteros y dos tests que verifican algunos
+resultados.
+
+``` rust
+{{< include c21/test01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20producto%28a%3A%20i32%2C%20b%3A%20i32%29%20-%3E%20i32%20%7B%0A%20%20%20%20a%20%2A%20b%0A%7D%0A%0A%23%5Btest%5D%0Afn%20producto_positivos%28%29%20%7B%0A%20%20%20%20let%20p%20%3D%20producto%283%2C%204%29%3B%0A%20%20%20%20assert_eq%21%28p%2C%2012%29%3B%0A%20%20%20%20assert%21%28p%20%3E%200%29%3B%0A%7D%0A%0A%23%5Btest%5D%0Afn%20producto_negativos%28%29%20%7B%0A%20%20%20%20let%20p%20%3D%20producto%28-3%2C%20-4%29%3B%0A%20%20%20%20assert_eq%21%28p%2C%2012%29%3B%0A%20%20%20%20assert%21%28p%20%3E%200%29%3B%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20a%20%3D%20-2%3B%0A%20%20%20%20let%20b%20%3D%207%3B%0A%20%20%20%20println%21%28%22%7B%7D%20%2A%20%7B%7D%20%3D%20%7B%7D%22%2C%20a%2C%20b%2C%20producto%28a%2C%20b%29%29%3B%0A%7D%0A)
+
+:::
+
+En este ejemplo, la función `producto()` forma parte del
+programa, mientras que `producto_positivos()` y
+`producto_negativos()` son tests. El nombre del test es libre,
+aunque resulta recomendable elegir uno que describa claramente
+qué aspecto del comportamiento se está comprobando.
+
+En las siguientes secciones veremos cómo escribir comprobaciones
+más completas mediante las macros de aserción que proporciona
+Rust.
+
+## Ejecutar los tests
+
+- Si estamos trabajando en un proyecto local, los tests se
+  ejecutan mediante el comando `cargo test`.
+
+- En el *Rust Playground* también es posible ejecutar tests. Para
+  ello basta con seleccionar la opción *Test*. Cuando el programa
+  contiene funciones marcadas con `#[test]`, el Playground ofrece
+  directamente esta opción en el botón principal de ejecución,
+  aunque siempre es posible elegir entre *Run* y *Test* mediante
+  el botón situado a su derecha, identificado con el icono `...`.
+
+Antes de ejecutar las pruebas, `cargo` compila el proyecto. Si la
+compilación finaliza correctamente, ejecuta automáticamente todas
+las funciones marcadas con el atributo `#[test]`.
+
+Para cada test, Rust indica si la prueba se ha superado (`ok`) o
+ha fallado (`FAILED`). Al finalizar, muestra un resumen con el
+número total de tests ejecutados y del resultado obtenido.
+
+Si alguno de los tests falla, `cargo` continúa ejecutando el
+resto de pruebas y, al finalizar, muestra información sobre los
+tests que no han sido superados. De este modo es posible detectar
+varios errores en una única ejecución.
+
+Durante el desarrollo es habitual ejecutar los tests con
+frecuencia para comprobar que las modificaciones realizadas no
+han introducido nuevos errores en el programa.
+
+## Macros de aserción
+
+Rust proporciona varias macros de aserción para comprobar que el
+comportamiento de una función es el esperado. Si la condición
+indicada por la macro no se cumple, el test falla y se informa
+del motivo.
+
+Las macros más utilizadas son las siguientes:
+
+| Macro                            | Comprueba que...             |
+|----------------------------------|------------------------------|
+| `assert!(condición)`             | La condición es `true`.      |
+| `assert_eq!(obtenido, esperado)` | Ambos valores son iguales.   |
+| `assert_ne!(valor1, valor2)`     | Ambos valores son distintos. |
+
+Todas estas macros admiten, de forma opcional, un mensaje que se
+mostrará si el test falla:
+
+``` rust
+assert_eq!(producto(3, 4), 12, "El producto de 3 y 4 debería ser 12");
+```
+
+Entre ellas, `assert_eq!` es probablemente la más utilizada, ya
+que permite comprobar de forma sencilla que una función devuelve
+exactamente el resultado esperado.
+
+## Tests fallidos
+
+El siguiente programa contiene un error en la función
+`producto()`. En lugar de multiplicar los dos números, devuelve
+su suma.
+
+``` rust
+{{< include c21/test02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20producto%28a%3A%20i32%2C%20b%3A%20i32%29%20-%3E%20i32%20%7B%0A%20%20%20%20a%20%2B%20b%20//%20Error%0A%7D%0A%0A%23%5Btest%5D%0Afn%20producto_positivos%28%29%20%7B%0A%20%20%20%20assert_eq%21%28producto%283%2C%204%29%2C%2012%29%3B%0A%7D%0A%0A%23%5Btest%5D%0Afn%20producto_negativos%28%29%20%7B%0A%20%20%20%20let%20p%20%3D%20producto%28-3%2C%20-4%29%3B%0A%20%20%20%20assert_eq%21%28p%2C%2012%29%3B%0A%20%20%20%20assert%21%28p%20%3E%200%29%3B%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20a%20%3D%20-2%3B%0A%20%20%20%20let%20b%20%3D%207%3B%0A%20%20%20%20println%21%28%22%7B%7D%20%2A%20%7B%7D%20%3D%20%7B%7D%22%2C%20a%2C%20b%2C%20producto%28a%2C%20b%29%29%3B%0A%7D%0A)
+
+:::
+
+Al ejecutar el test, Rust indica que la comprobación ha fallado y
+muestra tanto el valor obtenido como el esperado. Este tipo de
+mensajes facilita localizar el origen del error y averiguar por
+qué el test no se ha superado.
+
+## Comprobar errores con `#[should_panic]`
+
+En ocasiones, el comportamiento correcto de una función consiste
+precisamente en producir un error. Por ejemplo, puede que una
+función no admita determinados argumentos y, si los recibe,
+finalice su ejecución mediante `panic!`.
+
+Para comprobar este comportamiento, Rust proporciona el atributo
+`#[should_panic]`. Cuando un test está marcado con este atributo,
+se considera superado únicamente si durante su ejecución se
+produce un `panic!`. Si el test finaliza normalmente, se
+considera que ha fallado.
+
+En el siguiente ejemplo, la función `division()` provoca un
+`panic!` cuando se intenta dividir entre cero. Obsérvese que la
+función `main()` no realiza ninguna llamada a `division()`: es el
+propio test quien invoca directamente la función que se desea
+comprobar.
+
+``` rust
+{{< include c21/test03/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20division%28a%3A%20i32%2C%20b%3A%20i32%29%20-%3E%20i32%20%7B%0A%20%20%20%20if%20b%20%3D%3D%200%20%7B%0A%20%20%20%20%20%20%20%20panic%21%28%22Divisi%C3%B3n%20por%20cero%22%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%20/%20b%0A%7D%0A%0A%23%5Btest%5D%0A%23%5Bshould_panic%5D%0Afn%20division_por_cero%28%29%20%7B%0A%20%20%20%20division%2810%2C%200%29%3B%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%7D%0A)
+
+:::
+
+En este caso, el test se supera porque la llamada a
+`division(10, 0)` produce el `panic!` esperado.
+
+## Organización de los tests
+
+En los ejemplos de este capítulo, las funciones del programa y
+los tests se han escrito juntos para facilitar su lectura. Sin
+embargo, cuando el programa crece resulta conveniente
+organizarlos de una forma más sistemática.
+
+La recomendación oficial de Rust para los tests unitarios
+consiste en escribirlos al final del mismo archivo que contiene
+las funciones que se desean comprobar. Para ello, se agrupan
+dentro de un módulo denominado `tests`, precedido por el atributo
+`#[cfg(test)]`, que indica que dicho módulo solo debe compilarse
+cuando se ejecutan los tests.
+
+``` rust
+fn producto(a: i32, b: i32) -> i32 {
+    a * b
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn producto_positivos() {
+        assert_eq!(producto(3, 4), 12);
+    }
+
+    #[test]
+    fn producto_negativos() {
+        assert_eq!(producto(-3, -4), 12);
+    }
+}
+
+fn main() {
+}
+```
+
+La sentencia `use super::*;` hace visibles dentro del módulo
+`tests` todas las funciones definidas en el módulo que lo
+contiene, permitiendo utilizarlas directamente en los tests.
+
+## Conclusión
+
+- Un test es una función marcada con el atributo `#[test]`.
+
+- Los tests se ejecutan mediante `cargo test` o desde el *Rust
+  Playground* seleccionando la opción *Test*.
+
+- Las macros `assert!`, `assert_eq!` y `assert_ne!` permiten
+  comprobar automáticamente que una función produce los
+  resultados esperados.
+
+- El atributo `#[should_panic]` permite verificar que una función
+  produce un `panic!` cuando recibe argumentos no válidos.
+
+- En los tests unitarios, Rust recomienda agrupar las pruebas en
+  un módulo `tests` al final del mismo archivo que contiene el
+  código que se desea comprobar.
+
+Los tests automáticos ayudan a detectar errores de forma temprana
+y permiten comprobar, tras cada modificación del programa, que el
+código sigue comportándose como se espera. Por este motivo,
+constituyen una herramienta fundamental en el desarrollo de
+software de calidad.

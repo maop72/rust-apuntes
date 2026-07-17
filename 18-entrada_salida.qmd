@@ -71,8 +71,6 @@ adecuado para realizar pruebas. Su contenido puede eliminarse
 automáticamente al reiniciar el sistema o mediante tareas
 periódicas de limpieza.
 
-
-
 ``` rust
 {{< include c18/escritura/src/main.rs >}}
 ```
@@ -82,8 +80,6 @@ periódicas de limpieza.
 [Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Afs%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20texto%20%3D%20%22Rust%20es%20un%20lenguaje%20moderno.%22%3B%0A%0A%20%20%20%20fs%3A%3Awrite%28%22/tmp/mensaje.txt%22%2C%20texto%29.expect%28%22Error%20al%20escribir%20el%20fichero%22%29%3B%0A%0A%20%20%20%20println%21%28%22Fichero%20escrito%20correctamente.%22%29%3B%0A%7D%0A)
 
 :::
-
-
 
 La función `write()` recibe dos argumentos: el nombre del fichero
 y los datos que se desean escribir. El valor devuelto es de tipo
@@ -109,8 +105,6 @@ almacenados una vez finaliza.
 Para leer el contenido completo de un fichero puede utilizarse la
 función `std::fs::read_to_string()`.
 
-
-
 ``` rust
 {{< include c18/lectura01/src/main.rs >}}
 ```
@@ -120,7 +114,6 @@ función `std::fs::read_to_string()`.
 [Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Afs%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20contenido%20%3D%20fs%3A%3Aread_to_string%28%22/tmp/mensaje.txt%22%29%0A%20%20%20%20%20%20%20%20.expect%28%22Error%20al%20leer%20el%20fichero%22%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20contenido%29%3B%0A%7D%0A%0A)
 
 :::
-
 
 La función `read_to_string()` recibe el nombre del fichero y
 devuelve su contenido en un objeto de tipo `String`. Al igual que
@@ -134,14 +127,12 @@ fallará porque el fichero escrito en una ejecución anterior no se
 conserva. Cada ejecución tiene lugar en un entorno temporal e
 independiente.
 
-
 ## Propagación de errores en E/S.
 
-En los ejemplos anteriores hemos utilizado el método `expect()` para
-finalizar el programa cuando se produce un error. Como vimos en
-@sec-question-mark, otra posibilidad consiste en propagar el error al
-código que llamó a la función mediante el operador `?`.
-
+En los ejemplos anteriores hemos utilizado el método `expect()`
+para finalizar el programa cuando se produce un error. Como vimos
+en @sec-question-mark, otra posibilidad consiste en propagar el
+error al código que llamó a la función mediante el operador `?`.
 
 ``` rust
 {{< include c18/lectura02/src/main.rs >}}
@@ -155,21 +146,42 @@ código que llamó a la función mediante el operador `?`.
 
 El operador `?` se aplica sobre un valor de tipo `Result`. Si la
 operación tiene éxito, extrae el valor contenido en `Ok` y la
-ejecución continúa normalmente. Si se produce un error, la función
-finaliza inmediatamente devolviendo dicho error.
-
+ejecución continúa normalmente. Si se produce un error, la
+función finaliza inmediatamente devolviendo dicho error.
 
 Es importante recordar que una función solo puede utilizar el
 operador `?` si devuelve un tipo de error compatible con el de la
 operación que está realizando. En este ejemplo,
 `read_to_string()` devuelve un `io::Result<String>`, por lo que
-`main()` debe devolver también un `io::Result<()>` (o un tipo compatible).
+`main()` debe devolver también un `io::Result<()>` (o un tipo
+compatible).
 
-En otro caso, 
-el compilador produciría un
-error. Este es uno de los problemas más habituales cuando se comienza
-a utilizar el operador `?`. 
+En otro caso, el compilador produciría un error. Este es uno de
+los problemas más habituales cuando se comienza a utilizar el
+operador `?`.
 
+## Resumen
 
+En este capítulo hemos introducido las operaciones básicas de
+entrada y salida que proporciona la biblioteca estándar de Rust.
 
+Las ideas principales son las siguientes:
 
+- La entrada por consola se realiza a través de `std::io`,
+  utilizando normalmente el método `read_line()`.
+- La función `read_line()` almacena el texto leído en un objeto
+  `String` y devuelve un valor de tipo `Result`.
+- El método `trim()` resulta útil para eliminar el salto de línea
+  que se añade al pulsar la tecla Intro.
+- Las funciones `std::fs::write()` y `std::fs::read_to_string()`
+  permiten escribir y leer ficheros de texto de forma sencilla.
+- Las operaciones de entrada y salida pueden fallar, por lo que
+  devuelven un `Result` que debe tratarse explícitamente.
+- Cuando una función devuelve un tipo de error compatible, el
+  operador `?` permite propagar los errores de forma concisa.
+
+Aunque la biblioteca estándar ofrece mecanismos mucho más
+potentes para trabajar con ficheros y flujos de datos, las
+operaciones estudiadas en este capítulo son suficientes para una
+gran parte de los programas y constituyen la base sobre la que se
+apoyan técnicas más avanzadas.

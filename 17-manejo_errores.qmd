@@ -1,7 +1,8 @@
 # Manejo de errores {#sec-errores}
 
-En el @sec-enum vimos los tipos eumerados, estudiaremos ahora uno
-de los más importantes de la biblioteca estándar: `Result<T, E>`.
+Dedicamos el @sec-enum a los tipos enumerados, estudiaremos ahora
+uno de los más importantes de la biblioteca estándar:
+`Result<T, E>`.
 
 Durante la ejecución de un programa pueden producirse situaciones
 que impidan continuar una operación con normalidad. En muchos
@@ -48,7 +49,7 @@ posibilidad de que una operación falle. Como consecuencia, el
 código resulta más robusto y es menos probable que un error pase
 inadvertido.
 
-## Errores recuperables: `Result<T, E>`
+## Errores recuperables: `Result<T, E>` {#sec-enum-result}
 
 Las operaciones que pueden fallar de forma recuperable devuelven
 un valor de tipo `Result<T, E>`, que representa explícitamente
@@ -392,3 +393,32 @@ considera que el error no debería producirse. Si esa suposición
 resulta ser incorrecta, `expect()` suele ser preferible, ya que
 el mensaje proporcionado por el programador facilita comprender
 qué suposición ha fallado y localizar el origen del problema.
+
+## Resumen
+
+En este capítulo hemos estudiado el mecanismo que utiliza Rust
+para gestionar los errores de forma segura y explícita.
+
+Las ideas principales son las siguientes:
+
+- Los errores recuperables se representan mediante el tipo
+  `Result<T, E>`.
+- Un valor `Result` puede contener un resultado correcto (`Ok`) o
+  un error (`Err`), por lo que ambos casos deben tratarse
+  explícitamente.
+- La expresión `match` permite procesar cada una de estas dos
+  posibilidades de forma clara y segura.
+- El operador `?` simplifica la propagación de errores en las
+  funciones que también devuelven un `Result`.
+- Los métodos `unwrap()` y `expect()` extraen el valor contenido
+  en un `Result`, pero provocan un `panic!` si el resultado es un
+  error, por lo que solo deben utilizarse cuando esa situación no
+  pueda producirse o durante el desarrollo.
+- `panic!` representa un error irrecuperable y provoca la
+  finalización del programa.
+
+El tratamiento explícito de los errores es una de las
+características que distinguen a Rust. Gracias a `Result` y al
+operador `?`, es posible escribir programas robustos sin recurrir
+a excepciones y haciendo visibles en el propio código las
+situaciones que pueden fallar.

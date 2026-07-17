@@ -29,7 +29,7 @@ Podemos clasificar los métodos en dos grandes grupos:
 
 1.  Los vinculados a un struct. Reciben, como primer parámetro,
     el struct sobre el que actúan, representado mediante la
-    palabra clave `self`. A su vez, se subdividen en:
+    palabra reservada `self`. A su vez, se subdividen en:
 
     - *Métodos con `&self`*. Son métodos de *solo lectura*.
       Pueden consultar el contenido del struct, pero no
@@ -276,7 +276,6 @@ escritura para conectar y desconectar la instancia.
 
 ```rust
 
-``` rust
 {{< include c11/conexion/src/main.rs >}}
 ```
 
@@ -303,3 +302,34 @@ métodos estudiados:
 No aparece ningún método con `self`, ya que este tipo de métodos
 es menos frecuente y suele reservarse para situaciones en las que
 el método necesita tomar posesión del struct.
+
+
+## Resumen
+
+En este capítulo hemos visto cómo asociar comportamiento a los
+`struct` mediante métodos.
+
+Las ideas principales son las siguientes:
+
+- Los métodos se definen dentro de bloques `impl` asociados a un
+  tipo.
+- El primer parámetro de un método puede ser `&self`, `&mut self`
+  o `self`, según la forma en que el método necesite acceder al
+  objeto.
+- Los métodos con `&self` permiten consultar el estado del objeto
+  sin modificarlo.
+- Los métodos con `&mut self` pueden modificar el contenido del
+  objeto.
+- Los métodos con `self` consumen el objeto y transfieren su
+  propiedad al método.
+- Los métodos asociados no reciben `self` y se invocan mediante el
+  nombre del tipo; el ejemplo más habitual es el constructor
+  convencional `new`.
+- Un mismo tipo puede tener varios bloques `impl`, lo que permite
+  organizar mejor el código.
+
+La combinación de `struct` y métodos permite definir tipos que
+agrupan tanto los datos como las operaciones relacionadas con
+ellos. En el siguiente capítulo ampliaremos esta idea mediante los
+tipos enumerados (`enum`), que permiten representar valores que
+pueden adoptar distintas variantes.

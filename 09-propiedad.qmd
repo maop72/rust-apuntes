@@ -92,8 +92,8 @@ let s = String::from("Hola");
 ```
 
 la variable `x` se almacena íntegramente en memoria *stack*. En
-cambio, la variable `s` utiliza memoria en memoria *heap* para
-almacenar los caracteres de la cadena.
+cambio, la variable `s` utiliza memoria *heap* para almacenar los
+caracteres de la cadena.
 
 En resumen:
 
@@ -225,10 +225,10 @@ realizar una asignación:
 La razón es que algunos tipos implementan un rasgo (*trait*)
 llamado `Copy`.
 
-Como estudiaremos en capítulos posteriores, un rasgo es un
-mecanismo mediante el cual Rust asocia ciertas capacidades o
-comportamientos a un tipo de datos. De momento nos basta saber
-que un tipo que implementa `Copy` puede copiarse automáticamente.
+Un rasgo es un mecanismo mediante el cual Rust asocia ciertas
+capacidades o comportamientos a un tipo de datos. De momento nos
+basta saber que un tipo que implementa `Copy` puede copiarse
+automáticamente.
 
 Cuando un tipo implementa `Copy`, una asignación crea una copia
 del valor en lugar de transferir su propiedad. Como consecuencia,
@@ -250,7 +250,6 @@ que determina la existencia de dicho rasgo.
 De forma simplificada, un tipo puede implementar `Copy` cuando
 duplicar los bits que lo representan en memoria produce un nuevo
 valor completamente válido e independiente del original.
-Volveremos sobre esta idea más adelante.
 
 ## Copias explícitas: método `clone` {#sec-clone}
 
@@ -343,7 +342,7 @@ la función no necesita convertirse en propietaria del valor, sino
 únicamente acceder a él de forma temporal. Para ello Rust
 proporciona las referencias y los préstamos.
 
-## Referencias y préstamos.
+## Referencias y préstamos. {#sec-prestamos}
 
 En la @sec-clone vimos que el método `clone()` permite crear
 copias independientes de un valor. Sin embargo, esta solución
@@ -374,7 +373,7 @@ Referencias y préstamos son dos aspectos de un mismo mecanismo:
 - Cuando una referencia se crea, se dice que el valor original ha
   sido prestado (*borrowed*) temporalmente.
 
-En el siguiente ejemplo podemos ver como pasar una variable a una
+En el siguiente ejemplo podemos ver cómo pasar una variable a una
 función sin perder su propiedad:
 
 ``` rust
@@ -467,7 +466,7 @@ Veamos ahora un ejemplo similar pero con una función:
   que la variable original recupera el control exclusivo sobre el
   valor.
 
-Observa también que el modificador `&mut` aparece tanto en la
+Obsérvese también que el modificador `&mut` aparece tanto en la
 llamada a la función como en la declaración de su parámetro, pero
 su uso y significado son distintos en cada caso.
 
@@ -503,3 +502,30 @@ el mismo valor. Por tanto:
 - Nunca pueden darse ambas situaciones al mismo tiempo.
 
 O en otras palabras: *muchos lectores o un único escritor*.
+
+## Resumen
+
+En este capítulo hemos introducido uno de los conceptos más
+importantes de Rust: el sistema de propiedad.
+
+Las ideas fundamentales son las siguientes:
+
+- Cada valor tiene un único propietario.
+- Cuando el propietario sale de su ámbito, el valor se destruye
+  automáticamente.
+- La asignación y el paso de parámetros pueden transferir la
+  propiedad de un valor (*move*).
+- Algunos tipos implementan el rasgo `Copy`, por lo que se copian
+  automáticamente en lugar de mover su propiedad.
+- Cuando es necesario obtener una copia independiente de un
+  objeto que no implementa `Copy`, puede utilizarse el método
+  `clone()`.
+- Las referencias permiten acceder temporalmente a un valor sin
+  convertirse en su propietario.
+- Puede haber cualquier número de préstamos inmutables o un único
+  préstamo mutable, pero nunca ambas situaciones al mismo tiempo.
+
+Estas reglas permiten que Rust garantice la seguridad de la
+memoria durante la compilación, evitando accesos inválidos,
+liberaciones múltiples y muchas condiciones de carrera, todo ello
+sin necesidad de utilizar un recolector de basura.

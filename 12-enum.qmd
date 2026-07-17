@@ -1,6 +1,6 @@
 # `enum` {#sec-enum}
 
-Este capitulo tratará los `enum` de Rust, abreviatura de
+Este capítulo tratará los `enum` de Rust, abreviatura de
 *enumerations* (enumeraciones). Un `enum` define un tipo cuyos
 valores pueden adoptar una variante entre varias posibles,
 establecidas por el programador. Obsérvese la diferencia con los
@@ -10,9 +10,10 @@ simultáneamente todos sus campos.
 Los `enum` son un mecanismo muy versátil y aparecen con
 frecuencia tanto en programas escritos por el usuario como en la
 propia biblioteca estándar de Rust. En este capítulo estudiaremos
-cómo definir `enum` y crear valores de este tipo. En capítulos
-posteriores veremos cómo trabajar con ellos mediante `match` y
-otros mecanismos del lenguaje.
+cómo definir `enum` y crear valores de este tipo. En el
+@sec-patrones veremos cómo trabajar con ellos mediante `match`,
+en la @sec-enum-option estudiaremos el enumerado `Option` y en el
+@sec-enum-result, el enumerado `Result<T, E>`.
 
 ## Definición
 
@@ -195,7 +196,6 @@ un valor, es decir, que es `Some`. En esos casos puede utilizarse
 el método `unwrap()`, que devuelve el valor contenido en el
 `Option`.
 
-
 ``` rust
 {{< include c12/unwrap/src/main.rs >}}
 ```
@@ -205,7 +205,6 @@ el método `unwrap()`, que devuelve el valor contenido en el
 [Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20x%20%3D%20Some%2842%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20x%29%3B%20//%20Enumerado%20completo%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20x.unwrap%28%29%29%3B%20//%20Valor%20Some%0A%0A%20%20%20%20let%20y%3A%20Option%3Ci32%3E%20%3D%20None%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20y.unwrap%28%29%29%3B%20//%20Panic%0A%7D%0A)
 
 :::
-
 
 Si `unwrap()` se aplica sobre un valor `None`, el programa
 finaliza inmediatamente produciendo un *panic*. Por tanto, si
@@ -227,3 +226,30 @@ Por último, no todas las variantes de un `enum` tienen por qué
 almacenar el mismo número de datos, ni siquiera datos del mismo
 tipo. Cada variante puede definir libremente la información que
 lleva asociada.
+
+## Resumen
+
+En este capítulo hemos introducido los `enum`, un mecanismo que
+permite definir tipos cuyos valores pueden pertenecer a una de
+varias variantes posibles.
+
+Las ideas principales son las siguientes:
+
+- Un `enum` representa un conjunto de variantes mutuamente
+  excluyentes.
+- Cada variante puede no contener datos o almacenar información
+  adicional de cualquier tipo.
+- Los `enum` permiten modelar de forma clara situaciones en las
+  que un valor puede encontrarse en distintos estados.
+- `Option<T>` es un `enum` de la biblioteca estándar que
+  representa la presencia (`Some`) o ausencia (`None`) de un
+  valor.
+- El uso de `Option<T>` evita recurrir a valores especiales o
+  nulos para indicar que un dato no existe.
+- Cuando se conoce con certeza que un `Option` contiene un valor,
+  puede obtenerse mediante `unwrap()`, aunque su uso debe hacerse
+  con precaución.
+
+En el siguiente capítulo veremos cómo trabajar de forma cómoda y
+segura con los `enum` mediante el patrón `match`, que permite
+seleccionar el código adecuado para cada una de sus variantes.

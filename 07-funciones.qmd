@@ -37,7 +37,7 @@ al mismo ámbito o a un ámbito accesible desde él.
 
 :::
 
-La palabra clave `fn` indica la definición de una función. A
+La palabra reservada `fn` indica la definición de una función. A
 continuación aparece el nombre de la función y, entre paréntesis,
 la lista de parámetros. En este ejemplo ninguna de las funciones
 reciben parámetros.
@@ -304,7 +304,7 @@ valores.
 ## Uso de `Return`
 
 Aunque no es necesario, también es posible utilizar la palabra
-clave `return` para devolver un valor:
+reservada `return` para devolver un valor:
 
 ``` rust
 {{< include c07/fn_return/src/main.rs >}}
@@ -364,3 +364,33 @@ externas que permiten aproximarse a este comportamiento. No
 obstante, en el ecosistema Rust es más habitual recurrir a
 estructuras de datos o al patrón *builder* cuando una función
 requiere un gran número de parámetros.
+
+## Resumen
+
+En este capítulo hemos introducido el concepto de función y la
+forma en que Rust las utiliza para estructurar los programas.
+
+Las ideas principales son las siguientes:
+
+- Las funciones permiten dividir un programa en tareas más
+  pequeñas, favoreciendo la reutilización y la claridad del
+  código.
+- Una función puede recibir información mediante parámetros y
+  devolver un valor mediante el tipo indicado tras `->`.
+- Cuando es necesario devolver varios resultados, puede
+  utilizarse una tupla.
+- En Rust es obligatorio indicar el tipo de los parámetros y del
+  valor devuelto, salvo en funciones que no devuelven ningún
+  resultado.
+- El valor de retorno de una función suele ser la última
+  expresión de su cuerpo, sin necesidad de utilizar `return`.
+- Rust distingue entre expresiones y sentencias, una diferencia
+  que resulta esencial para comprender el funcionamiento del
+  lenguaje.
+- El punto y coma transforma una expresión en una sentencia, por
+  lo que su presencia o ausencia puede modificar el significado
+  del código.
+
+En los próximos capítulos veremos cómo combinar las funciones con
+las estructuras de control y con los distintos tipos de datos
+para construir programas de mayor tamaño y complejidad.

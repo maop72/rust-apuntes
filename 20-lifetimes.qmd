@@ -1,2 +1,341 @@
 # Lifetimes
 
+En la sección @sec-prestamos estudiamos las referencias y vimos
+cómo Rust garantiza que una referencia nunca apunte a un dato que
+haya dejado de existir. Esta comprobación forma parte del sistema
+de préstamos (*borrow checker*) y es una de las principales
+características del lenguaje.
+
+En la mayoría de los programas el compilador puede determinar
+automáticamente durante cuánto tiempo permanece válida cada
+referencia. Sin embargo, existen situaciones en las que esa
+información no puede deducirse de forma automática.
+
+Esto ocurre con frecuencia cuando una función recibe varias
+referencias y devuelve una de ellas. Aunque el programador sepa
+que la referencia devuelta será válida, el compilador necesita
+conocer la relación entre los tiempos de vida de las referencias
+involucradas para poder comprobarlo.
+
+Los *lifetimes* permiten expresar esa información. En español,
+*lifetime* puede traducirse por *tiempo de vida* o, simplemente,
+*vida*.
+
+Los *lifetimes* no modifican el tiempo de vida real de los datos
+ni de las referencias, sino que describen al compilador cómo
+están relacionadas entre sí. Gracias a ellos, Rust puede seguir
+garantizando la seguridad de memoria sin necesidad de un
+recolector de basura.
+
+En este capítulo aprenderemos a interpretar y escribir
+*lifetimes* explícitos en funciones y estructuras sencillas. En
+la mayor parte de los programas, no obstante, el compilador puede
+inferirlos automáticamente y no será necesario escribirlos.
+
+## Lifetimes en funciones
+
+Supongamos que necesitamos una función que reciba dos referencias
+a cadena y devuelva una referencia a la cadena más larga. O en
+caso de igual longitud, una referencia a la primera.
+
+Con los conocimientos adquiridos hasta ahora podríamos intentar
+escribir una función como la siguiente:
+
+``` rust
+fn mayor(cad1: &str, cad2: &str) -> &str {   // ¡Error!
+    if cad1.len() >= cad2.len() {
+        cad1
+    } else {
+        cad2
+    }
+}
+```
+
+La función parece correcta, pero el compilador no puede aceptar
+su definición tal y como está escrita. Supongamos ahora el
+siguiente programa, que intenta hacer uso de la función anterior:
+
+``` rust
+fn main() {
+    let s1 = String::from("Hola mundo");
+    let resultado;
+    {
+        let s2 = String::from("Adiós");
+        resultado = mayor(&s1, &s2);
+    }
+    println!("{}", resultado);   // ¡Error!
+}
+```
+
+Este programa también es incorrecto:
+
+- `s1` se declara fuera del bloque interior, por lo que sigue
+  existiendo al llegar a la llamada a `println!`.
+
+- `s2` se declara dentro del bloque y deja de existir al
+  abandonarlo.
+
+En la última línea, ¿sigue existiendo el objeto al que hace
+referencia resultado? Depende:
+
+- Si la referencia devuelta apunta a `s1` el objeto sigue
+  existiendo y el acceso sería válido.
+
+- Si apunta a `s2`, el objeto ya ha desaparecido al salir del
+  bloque, por lo que `resultado` sería una referencia colgante
+  (*dangling reference*).
+
+Rust impide que una situación como esta pueda producirse. Para
+ello, el compilador necesita conocer la relación entre los
+tiempos de vida de las referencias que intervienen en la función.
+Esa información se expresa mediante los *lifetimes*.
+
+## Parámetros de *lifetime*
+
+La solución al problema del apartado anterior consiste en indicar
+explícitamente la relación entre las referencias que intervienen
+en la función. Para ello se utilizan *parámetros de lifetime*,
+que se escriben como un identificador precedido por un apóstrofo
+(`'`).
+
+La función anterior puede escribirse así:
+
+``` rust
+fn mayor<'a>(cad1: &'a str, cad2: &'a str) -> &'a str {
+    if cad1.len() >= cad2.len() {
+        cad1
+    } else {
+        cad2
+    }
+}
+```
+
+El identificador `'a` aparece cuatro veces:
+
+- tras el nombre de la función (`fn mayor<'a>`), donde se declara
+  el parámetro de *lifetime*, entre *corchetes angulares* (`<>`);
+- en el tipo de `cad1`;
+- en el tipo de `cad2`;
+- y en el tipo del valor devuelto.
+
+Es importante observar que en los cuatro casos aparece el mismo
+identificador. Con ello indicamos que las tres referencias están
+relacionadas mediante un mismo parámetro de *lifetime*.
+
+El nombre `'a` es simplemente un identificador. Podría haberse
+utilizado cualquier otro, como `'b`, `'cadena` o `'vida`. Por
+convenio se emplean normalmente letras cortas, siendo `'a` la más
+habitual cuando solo interviene un parámetro de *lifetime*.
+
+## Significado de un parámetro de *lifetime*
+
+Veamos de nuevo la definición de la función:
+
+``` rust
+fn mayor<'a>(cad1: &'a str, cad2: &'a str) -> &'a str {
+    if cad1.len() >= cad2.len() {
+        cad1
+    } else {
+        cad2
+    }
+}
+```
+
+Al utilizar el mismo parámetro de *lifetime* (`'a`) en las dos
+referencias de entrada y en la referencia devuelta, estamos
+indicando que existe una relación entre ellas.
+
+En concreto, la referencia devuelta solo podrá utilizarse
+mientras sea válida la referencia de la que procede. De este
+modo, si `mayor()` devuelve `cad1`, la referencia devuelta tendrá
+el mismo *lifetime* que `cad1`. Si devuelve `cad2`, tendrá el
+mismo *lifetime* que `cad2`.
+
+Volvamos ahora al ejemplo de la sección anterior. Allí, el
+`String` almacenado en `s2` desaparecía al salir del bloque
+interior. Si `mayor()` devolviera una referencia a `s2`, dicha
+referencia dejaría de ser válida en ese mismo instante. Por
+tanto, el compilador detectará que no puede utilizarse
+posteriormente en la llamada a `println!`.
+
+En cambio, si la referencia devuelta apunta a `s1`, seguirá
+siendo válida fuera del bloque, ya que `s1` continúa existiendo.
+
+Los parámetros de *lifetime* no modifican el tiempo de vida de
+los objetos ni de las referencias. No *alargan la vida* de los
+objetos. Su única finalidad es proporcionar al compilador la
+información necesaria para verificar que el programa es seguro.
+
+En el ejemplo anterior, la cadena almacenada en `s2` sigue
+desapareciendo al abandonar el bloque interior, exactamente igual
+que ocurría antes de introducir `'a`. El uso de *lifetimes* no
+hace que el programa pase a ser correcto. Lo que permite es que
+el compilador disponga de la información necesaria para detectar
+que, si la función devolviera una referencia a `s2`, esta no
+podría utilizarse en la llamada a `println!`, ya que el objeto al
+que apunta habría dejado de existir.
+
+Obsérvese que el compilador no intenta averiguar cuál de las dos
+referencias devolverá realmente la función. Debe comprobar que el
+programa sea seguro en cualquiera de las posibles ejecuciones,
+independientemente de cuál sea la referencia devuelta.
+
+En este ejemplo podría deducirse que `mayor()` devolverá una
+referencia a `s1`, ya que `"Hola mundo"` es más larga que
+`"Adiós"`. Sin embargo, el compilador no basa su razonamiento en
+ese hecho. Lo importante es que la función *podría* devolver una
+referencia a `s2` si las cadenas tuvieran otro contenido. Como
+esa posibilidad existe, el compilador considera que el programa
+no es seguro y lo rechaza.
+
+En otros lenguajes que no realizan este tipo de comprobaciones,
+un programa como el anterior podría funcionar aparentemente sin
+problemas durante años. Si en todas las ejecuciones la función
+devuelve una referencia a `s1`, el acceso final será válido y el
+error permanecerá oculto. Sin embargo, bastaría con que en una
+ejecución posterior `s2` fuera la cadena más larga para que la
+función devolviera una referencia a un objeto que ya no existe.
+El resultado sería un comportamiento indefinido: el programa
+podría fallar, producir un resultado incorrecto o incluso parecer
+que sigue funcionando.
+
+Rust detecta este tipo de situaciones durante la compilación,
+antes de que el programa llegue a ejecutarse.
+
+## Reglas de elisión
+
+En la práctica, la mayoría de las funciones que utilizan
+referencias no necesitan declarar explícitamente sus *lifetime*.
+El compilador aplica automáticamente una serie de reglas,
+conocidas como **reglas de elisión** (*lifetime elision rules*),
+que permiten deducirlos.
+
+Por ejemplo, consideremos la siguiente función:
+
+``` rust
+fn misma_cadena(s: &str) -> &str {
+    s
+}
+```
+
+Aunque en su definición no aparece ningún *lifetime*, el
+compilador la interpreta como si estuviera escrita así:
+
+``` rust
+fn misma_cadena<'a>(s: &'a str) -> &'a str {
+    s
+}
+```
+
+Como la función recibe una única referencia, no existe ninguna
+ambigüedad sobre el origen de la referencia devuelta y el
+compilador puede deducir automáticamente el *lifetime*
+correspondiente.
+
+En cambio, esto ya no ocurre en la función `mayor()` estudiada en
+la sección anterior:
+
+``` rust
+fn mayor(cad1: &str, cad2: &str) -> &str {
+    // ...
+}
+```
+
+En este caso existen dos referencias de entrada y el compilador
+no puede deducir a cuál de ellas está asociada la referencia
+devuelta. Por ese motivo es necesario escribir explícitamente los
+*lifetime*:
+
+``` rust
+fn mayor<'a>(cad1: &'a str, cad2: &'a str) -> &'a str {
+    // ...
+}
+```
+
+Las reglas de elisión permiten omitir los *lifetimes* en la mayor
+parte del código. Solo cuando el compilador no puede deducirlos
+es necesario escribirlos explícitamente.
+
+## Lifetimes en estructuras
+
+Hasta ahora hemos utilizado referencias como parámetros y valores
+devueltos por funciones. Sin embargo, una estructura también
+puede contener referencias.
+
+En ese caso es necesario indicar mediante un *lifetime* la
+relación entre el tiempo de vida de la estructura y el de las
+referencias que almacena.
+
+Por ejemplo, la siguiente estructura representa una entrada de
+una tabla ARP:
+
+``` rust
+struct EntradaArp<'a> {
+    ip: &'a str,
+    mac: &'a str,
+}
+```
+
+La estructura contiene dos referencias a cadenas: una con la
+dirección IP y otra con la dirección MAC.
+
+El parámetro de *lifetime* `'a` se declara tras el nombre de la
+estructura:
+
+``` rust
+struct EntradaArp<'a> {
+    // ...
+}
+```
+
+y posteriormente se utiliza para anotar los campos que contienen
+referencias.
+
+Al utilizar el mismo parámetro (`'a`) en ambos campos, indicamos
+que las dos referencias están relacionadas con un mismo
+*lifetime*.
+
+Como en las funciones, los *lifetimes* no alargan la vida de los
+objetos referenciados. Su única finalidad es proporcionar al
+compilador la información necesaria para comprobar que ninguna
+instancia de `EntradaArp` pueda seguir existiendo cuando alguna
+de las referencias que contiene haya dejado de ser válida.
+
+## Los *lifetimes* solo existen durante la compilación
+
+Los *lifetimes* son información utilizada exclusivamente por el
+compilador para comprobar la seguridad del código.
+
+Una vez que el programa ha sido compilado, los *lifetimes*
+desaparecen. No forman parte del programa ejecutable ni ocupan
+memoria durante la ejecución. Su única finalidad es permitir que
+el compilador detecte situaciones en las que una referencia
+podría utilizarse después de que el objeto al que apunta haya
+dejado de existir.
+
+## Resumen
+
+En este capítulo hemos estudiado los *lifetimes*, el mecanismo
+que utiliza Rust para expresar la relación entre la validez de
+las referencias.
+
+Las ideas principales son las siguientes:
+
+- Un *lifetime* describe el tiempo durante el cual una referencia
+  es válida.
+- Los *lifetimes* no modifican la duración de los objetos ni de
+  las referencias; únicamente describen esa relación.
+- En la mayoría de los casos el compilador puede inferir los
+  *lifetimes* automáticamente.
+- Solo es necesario escribirlos explícitamente cuando el
+  compilador no puede deducirlos.
+- Los *lifetimes* también pueden formar parte de la definición de
+  estructuras que contienen referencias.
+- Los *lifetimes* existen únicamente durante la compilación y no
+  tienen coste alguno en tiempo de ejecución.
+
+Los *lifetimes* son una de las características más distintivas de
+Rust. Aunque al principio puedan parecer complejos, permiten al
+compilador garantizar que nunca existan referencias colgantes y
+constituyen una pieza fundamental del modelo de seguridad del
+lenguaje.

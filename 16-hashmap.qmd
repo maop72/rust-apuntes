@@ -54,7 +54,6 @@ El siguiente ejemplo ilustra las operaciones básicas sobre un
 
 :::
 
-
 - La sentencia `use std::collections::HashMap;` importa el tipo
   `HashMap` de la biblioteca estándar. A diferencia de tipos como
   `i32`, `bool`, `char`, `String` o `Vec`, es necesario importar
@@ -69,10 +68,10 @@ El siguiente ejemplo ilustra las operaciones básicas sobre un
   valores, ya que Rust los deduce a partir de los datos
   insertados.
 
-  El método `insert()` devuelve un `Option` con el valor 
-  anterior asociado a la clave. Si la clave no existía,
-  devuelve `None`. Pero en muchos casos, como en este ejemplo,
-  el valor devuelto por `insert()` es ignorado. 
+  El método `insert()` devuelve un `Option` con el valor anterior
+  asociado a la clave. Si la clave no existía, devuelve `None`.
+  Pero en muchos casos, como en este ejemplo, el valor devuelto
+  por `insert()` es ignorado.
 
 - Muestra el contenido completo del `HashMap` utilizando el
   especificador de formato `{:?}`. Como ocurre con los vectores,
@@ -99,31 +98,27 @@ El siguiente ejemplo ilustra las operaciones básicas sobre un
   no existe, el método no produce ningún error y simplemente no
   modifica el contenido del `HashMap`.
 
-
 ## Acceso mediante el operador `[]`
-
 
 Además del método `get()`, también es posible acceder a un valor
 mediante el operador `[]`.
 
-```rust
+``` rust
 println!("{}", tabla["00:11:22:33:44:55"]);
 ```
 
 A diferencia de `get()`, el operador `[]` devuelve directamente
 una referencia al valor asociado a la clave. Si la clave no
-existe, el programa finaliza produciendo un *panic*.
-Por este motivo, en la mayoría de las situaciones se prefiere
-utilizar `get()`, que devuelve un `Option` y permite tratar de
-forma segura el caso en que la clave no exista.
-
+existe, el programa finaliza produciendo un *panic*. Por este
+motivo, en la mayoría de las situaciones se prefiere utilizar
+`get()`, que devuelve un `Option` y permite tratar de forma
+segura el caso en que la clave no exista.
 
 El operador `[]` solo puede utilizarse para leer un valor. No es
-posible modificar un elemento mediante una asignación.
-Para modificar el valor asociado a una clave debe utilizarse el
-método `insert()`, que reemplaza el valor anterior si la clave ya
+posible modificar un elemento mediante una asignación. Para
+modificar el valor asociado a una clave debe utilizarse el método
+`insert()`, que reemplaza el valor anterior si la clave ya
 existe.
-
 
 ``` rust
 {{< include c16/hash_mal/src/main.rs >}}
@@ -135,7 +130,6 @@ existe.
 
 :::
 
-
 ## La API `entry()`
 
 En ocasiones es necesario realizar una operación distinta según
@@ -145,8 +139,8 @@ inicializar un contador o modificar el valor asociado a una clave
 existente.
 
 Una posibilidad sería comprobar primero si la clave existe y, a
-continuación, actuar en consecuencia. Sin embargo, este enfoque no
-es el más eficiente, ya que obliga a buscar la misma clave dos
+continuación, actuar en consecuencia. Sin embargo, este enfoque
+no es el más eficiente, ya que obliga a buscar la misma clave dos
 veces: una para comprobar si existe y otra para insertar o
 modificar el valor.
 
@@ -184,12 +178,11 @@ En este ejemplo, la clave `"HTTP"` ya existe, por lo que conserva
 el valor `443`. En cambio, la clave `"SSH"` no existía y se
 inserta con el valor `22`.
 
-
 ## Recorrido de un `HashMap`
 
 Los elementos de un `HashMap` pueden recorrerse mediante un bucle
-`for`. Dependiendo de la información que interese obtener, existen
-tres posibilidades:
+`for`. Dependiendo de la información que interese obtener,
+existen tres posibilidades:
 
 - `iter()`, que recorre pares formados por la clave y el valor.
 - `keys()`, que recorre únicamente las claves.
@@ -197,8 +190,6 @@ tres posibilidades:
 
 El siguiente ejemplo muestra las tres formas de recorrer un
 `HashMap`.
-
-
 
 ``` rust
 {{< include c16/recorrido_hash/src/main.rs >}}
@@ -210,12 +201,9 @@ El siguiente ejemplo muestra las tres formas de recorrer un
 
 :::
 
-
-Al igual que ocurre al mostrar un `HashMap` mediante `println!("{:?}")`,
-el orden en que se recorren los elementos no está definido y puede
-variar entre ejecuciones.
-
-
+Al igual que ocurre al mostrar un `HashMap` mediante
+`println!("{:?}")`, el orden en que se recorren los elementos no
+está definido y puede variar entre ejecuciones.
 
 ## Otras operaciones habituales
 
@@ -245,5 +233,29 @@ proporciona otros métodos de uso frecuente.
 - `clear()` elimina todos los elementos del `HashMap`, dejándolo
   vacío.
 
+## Resumen
 
+En este capítulo hemos estudiado `HashMap<K, V>`, la estructura
+de datos que permite asociar claves con valores.
 
+Las ideas principales son las siguientes:
+
+- Un `HashMap` almacena pares clave-valor y permite acceder a los
+  valores a partir de su clave.
+- Las claves deben ser únicas; insertar un valor con una clave ya
+  existente sustituye al valor anterior.
+- Los elementos pueden insertarse, consultarse, modificarse y
+  eliminarse mediante los métodos proporcionados por la
+  biblioteca estándar.
+- El método `get()` devuelve un `Option<&V>`, por lo que es
+  necesario tratar el caso en que la clave no exista.
+- La API `entry()` permite insertar o modificar valores de forma
+  eficiente sin realizar búsquedas repetidas.
+- Es posible recorrer un `HashMap` mediante un bucle `for`,
+  obteniendo referencias a sus claves y valores.
+
+Los mapas hash son una de las colecciones más útiles de Rust
+cuando se necesita localizar información de forma rápida a partir
+de una clave. Junto con los vectores y las cadenas, constituyen
+una parte fundamental de la biblioteca estándar y aparecen con
+frecuencia en aplicaciones reales.
