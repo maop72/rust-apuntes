@@ -40,6 +40,10 @@ vez definida. Se escriben entre paréntesis, separados por comas.
   de su posición. El primer elemento es `persona.0`, el segundo
   `persona.1` y el tercero `persona.2`.
 
+- La posición ha de ser un literal numérico (un número *tal
+  cual*). No puede ser una variable ni una expresión. El índice
+  identifica un campo concreto y debe conocerse en compilación
+
 - Las últimas sentencias muestran cada elemento por separado:
 
   ``` rust
@@ -86,7 +90,8 @@ Los elementos de un array se escriben entre corchetes, separados
 por comas. También se usan los corchetes para acceder a los
 elementos por su índice. Al igual que en C y muchos otros
 lenguajes, el primer elemento es el `0`, el segundo es el `1`,
-etc.
+etc. El índice puede ser un literal numérico, una variable o una
+expresión.
 
 ``` rust
 {{< include c06/arrays/src/main.rs >}}
@@ -114,16 +119,17 @@ etc.
 
 ## Comparación entre tuplas y arrays
 
-La @tbl-tupla-vs-array resume las similitudes y diferencias
-entre tuplas y arrays.
+La @tbl-tupla-vs-array resume las similitudes y diferencias entre
+tuplas y arrays.
 
-| Característica           | Tupla                   | Array                      |
-|--------------------------|-------------------------|----------------------------|
-| Longitud fija            | Sí                      | Sí                         |
-| Elementos del mismo tipo | No necesariamente       | Sí                         |
-| Delimitadores            | Paréntesis `()`         | Corchetes `[]`             |
-| Acceso a elementos       | Punto (`.0`, `.1`, ...) | Índice (`[0]`, `[1]`, ...) |
-| Ejemplo                  | `("TCP", 443, true)`    | `[10, 20, 30, 40, 50]`     |
+| Característica | Tupla | Array |
+|----|----|----|
+| Longitud fija | Sí | Sí |
+| Elementos del mismo tipo | No necesariamente | Sí |
+| Delimitadores | Paréntesis `()` | Corchetes `[]` |
+| Acceso a elementos | Punto (`.0`, `.1`, ...) | Índice (`[0]`, `[1]`, ...) |
+| Acceso mediante vble o expr. | No | Sí |
+| Ejemplo | `("TCP", 443, true)` | `[10, 20, 30, 40, 50]` |
 
 : Comparación entre tuplas y arrays {#tbl-tupla-vs-array}
 
@@ -131,7 +137,7 @@ entre tuplas y arrays.
 
 En este capítulo hemos presentado los dos tipos de datos
 compuestos básicos que proporciona Rust: las tuplas y los
-*arrays*. 
+*arrays*.
 
 Las ideas principales son las siguientes:
 
@@ -147,6 +153,9 @@ Las ideas principales son las siguientes:
   corchetes, comenzando por el índice `0`.
 - Tanto las tuplas como los *arrays* tienen un tamaño fijo, pero
   las tuplas permiten mezclar tipos mientras que los *arrays* no.
+- En los arrays se pueden usar variables o expresiones para los
+  índices. En las tuplas, no. Solo constantes numéricas 
+  literales.
 
 En los próximos capítulos estudiaremos nuevos tipos de datos que
 permiten representar estructuras más complejas y colecciones de

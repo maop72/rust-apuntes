@@ -98,10 +98,10 @@ cargo run --release
 
 ## Formato
 
-La *Rust Style Guide* define un formato oficial para el código
-fuente, implementado por la herramienta *rustfmt*, usada de forma
-prácticamente universal. Basta ejecutar, en el directorio del
-proyecto:
+La [Rust Style Guide](https://doc.rust-lang.org/style-guide)
+define un formato oficial para el código fuente, implementado por
+la herramienta *rustfmt*, usada de forma prácticamente universal.
+Basta ejecutar, en el directorio del proyecto:
 
 `cargo fmt`.
 

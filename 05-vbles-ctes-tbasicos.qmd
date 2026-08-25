@@ -310,6 +310,12 @@ cualquier otro lenguaje de programación, debe declararse con
 
 :::
 
+En la @sec-shadowing veremos una característica muy idiomática de
+Rust, denominada *shadowing*, que permite declarar una nueva
+variable con el mismo nombre que otra anterior. Gracias a este
+mecanismo es posible realizar transformaciones sucesivas de un
+valor sin necesidad de hacerlo mutable.
+
 ## Constantes
 
 Las constantes se definen con la palabra reservada `const`.
@@ -346,10 +352,6 @@ Ejemplo:
 [Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20PUERTO_HTTP%3A%20u16%20%3D%2080%3B%0Aconst%20TIMEOUT_SEGUNDOS%3A%20u64%20%3D%2030%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20println%21%28%22Puerto%3A%20%7B%7D%22%2C%20PUERTO_HTTP%29%3B%0A%20%20%20%20println%21%28%22Timeout%3A%20%7B%7D%22%2C%20TIMEOUT_SEGUNDOS%29%3B%0A%7D%0A)
 
 :::
-
-Más adelante estudiaremos otros conceptos relacionados como el
-*shadowing*, las variables estáticas (`static`) y las funciones
-que pueden evaluarse en tiempo de compilación (`const fn`).
 
 ## Operadores
 

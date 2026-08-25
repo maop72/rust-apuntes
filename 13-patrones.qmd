@@ -1,4 +1,4 @@
-# Coincidencia de patrones   {#sec-patrones}
+# Coincidencia de patrones {#sec-patrones}
 
 En muchos programas es necesario ejecutar acciones diferentes
 según el valor de una variable. En otros lenguajes esto suele
@@ -22,7 +22,7 @@ comodín y cómo extraer los datos asociados a una variante.
 Finalmente estudiaremos las formas abreviadas `if let` y
 `while let`, que simplifican algunos usos muy frecuentes.
 
-## Definición de `match`
+## Definición de `match` {#sec-match}
 
 La expresión `match` permite seleccionar entre varias
 alternativas según el valor de una expresión. Su funcionamiento
@@ -89,10 +89,10 @@ programa no compila.
 ## `match` con el enumerado `Option<T>`
 
 Uno de los usos más frecuentes de `match` consiste en procesar
-valores de tipos enumerados como por ejemplo  `Option<T>`. Como vimos en
-la @sec-enum-option, un `Option` puede contener un valor (`Some`)
-o no contener ninguno (`None`). El siguiente programa muestra
-cómo tratar ambos casos:
+valores de tipos enumerados como por ejemplo `Option<T>`. Como
+vimos en la @sec-enum-option, un `Option` puede contener un valor
+(`Some`) o no contener ninguno (`None`). El siguiente programa
+muestra cómo tratar ambos casos:
 
 ``` rust
 {{< include c13/match_option/src/main.rs >}}
@@ -272,14 +272,10 @@ repetidamente. Su sintaxis es análoga a la de `if let`.
 Este ejemplo utiliza conceptos que todavía no conocemos, pero
 merece la pena observarlo porque representa uno de los usos más
 habituales de `while let` en Rust. El método `pop()` extrae el
-último elemento del vector, utilizado aquí como una pila, y
-lo devuelve envuelto en `Some`. Cuando el vector queda vacío,
+último elemento del vector, utilizado aquí como una pila, y lo
+devuelve envuelto en `Some`. Cuando el vector queda vacío,
 devuelve `None`, lo que hace que el bucle termine
 automáticamente.
-
-Más adelante estudiaremos los vectores y el tipo `Option`, y
-retomaremos este ejemplo para ver con precisión cómo funciona.
-
 
 ## Resumen
 
@@ -296,9 +292,9 @@ Las ideas principales son las siguientes:
   valor.
 - Los patrones pueden utilizarse para descomponer valores
   complejos, como los almacenados en un `enum`.
-- Las construcciones `if let` y `while let` proporcionan una forma
-  más concisa de trabajar con patrones cuando solo interesa una
-  posibilidad.
+- Las construcciones `if let` y `while let` proporcionan una
+  forma más concisa de trabajar con patrones cuando solo interesa
+  una posibilidad.
 - Estas construcciones son especialmente útiles para manipular
   valores de tipo `Option<T>` y `Result<T, E>`.
 
@@ -307,5 +303,3 @@ hacen que Rust resulte especialmente expresivo y seguro. A medida
 que avancemos en el lenguaje, aparecerá con frecuencia como una
 herramienta fundamental para trabajar con tipos de datos
 complejos.
-
-

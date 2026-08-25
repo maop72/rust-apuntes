@@ -28,9 +28,9 @@ identificadores diferentes. Las convenciones habituales son:
 - Variables, funciones y módulos: `snake_case`. Letras minúsculas
   separadas por guión bajo.
 - Tipos, `struct`, `enum` y `trait`: `PascalCase`. Primera letra
-  de cada palabra en mayúscula. También se le llama UpperCamelCase,
-  para distinguirlo de camelCase, donde la primera palabra va en
-  minúscula.
+  de cada palabra en mayúscula. También se le llama
+  UpperCamelCase, para distinguirlo de camelCase, donde la
+  primera palabra va en minúscula.
 - Constantes y variables estáticas: `SCREAMING_SNAKE_CASE`
   (letras mayúsculas, separadas por guión bajo).
 - Parámetros genéricos: normalmente una letra mayúscula (`T`,
@@ -74,6 +74,38 @@ deducirse directamente del código. Entre otros motivos, porque en
 el futuro podría modificarse el código sin actualizar el
 comentario, dejando ambos en contradicción.
 
-Rust dispone también de comentarios especiales para generar
-documentación automática: `///` y `//!`, que trataremos
-posteriormente.
+Además, los comentarios `///` y `//!` son comentarios de
+documentación que `rustdoc` utiliza para generar la documentación
+del código. `///` documenta el elemento que aparece a
+continuación, como una función, estructura, enumeración o módulo.
+También existe la variante de bloque `/** ... */`, equivalente a
+`///`.
+
+Ejemplo:
+
+``` rust
+/// Calcula el cuadrado de un número.
+fn cuadrado(x: i32) -> i32 {
+    x * x
+}
+```
+
+La diferencia fundamental es que `//!` documenta el elemento que
+contiene el comentario, normalmente un módulo o el crate
+completo. Así, `//!` al principio de `lib.rs` o `main.rs` sirve
+para proporcionar la descripción general del crate, mientras que
+`//!` dentro de un módulo documenta ese módulo. Su equivalente en
+formato de bloque es `/*! ... */`.
+
+Ejemplo:
+
+``` rust
+//! Herramientas matemáticas para trabajar con números.
+
+pub fn suma(a: i32, b: i32) -> i32 {
+    a + b
+}
+```
+
+Una regla práctica para recordarlo: `///` documenta lo que
+viene después; `//!` documenta lo que lo contiene.

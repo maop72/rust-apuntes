@@ -32,8 +32,7 @@ habituales son:
 - El método `to_string()`, que convierte un valor en un `String`.
   Está disponible para muchos tipos, como números, caracteres o
   valores booleanos; en general, para cualquier tipo que
-  implemente el rasgo (*trait*) `Display`. Estudiaremos los
-  *traits* más adelante.
+  implemente el rasgo (*trait*) `Display`.
 
 Los siguientes ejemplos muestran estos tres casos:
 

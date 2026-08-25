@@ -76,9 +76,10 @@ ya no se comprueban. Así, para una temperatura de 72 grados, se
 mostrará el mensaje `"CPU caliente"`.
 
 Las cadenas `if`–`else if` son adecuadas para expresar un número
-reducido de alternativas. Más adelante veremos la construcción
-`match`, que suele resultar más clara cuando existen muchas
-posibilidades o cuando se desea clasificar valores discretos.
+reducido de alternativas. En la @sec-match veremos la
+construcción `match`, que suele resultar más clara cuando existen
+muchas posibilidades o cuando se desea clasificar valores
+discretos.
 
 ### Evitando el anidamiento excesivo
 
@@ -90,7 +91,7 @@ código alcanza tres o más niveles, a menudo es una señal de que
 existe una forma más clara de expresar la misma lógica.
 
 Muchos programadores siguen la recomendación informal *Flat is
-better than nested* ("mejor plano que anidado"). La idea consiste
+better than nested* (mejor plano que anidado). La idea consiste
 en mantener el flujo de ejecución lo más alineado posible hacia
 la izquierda, evitando niveles de indentación innecesarios.
 
@@ -128,7 +129,8 @@ más fácil de leer y mantener.
 
 Si en vez de dos niveles de anidamiento como en este ejemplo
 hubiera tres, cuatro o más, la ventaja del enfoque *plano*
-resultaría mucho más evidente.
+resultaría mucho más evidente. El anidamiento excesivo y confuso
+es un defecto muy típico entre programadores principiantes.
 
 Por otro lado, la segunda solución no es completamente
 equivalente a la primera. Al utilizar varias sentencias `if`
@@ -201,7 +203,7 @@ mientras no se abandone explícitamente mediante una instrucción
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20contador%20%3D%200%3B%0A%0A%20%20%20%20loop%20%7B%0A%20%20%20%20%20%20%20%20contador%20%2B%3D%201%3B%0A%20%20%20%20%20%20%20%20print%21%28%22hola%20%22%29%3B%0A%0A%20%20%20%20%20%20%20%20if%20contador%20%3D%3D%205%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20break%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%22Fin%20del%20bucle.%22%29%3B%0A%7D%0A%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20contador%20%3D%200%3B%0A%0A%20%20%20%20loop%20%7B%0A%20%20%20%20%20%20%20%20contador%20%2B%3D%201%3B%0A%20%20%20%20%20%20%20%20print%21%28%22hola%20%22%29%3B%0A%0A%20%20%20%20%20%20%20%20if%20contador%20%3D%3D%205%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20break%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%22%5CnFin%20del%20bucle.%22%29%3B%0A%7D%0A%0A)
 
 :::
 
@@ -213,7 +215,8 @@ instrucción `break` interrumpe la ejecución del bucle.
 
 Si eliminásemos la instrucción `break`, tendríamos un bucle
 infinito que solo se detendría con una interrupción externa, por
-ejemplo pulsando `Ctrl+c`.
+ejemplo pulsando `Ctrl+c`. Esto es, las teclas *ctrl* y *c*, 
+simultáneamente.
 
 En el siguiente ejemplo vemos cómo, además de finalizar el bucle,
 `break` puede devolver un valor: al igual que `loop`, la

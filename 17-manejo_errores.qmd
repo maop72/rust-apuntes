@@ -394,6 +394,70 @@ resulta ser incorrecta, `expect()` suele ser preferible, ya que
 el mensaje proporcionado por el programador facilita comprender
 qué suposición ha fallado y localizar el origen del problema.
 
+## Shadowing {#sec-shadowing}
+
+En la mayoría de los lenguajes de programación es posible
+declarar una variable local con el mismo nombre que una variable
+global. En ese caso, mientras se ejecuta el código del ámbito
+local, la variable global queda oculta y cualquier referencia al
+nombre utiliza la variable local.
+
+Rust permite además una posibilidad adicional: declarar dos
+variables con el mismo nombre dentro del mismo ámbito. En este
+caso, la nueva declaración hace *shadowing* (sombra) de la
+anterior.
+
+``` rust
+{{< include c17/shadow01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20x%20%3D%2010%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cx%29%3B%0A%20%20%20%20%0A%20%20%20%20let%20x%20%3D%2020%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2Cx%29%3B%0A%7D%0A)
+
+:::
+
+La segunda declaración no modifica el valor de la primera
+variable, sino que crea una nueva variable que oculta a la
+anterior. A partir de ese punto, cualquier referencia a `x`
+utiliza la nueva variable.
+
+El *shadowing* es especialmente útil cuando se desea transformar
+un valor sin tener que inventar un nuevo nombre para cada paso.
+Además, permite cambiar el tipo de la variable, algo que no es
+posible mediante una asignación.
+
+``` rust
+{{< include c17/shadow02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20dato%20%3D%20%22123%22%3B%0A%20%20%20%20let%20dato%20%3D%20dato.parse%3A%3A%3Ci32%3E%28%29.unwrap%28%29%3B%0A%20%20%20%20let%20dato%20%3D%20dato%20%2A%202%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20dato%29%3B%0A%7D%0A)
+
+:::
+
+En este ejemplo, las tres variables se llaman `dato`, pero cada
+declaración crea una variable distinta:
+
+- La primera es de tipo `&str`.
+- La segunda es de tipo `i32`, obtenida al convertir la cadena en
+  un entero.
+- La tercera también es de tipo `i32` y contiene el doble del
+  valor anterior.
+
+A primera vista puede parecer que la tercera variable es
+innecesaria, ya que tiene el mismo tipo que la segunda. Sin
+embargo, gracias al *shadowing* se crea una nueva variable
+inmutable con el resultado de la operación, sin necesidad de
+declarar la segunda como mutable (`mut`) y modificar su contenido
+mediante una asignación.
+
+No debe confundirse el *shadowing* con una asignación. Una
+asignación modifica el contenido de una variable existente,
+mientras que el *shadowing* crea una variable nueva que oculta a
+la anterior.
+
 ## Resumen
 
 En este capítulo hemos estudiado el mecanismo que utiliza Rust
@@ -422,3 +486,9 @@ características que distinguen a Rust. Gracias a `Result` y al
 operador `?`, es posible escribir programas robustos sin recurrir
 a excepciones y haciendo visibles en el propio código las
 situaciones que pueden fallar.
+
+Por otra parte, el *shadowing* constituye un estilo de
+programación muy habitual en Rust. Permite reutilizar nombres de
+variables a medida que se transforman los datos, favoreciendo un
+código claro y manteniendo la inmutabilidad por defecto del
+lenguaje.

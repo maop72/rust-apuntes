@@ -20,7 +20,9 @@ estructurar cualquier programa:
 
 En Rust, como en la mayoría de lenguajes modernos, la ejecución
 de un programa comienza en una función especial llamada `main`.
-Normalmente, desde esta función se llama a otras funciones.
+Normalmente, desde esta función se llama a otras funciones. Es
+frecuente que sea la última función o tal vez la primera, pero
+puede aparecer en cualquier otra posición.
 
 La definición de una función puede aparecer antes o después de
 las llamadas que la utilizan. Lo único necesario es que sea
@@ -55,8 +57,8 @@ cuando esta termina.
 
 ## Efectos laterales
 
-Algunos lenguajes clásicos, como Pascal, Modula-2 o Ada,
-distinguen entre dos tipos de subprogramas:
+Algunos lenguajes de programación clásicos, como Pascal, Modula-2
+o Ada, distinguen entre dos tipos de subprogramas:
 
 - *Funciones*, que devuelven un valor al programa que las invoca.
 
@@ -212,14 +214,14 @@ varios valores relacionados.
 ## Expresiones y sentencias
 
 Un programador acostumbrado a otros lenguajes seguramente
-observará una peculiaridad: la función anterior no termina con
-una sentencia `return`. Esto es lo habitual en Rust, donde en
-lugar de utilizar `return`, normalmente la última línea del
-cuerpo de una función es una expresión, cuyo valor se devuelve
-automáticamente. Para entender este comportamiento es necesario
-distinguir entre expresiones y sentencias. Es algo que aparece
-con frecuencia en Rust y constituye una característica importante
-del lenguaje.
+observará una peculiaridad: las funciones *sumar* y *dividir* de
+los ejemplos anteriores no terminan con una sentencia `return`.
+Esto es lo habitual en Rust, donde en lugar de utilizar `return`,
+normalmente la última línea del cuerpo de una función es una
+expresión, cuyo valor se devuelve automáticamente. Para entender
+este comportamiento es necesario distinguir entre expresiones y
+sentencias. Es algo que aparece con frecuencia en Rust y
+constituye una característica importante del lenguaje.
 
 Rust distingue entre *expressions* y *statements*. En español, es
 habitual traducir *statement* como *sentencia*, aunque también se
@@ -293,7 +295,7 @@ son expresiones y, por tanto, producen valores. Cuando se añade
 un punto y coma, la expresión pasa a convertirse en una sentencia
 y su valor se descarta. Como consecuencia, la sentencia produce
 el valor unitario `()`, como adelantamos en la
-{@sec-tipo-unitario}.
+@sec-tipo-unitario.
 
 Por tanto, el punto y coma puede modificar el significado del
 código, no es un mero separador de sentencias. Más adelante

@@ -25,9 +25,9 @@ utilizando rutas y la sentencia `use`.
 ## Definición de módulos
 
 De manera informal, puede pensarse en un módulo como una unidad
-de código reutilizable. Más adelante veremos cómo distribuir los
-módulos en distintos archivos, pero por el momento los
-definiremos dentro de un único archivo para centrarnos en la
+de código reutilizable. En la @sec-codigo-ficheros veremos cómo
+distribuir los módulos en distintos archivos, pero por el momento
+los definiremos dentro de un único archivo para centrarnos en la
 sintaxis.
 
 Los módulos se definen mediante la palabra reservada `mod`,
@@ -97,7 +97,7 @@ Esta política de visibilidad permite ocultar los detalles
 internos de implementación de un módulo y exponer únicamente la
 interfaz que se desea ofrecer al resto del programa.
 
-## Organización del código en ficheros
+## Organización del código en ficheros {#sec-codigo-ficheros}
 
 Hasta ahora hemos definido todos los módulos dentro de un único
 fichero. Pero es más habitual distribuir los módulos en varios

@@ -1,4 +1,4 @@
-# Vectores
+# Vectores {#sec-vectores}
 
 Hasta ahora hemos trabajado con tipos cuyo tamaño es conocido en
 tiempo de compilación: enteros, números en coma flotante, valores
@@ -243,8 +243,8 @@ programa sustituye el primer elemento por un nuevo valor:
 ## Operaciones habituales
 
 La biblioteca estándar proporciona numerosos métodos para
-manipular vectores. La @tbl-manipula-vectores tabla resume algunos de los más
-utilizados:
+manipular vectores. La @tbl-manipula-vectores tabla resume
+algunos de los más utilizados:
 
 | Método               | Descripción                                          |
 |----------------------|------------------------------------------------------|
@@ -257,9 +257,8 @@ utilizados:
 | `remove(pos)`        | Elimina el elemento situado en la posición indicada. |
 | `contains(&valor)`   | Indica si el vector contiene un determinado valor.   |
 
-
-: Métodos más habituales para manipular vectores {#tbl-manipula-vectores}
-
+: Métodos más habituales para manipular vectores
+{#tbl-manipula-vectores}
 
 El siguiente programa muestra el uso de todos estos métodos:
 
@@ -275,15 +274,13 @@ El siguiente programa muestra el uso de todos estos métodos:
 
 Obsérvese que `pop()` tiene dos efectos:
 
-- Devuelve el último elemento del vector. En este caso un `Option`
-  con el valor `Some("SSH")`.
+- Devuelve el último elemento del vector. En este caso un
+  `Option` con el valor `Some("SSH")`.
 - Elimina este elemento del vector.
 
-
-En la práctica, lo habitual es procesar el valor devuelto mediante
-una sentencia `match`, distinguiendo los casos `Some` y `None`,
-como muestra el siguiente ejemplo:
-
+En la práctica, lo habitual es procesar el valor devuelto
+mediante una sentencia `match`, distinguiendo los casos `Some` y
+`None`, como muestra el siguiente ejemplo:
 
 ``` rust
 {{< include c14/pop/src/main.rs >}}
@@ -326,6 +323,6 @@ Las ideas principales son las siguientes:
 
 Los vectores son una de las estructuras de datos más importantes
 de Rust y aparecen en una gran cantidad de programas. En el
-siguiente capítulo estudiaremos el tipo `String`, que internamente
-utiliza un `Vec<u8>` para almacenar sus caracteres codificados en
-UTF-8.
+siguiente capítulo estudiaremos el tipo `String`, que
+internamente utiliza un `Vec<u8>` para almacenar sus caracteres
+codificados en UTF-8.
