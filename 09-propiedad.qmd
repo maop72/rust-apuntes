@@ -3,8 +3,11 @@
 Uno de los aspectos más característicos de Rust es su sistema de
 propiedad. Gracias a él, el compilador puede garantizar la
 seguridad de la memoria y evitar problemas habituales en otros
-lenguajes, como los accesos a memoria liberada o las condiciones
-de carrera, sin necesidad de un recolector de basura.
+lenguajes, como los accesos a memoria liberada o las [condiciones
+de
+carrera](https://es.wikipedia.org/wiki/Condici%C3%B3n_de_carrera),
+sin necesidad de un [recolector de
+basura](https://es.wikipedia.org/wiki/Recolector_de_basura).
 
 Para conseguirlo, Rust controla quién es el propietario de cada
 dato, cuándo puede transferirse dicha propiedad y en qué
@@ -250,6 +253,35 @@ que determina la existencia de dicho rasgo.
 De forma simplificada, un tipo puede implementar `Copy` cuando
 duplicar los bits que lo representan en memoria produce un nuevo
 valor completamente válido e independiente del original.
+
+## Independencia de `Copy` respecto a *stack* y *heap*
+
+Como hemos adelantado en la sección anterior, la relación entre
+`Copy` y la memoria *stack*/*heap* no es absoluta:
+Una tupla puede almacenarse en el *stack* y no implementar `Copy`
+si alguno de sus elementos no lo implementa:
+
+
+``` rust
+{{< include c09/independencia/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20t1%20%3D%20%2810%2C%20String%3A%3Afrom%28%22hola%22%29%29%3B%0A%20%20%20%20let%20t2%20%3D%20t1%3B%20%0A%20%20%0A%20%20%20%20//%20println%21%28%22%7B%3A%3F%7D%22%2C%20t1%29%3B%20%20//%20t1%20ya%20no%20se%20puede%20usar%0A%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20t2%29%3B%0A%0A%20%20%20%20let%20texto%20%3D%20String%3A%3Afrom%28%22mundo%22%29%3B%0A%20%20%20%20let%20r1%20%3D%20%26texto%3B%0A%20%20%20%20let%20r2%20%3D%20r1%3B%0A%0A%20%20%20%20//%20r1%20sigue%20siendo%20v%C3%A1lida%20%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20r1%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20r2%29%3B%0A%7D%0A)
+
+:::
+
+
+
+En el primer caso, la tupla contiene un `String`, que no
+implementa `Copy`. Por tanto, la tupla tampoco puede implementar
+`Copy` y la asignación de `t1` a `t2` mueve la propiedad.
+
+En el segundo caso, `r1` y `r2` son referencias. Las referencias
+implementan `Copy`, aunque el valor al que apuntan (`String`)
+utilice memoria *heap*. Lo que se copia es la referencia, no el
+`String` ni los datos almacenados en el *heap*.
 
 ## Copias explícitas: método `clone` {#sec-clone}
 

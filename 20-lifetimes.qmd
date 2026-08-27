@@ -15,11 +15,9 @@ Esto ocurre con frecuencia cuando una función recibe varias
 referencias y devuelve una de ellas. Aunque el programador sepa
 que la referencia devuelta será válida, el compilador necesita
 conocer la relación entre los tiempos de vida de las referencias
-involucradas para poder comprobarlo.
-
-Los *lifetimes* permiten expresar esa información. En español,
-*lifetime* puede traducirse por *tiempo de vida* o, simplemente,
-*vida*.
+involucradas para poder comprobarlo. Los *lifetimes* permiten
+expresar esa información. En español, *lifetime* puede traducirse
+por *tiempo de vida* o, simplemente, *vida*.
 
 Los *lifetimes* no modifican el tiempo de vida real de los datos
 ni de las referencias, sino que describen al compilador cómo
@@ -36,10 +34,9 @@ inferirlos automáticamente y no será necesario escribirlos.
 
 Supongamos que necesitamos una función que reciba dos referencias
 a cadena y devuelva una referencia a la cadena más larga. O en
-caso de igual longitud, una referencia a la primera.
-
-Con los conocimientos adquiridos hasta ahora podríamos intentar
-escribir una función como la siguiente:
+caso de igual longitud, una referencia a la primera. Con los
+conocimientos adquiridos hasta ahora podríamos intentar escribir
+código como el siguiente:
 
 ``` rust
 fn mayor(cad1: &str, cad2: &str) -> &str {   // ¡Error!
@@ -56,18 +53,16 @@ su definición tal y como está escrita. Supongamos ahora el
 siguiente programa, que intenta hacer uso de la función anterior:
 
 ``` rust
-fn main() {
-    let s1 = String::from("Hola mundo");
-    let resultado;
-    {
-        let s2 = String::from("Adiós");
-        resultado = mayor(&s1, &s2);
-    }
-    println!("{}", resultado);   // ¡Error!
-}
+{{< include c20/lifetime_mal01/src/main.rs >}}
 ```
 
-Este programa también es incorrecto:
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20mayor%28cad1%3A%20%26str%2C%20cad2%3A%20%26str%29%20-%3E%20%26str%20%7B%20%20%20//%20%C2%A1Error%21%0A%20%20%20%20if%20cad1.len%28%29%20%3E%3D%20cad2.len%28%29%20%7B%0A%20%20%20%20%20%20%20%20cad1%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20cad2%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20s1%20%3D%20String%3A%3Afrom%28%22Hola%20mundo%22%29%3B%0A%20%20%20%20let%20resultado%3B%0A%0A%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20let%20s2%20%3D%20String%3A%3Afrom%28%22Adi%C3%B3s%22%29%3B%0A%20%20%20%20%20%20%20%20resultado%20%3D%20mayor%28%26s1%2C%20%26s2%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20resultado%29%3B%0A%7D%0A)
+
+:::
+
+Este ejemplo evidencia que la función `mayor` es incorrecta:
 
 - `s1` se declara fuera del bloque interior, por lo que sigue
   existiendo al llegar a la llamada a `println!`.
@@ -85,32 +80,82 @@ referencia resultado? Depende:
   bloque, por lo que `resultado` sería una referencia colgante
   (*dangling reference*).
 
-Rust impide que una situación como esta pueda producirse. Para
-ello, el compilador necesita conocer la relación entre los
-tiempos de vida de las referencias que intervienen en la función.
-Esa información se expresa mediante los *lifetimes*.
+Analizando el código de `mayor` y el código de la función que
+llama a `mayor` (esto es, la funcion `main`) , podemos hacer este
+razonamiento:
+
+> `resultado` unas veces será `s1` y otras veces será `s2`.
+> Supongamos el peor caso y escribamos el código de forma que
+> utilice `resultado` solamente mientras ambas cadenas sigan
+> siendo válidas.
+
+Y escribir algo así:
+
+``` rust
+{{< include c20/lifetime_mal02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20mayor%28cad1%3A%20%26str%2C%20cad2%3A%20%26str%29%20-%3E%20%26str%20%7B%20%20%20//%20%C2%A1Error%21%0A%20%20%20%20if%20cad1.len%28%29%20%3E%3D%20cad2.len%28%29%20%7B%0A%20%20%20%20%20%20%20%20cad1%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20cad2%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20s1%20%3D%20String%3A%3Afrom%28%22Hola%20mundo%22%29%3B%0A%20%20%20%20let%20resultado%3B%0A%0A%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20let%20s2%20%3D%20String%3A%3Afrom%28%22Adi%C3%B3s%22%29%3B%0A%20%20%20%20%20%20%20%20resultado%20%3D%20mayor%28%26s1%2C%20%26s2%29%3B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20resultado%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+La idea en principio es válida. El último `println!` debería
+funcionar, no importa si `resultado` apunta a la antigua `s1` o a
+la antigua `s2`. Una implementación de este algoritmo en C podría
+compilar sin problemas y, en este caso concreto, funcionaría
+correctamente. C permite que el programador sea responsable de
+garantizar que el puntero utilizado sigue apuntando a un objeto
+válido. Pero Rust adopta una postura más estricta: no basta con
+que este ejemplo concreto funcione, sino que el *compilador* debe
+poder *garantizar* que el programa es seguro *siempre*.
+
+- Sin que importe cómo es el código que llama a la función. Este
+  código puede ser muy variado y, además, puede cambiar después
+  de haber definido `mayor` o incluso encontrarse en otro módulo
+  o biblioteca. Aquí *hemos hecho trampa* porque estamos
+  considerando tanto `mayor` como `main`.
+
+- Sin que importen los detalles de implementación de la función.
+  En este caso la relación es sencilla y podemos deducirla
+  fácilmente. En funciones más complejas, determinar las
+  relaciones entre las referencias podría requerir un análisis
+  mucho más complicado.
+
+La cabecera de una función puede verse como un contrato entre la
+función y el código que la utiliza. Este contrato debe expresar
+las propiedades que el compilador necesita conocer para poder
+comprobar que el uso de la función es seguro, independientemente
+de quién la llame y de los detalles de su implementación.
+
+Así que la relación entre los tiempos de vida de las referencias
+que intervienen en la función, que en este caso particular hemos
+podido deducir analizando su código, debe poder formar parte
+explícita de ese contrato.
 
 ## Parámetros de *lifetime*
 
 La solución al problema del apartado anterior consiste en indicar
-explícitamente la relación entre las referencias que intervienen
-en la función. Para ello se utilizan *parámetros de lifetime*,
-que se escriben como un identificador precedido por un apóstrofo
-(`'`).
+explícitamente en la cabecera la relación entre las referencias
+que intervienen en la función. Para ello se utilizan *parámetros
+de lifetime*, que se escriben como un identificador precedido por
+un apóstrofo (`'`).
 
-La función anterior puede escribirse así:
+Este código ya compila correctamente:
 
 ``` rust
-fn mayor<'a>(cad1: &'a str, cad2: &'a str) -> &'a str {
-    if cad1.len() >= cad2.len() {
-        cad1
-    } else {
-        cad2
-    }
-}
+{{< include c20/lifetime_ok/src/main.rs >}}
 ```
 
-El identificador `'a` aparece cuatro veces:
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20mayor%3C%27a%3E%28cad1%3A%20%26%27a%20str%2C%20cad2%3A%20%26%27a%20str%29%20-%3E%20%26%27a%20str%20%7B%0A%20%20%20%20if%20cad1.len%28%29%20%3E%3D%20cad2.len%28%29%20%7B%0A%20%20%20%20%20%20%20%20cad1%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20cad2%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20s1%20%3D%20String%3A%3Afrom%28%22Hola%20mundo%22%29%3B%0A%20%20%20%20let%20resultado%3B%0A%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20let%20s2%20%3D%20String%3A%3Afrom%28%22Adi%C3%B3s%22%29%3B%0A%20%20%20%20%20%20%20%20resultado%20%3D%20mayor%28%26s1%2C%20%26s2%29%3B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20resultado%29%3B%20%20%20%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+En la declaración de `mayor`, el identificador `'a` aparece
+cuatro veces:
 
 - tras el nombre de la función (`fn mayor<'a>`), donde se declara
   el parámetro de *lifetime*, entre *corchetes angulares* (`<>`);
