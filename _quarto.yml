@@ -22,12 +22,14 @@ book:
     - 13-patrones.qmd
     - 14-vectores.qmd
     - 15-string.qmd
-    - 16-hashmap.qmd
-    - 17-manejo_errores.qmd
-    - 18-entrada_salida.qmd
-    - 19-modulos.qmd
-    - 20-lifetimes.qmd
-    - 21-test_automaticos.qmd
+    - 16-iteradores.qmd
+    - 17-hashmap.qmd
+    - 18-manejo_errores.qmd
+    - 19-entrada_salida.qmd
+    - 20-modulos.qmd
+    - 21-lifetimes.qmd
+    - 22-test_automaticos.qmd
+    - 23-pnet.qmd
 
 
 lang: es-ES

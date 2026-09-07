@@ -237,7 +237,7 @@ En este caso, cuando `contador` alcanza el valor 5, el bucle
 termina y la expresión `loop` produce dicho valor, que se asigna
 a la variable `resultado`.
 
-### El bucle `while`
+### El bucle `while`  {#sec-while}
 
 La construcción `while` ejecuta repetidamente un bloque de código
 mientras una condición sea verdadera. Antes de cada iteración se

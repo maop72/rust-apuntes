@@ -288,7 +288,7 @@ de propiedad puede tomarse una referencia:
 let destino = &ruta1.destino;
 ```
 
-### Mostrar un `struct` completo
+### Mostrar un `struct` completo {#sec-struct-completo}
 
 Por defecto, Rust no sabe cómo mostrar una instancia completa de
 un tipo definido por el usuario. Para ello es necesario derivar

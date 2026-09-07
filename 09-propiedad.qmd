@@ -215,7 +215,7 @@ propiedad. La diferencia es que pertenecen a una categoría
 especial de tipos que se copian automáticamente, como veremos en
 la siguiente sección.
 
-## Copias automáticas: rasgo *Copy*
+## Copias automáticas: rasgo *Copy* {#sec-copy}
 
 En la sección anterior vimos dos comportamientos distintos al
 realizar una asignación:
@@ -257,10 +257,9 @@ valor completamente válido e independiente del original.
 ## Independencia de `Copy` respecto a *stack* y *heap*
 
 Como hemos adelantado en la sección anterior, la relación entre
-`Copy` y la memoria *stack*/*heap* no es absoluta:
-Una tupla puede almacenarse en el *stack* y no implementar `Copy`
-si alguno de sus elementos no lo implementa:
-
+`Copy` y la memoria *stack*/*heap* no es absoluta: Una tupla
+puede almacenarse en el *stack* y no implementar `Copy` si alguno
+de sus elementos no lo implementa:
 
 ``` rust
 {{< include c09/independencia/src/main.rs >}}
@@ -271,8 +270,6 @@ si alguno de sus elementos no lo implementa:
 [Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20t1%20%3D%20%2810%2C%20String%3A%3Afrom%28%22hola%22%29%29%3B%0A%20%20%20%20let%20t2%20%3D%20t1%3B%20%0A%20%20%0A%20%20%20%20//%20println%21%28%22%7B%3A%3F%7D%22%2C%20t1%29%3B%20%20//%20t1%20ya%20no%20se%20puede%20usar%0A%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20t2%29%3B%0A%0A%20%20%20%20let%20texto%20%3D%20String%3A%3Afrom%28%22mundo%22%29%3B%0A%20%20%20%20let%20r1%20%3D%20%26texto%3B%0A%20%20%20%20let%20r2%20%3D%20r1%3B%0A%0A%20%20%20%20//%20r1%20sigue%20siendo%20v%C3%A1lida%20%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20r1%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20r2%29%3B%0A%7D%0A)
 
 :::
-
-
 
 En el primer caso, la tupla contiene un `String`, que no
 implementa `Copy`. Por tanto, la tupla tampoco puede implementar
@@ -535,6 +532,98 @@ el mismo valor. Por tanto:
 
 O en otras palabras: *muchos lectores o un único escritor*.
 
+## Desreferenciación: el operador `*`  {#sec-desreferencias}
+
+Hasta ahora hemos utilizado referencias para pasar cadenas a una
+función. En concreto, el tipo `&str` que hemos utilizado en esos
+ejemplos es una referencia a una cadena. Por tanto, cuando
+escribimos `mostrar("Hola")`, estamos pasando una referencia, no
+una cadena completa.
+
+En esos ejemplos, Rust podía utilizar la referencia directamente
+para imprimir el texto. Pero una referencia no es el valor al que
+apunta. Si necesitamos utilizar ese valor, podemos
+*desreferenciar* la referencia. El operador `*` permite acceder
+al valor al que apunta una referencia.
+
+### Un ejemplo con enteros
+
+Veamos ahora un ejemplo en el que necesitamos desreferenciar
+explícitamente una referencia.
+
+``` rust
+{{< include c09/desreferencia/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20duplicar%28numero%3A%20i32%29%20-%3E%20i32%20%7B%0A%20%20%20%20numero%20%2A%202%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20numero%20%3D%20443%3B%0A%20%20%20%20let%20referencia%20%3D%20%26numero%3B%0A%0A%20%20%20%20//let%20doble%20%3D%20duplicar%28referencia%29%3B%20%20%20//%20%C2%A1Error%21%0A%20%20%20%20let%20doble%20%3D%20duplicar%28%2Areferencia%29%3B%0A%0A%20%20%20%20println%21%28%22El%20doble%20de%20%7B%7D%20es%20%7B%7D%22%2C%20referencia%2C%20doble%29%3B%0A%7D%0A)
+
+:::
+
+La función `duplicar()` necesita un entero, si le pasamos
+directamente `referencia`, que es una refencia a entero,
+obtenemos un error del compilador:
+
+> expected `i32`, found `&{integer}`
+
+La solución es desreferenciar la referencia:
+
+``` rust
+let doble = duplicar(*referencia);
+```
+
+Ahora `*referencia` es el valor al que apunta `referencia`, es
+decir, el entero `443`, que es el tipo que necesita la función.
+
+Es importante distinguir que:
+
+- `numero` es una variable cuyo valor es `443`.
+- `&numero` crea una referencia a esa variable.
+- `referencia` contiene esa referencia.
+- `*referencia` permite acceder al valor `443`.
+
+Si bien en ocasiones no es necesario desreferenciar de manera
+explícita, porque el compilador se ocupa de ello.
+
+``` rust
+{{< include c09/desreferencia02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20numero%20%3D%20443%3B%0A%20%20%20%20let%20referencia%20%3D%20%26numero%3B%0A%20%20%20%20println%21%28%22El%20n%C3%BAmero%20es%20%7B%7D%22%2C%20referencia%29%3B%0A%0A%20%20%20%20let%20doble%20%3D%20%2Areferencia%20%2A%202%3B%20%20//%20Desreferencia%20expl%C3%ADcita.%20Bien.%20%0A%20%20%20%20println%21%28%22El%20doble%20es%20%7B%7D%22%2C%20doble%29%3B%0A%0A%20%20%20%20let%20doble%20%3D%20referencia%20%2A%202%3B%20%20%20//%20El%20compilador%20desreferencia.%20Bien%20tambi%C3%A9n.%0A%20%20%20%20println%21%28%22El%20doble%20es%20%7B%7D%22%2C%20doble%29%3B%0A%7D%0A)
+
+:::
+
+En general, Rust puede desreferenciar automáticamente una
+referencia cuando el contexto lo permite, como ocurre en la
+multiplicación del ejemplo anterior. Pero no siempre es posible.
+Si una función espera un valor de un tipo concreto y le pasamos
+una referencia, puede ser necesario desreferenciarla
+explícitamente con `*`. En cualquier caso, el operador `*`
+permite indicar de forma explícita que queremos acceder al valor
+al que apunta una referencia.
+
+### Impresión de cadenas
+
+La impresión de una cadena tiene la particularidad de que admite
+tanto una cadena como una referencia a cadena.
+
+``` rust
+{{< include c09/desreferencia03/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20cadena%20%3D%20String%3A%3Afrom%28%22Hola%22%29%3B%0A%20%20%20%20let%20referencia%20%3D%20%26cadena%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20cadena%29%3B%20%20%20%20%20%20%20//%20Una%20cadena%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20%26cadena%29%3B%20%20%20%20%20%20//%20Una%20referencia%20a%20cadena%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20referencia%29%3B%20%20%20//%20Una%20referencia%20a%20cadena%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20%2Areferencia%29%3B%20%20//%20Una%20cadena%0A%7D%0A)
+
+:::
+
+En este ejemplo las cuatro líneas producen la misma salida porque
+la macro `println!` puede recibir tanto una cadena como una
+referencia a cadena.
+
 ## Resumen
 
 En este capítulo hemos introducido uno de los conceptos más
@@ -554,6 +643,11 @@ Las ideas fundamentales son las siguientes:
   `clone()`.
 - Las referencias permiten acceder temporalmente a un valor sin
   convertirse en su propietario.
+- El operador `*` permite desreferenciar una referencia para
+  acceder al valor al que apunta.
+- En algunos contextos, Rust puede desreferenciar automáticamente
+  una referencia, por lo que no siempre es necesario escribir `*`
+  de forma explícita.
 - Puede haber cualquier número de préstamos inmutables o un único
   préstamo mutable, pero nunca ambas situaciones al mismo tiempo.
 

@@ -114,6 +114,30 @@ En todos estos casos la forma abreviada no sería válida.
 
 :::
 
+Además de `{}`, Rust dispone del marcador `{:?}`, que permite
+mostrar un valor utilizando su formato de depuración (*Debug*).
+Es especialmente útil para mostrar estructuras de datos, como
+arrays, tuplas o estructuras. Muchos tipos predefinidos de Rust
+implementan `Debug`, por lo que pueden mostrarse directamente con
+`{:?}`. Podemos ver un ejemplo en este programa, que explicaremos
+en el capítulo siguiente:
+
+``` rust
+{{< include c06/arrays/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20numeros%20%3D%20%5B10%2C%2020%2C%2030%2C%2040%2C%2050%5D%3B%0A%0A%20%20%20%20println%21%28%22Contenido%20del%20array%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20numeros%29%3B%0A%20%20%0A%20%20%20%20println%21%28%22Elementos%20del%20array%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5CtPrimero%3A%20%7B%7D%22%2C%20numeros%5B0%5D%29%3B%0A%20%20%20%20println%21%28%22%5CtSegundo%3A%20%7B%7D%22%2C%20numeros%5B1%5D%29%3B%0A%20%20%20%20println%21%28%22%5CtTercero%3A%20%7B%7D%22%2C%20numeros%5B2%5D%29%3B%0A%7D%0A%0A)
+
+:::
+
+Cuando definimos nuestros propios tipos, como una estructura,
+podemos hacer que implementen `Debug` utilizando el atributo
+`#[derive(Debug)]`. Rust genera automáticamente una
+implementación de `Debug` para ese tipo. Lo veremos en la
+@sec-struct-completo.
+
 ## Tipos de datos básicos {#sec-tipos-basicos}
 
 Las variables se declaran mediante la palabra reservada `let`. Lo
@@ -239,18 +263,18 @@ descarta y la expresión pasa a producir el valor `()`.
 
 ### Resumen de tipos básicos
 
-| Tipo                              | Descripción                               | Ejemplo             |
-|-----------------------------------|-------------------------------------------|---------------------|
-| `bool`                            | Valor lógico                              | `true`, `false`     |
-| `char`                            | Carácter Unicode                          | `'A'`, `'ñ'`, `'€'` |
-| `&str`                            | Cadena de texto inmutable                 | `"Hola"`            |
-| `i8`, `i16`, `i32`, `i64`, `i128` | Enteros con signo                         | `-42`               |
-| `u8`, `u16`, `u32`, `u64`, `u128` | Enteros sin signo                         | `42`                |
-| `isize`                           | Entero con signo del tamaño de un puntero | `-42`               |
-| `usize`                           | Entero sin signo del tamaño de un puntero | `42`                |
-| `f32`                             | Real de simple precisión                  | `3.14`              |
-| `f64`                             | Real de doble precisión                   | `3.14`              |
-| `()`                              | Tipo unitario                             | `()`                |
+| Tipo | Descripción | Ejemplo |
+|----|----|----|
+| `bool` | Valor lógico | `true`, `false` |
+| `char` | Carácter Unicode | `'A'`, `'ñ'`, `'€'` |
+| `&str` | Cadena de texto inmutable | `"Hola"` |
+| `i8`, `i16`, `i32`, `i64`, `i128` | Enteros con signo | `-42` |
+| `u8`, `u16`, `u32`, `u64`, `u128` | Enteros sin signo | `42` |
+| `isize` | Entero con signo del tamaño de un puntero | `-42` |
+| `usize` | Entero sin signo del tamaño de un puntero | `42` |
+| `f32` | Real de simple precisión | `3.14` |
+| `f64` | Real de doble precisión | `3.14` |
+| `()` | Tipo unitario | `()` |
 
 : Tipos de datos básicos de Rust {#tbl-tipos-basicos}
 

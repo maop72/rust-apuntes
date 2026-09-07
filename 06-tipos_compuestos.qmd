@@ -103,9 +103,9 @@ expresión.
 
 :::
 
-- La variable `numeros` contiene un array con cinco elementos.
-  Todos ellos son enteros. Si alguno no lo fuera, el compilador
-  mostraría un error. Como en el siguiente ejemplo:
+La variable `numeros` contiene un array con cinco elementos.
+Todos ellos son enteros. Si alguno no lo fuera, el compilador
+mostraría un error. Como en el siguiente ejemplo:
 
 ``` rust
 {{< include c06/arrays_mal/src/main.rs >}}
@@ -116,6 +116,53 @@ expresión.
 [Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20datos%20%3D%20%5B10%2C%2020%2C%20%22azul%22%5D%3B%20//%20%C2%A1ERROR%21%20Los%20tipos%20han%20de%20ser%20iguales.%0A%0A%20%20%20%20println%21%28%22Contenido%20del%20array%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20datos%29%3B%0A%7D%0A)
 
 :::
+
+También es posible definir un array indicando su tamaño y el
+valor que tendrán todos sus elementos. Para ello se escribe el
+valor inicial, seguido de un punto y coma y del número de
+elementos:
+
+``` rust
+let ceros = [0; 5];
+```
+
+Esto significa que se debe repetir el valor `0` cinco veces. El
+array `ceros` contiene cinco elementos, todos ellos iguales a
+`0`. El tipo de los elementos es `i32`, que es el tipo que Rust
+deduce para el literal `0`. Esta forma de definir arrays resulta
+especialmente útil cuando todos sus elementos han de comenzar con
+el mismo valor. Por ejemplo:
+
+``` rust
+{{< include c06/array_ceros/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20ceros%20%3D%20%5B0%3B%205%5D%3B%0A%0A%20%20%20%20println%21%28%22Contenido%20del%20array%3A%22%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20ceros%29%3B%0A%7D%0A)
+
+:::
+
+También se puede indicar explícitamente el tipo de los elementos:
+
+``` rust
+let valores: [f64; 4] = [0.0; 4];
+```
+
+Aquí `valores` es un array de cuatro elementos de tipo `f64`,
+todos ellos inicializados a `0.0`.
+
+La forma `[valor; tamaño]` requiere que el valor pueda copiarse
+para inicializar los elementos. En este capítulo trabajaremos con
+tipos sencillos, como `i32`, `f64` o `bool`, que cumplen este
+requisito. En la @sec-copy veremos que no todos los tipos de Rust
+implementan el trait `Copy`. Con algunos de ellos no será posible
+utilizar esta forma de inicialización, aunque sí se podrán
+definir arrays escribiendo sus elementos uno a uno.
+
+En cualquier caso, el tamaño siempre forma parte del tipo del
+array. Por tanto, `[i32; 5]` y `[i32; 10]` son tipos distintos,
+aunque sus elementos sean del mismo tipo.
 
 ## Comparación entre tuplas y arrays
 
@@ -154,7 +201,7 @@ Las ideas principales son las siguientes:
 - Tanto las tuplas como los *arrays* tienen un tamaño fijo, pero
   las tuplas permiten mezclar tipos mientras que los *arrays* no.
 - En los arrays se pueden usar variables o expresiones para los
-  índices. En las tuplas, no. Solo constantes numéricas 
+  índices. En las tuplas, no. Solo constantes numéricas
   literales.
 
 En los próximos capítulos estudiaremos nuevos tipos de datos que
