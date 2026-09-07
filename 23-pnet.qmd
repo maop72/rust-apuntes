@@ -1,0 +1,1138 @@
+# Los crates `pnet`
+
+## ¿Qué es `pnet`?
+
+`pnet` es el nombre general de una familia de crates del proyecto
+[libpnet](https://github.com/libpnet/libpnet), una biblioteca
+multiplataforma para trabajar con redes a bajo nivel. El proyecto
+está dividido en varios crates independientes. Cada uno
+proporciona funcionalidades relacionadas con un nivel o aspecto
+diferente de la comunicación de red. En Rust, las dependencias se
+incorporan mediante los nombres de esos crates concretos. En
+nuestro caso utilizamos principalmente:
+
+- `pnet_datalink`: acceso a las interfaces de red y envío y
+  recepción de tramas de enlace.
+- `pnet_packet`: interpretación, construcción y modificación de
+  paquetes y cabeceras de distintos protocolos.
+- `pnet_transport`: acceso a protocolos de transporte.
+
+Por ejemplo, el acceso a las interfaces de red se realiza
+mediante `pnet_datalink`:
+
+``` rust
+    use pnet::datalink;
+```
+
+Y la interpretación de paquetes se realiza mediante módulos de
+`pnet_packet`:
+
+``` rust
+    use pnet::packet::ethernet::EthernetPacket;
+```
+
+`pnet` proporciona mecanismos para:
+
+- Descubrir las interfaces de red del sistema;
+- Enviar y recibir tramas y paquetes;
+- Acceder a la red desde distintas capas;
+- Interpretar y construir paquetes mediante sus módulos de
+  protocolos.
+
+`pnet` actúa como una abstracción sobre los mecanismos de red del
+sistema operativo. El programa no necesita utilizar directamente
+las llamadas al sistema de Linux: utiliza las funciones y tipos
+que ofrece `pnet`.
+
+## Incorporar `pnet` al proyecto
+
+Para utilizar las funcionalidades de `pnet`, primero hay que
+añadir como dependencias los crates que necesita el programa.
+Esto puede hacerse manualmente editando el archivo `Cargo.toml`,
+pero normalmente resulta más cómodo utilizar `cargo add`. Desde
+la shell de Linux, dentro del directorio correspondiente al
+proyecto Rust en el que estamos trabajando, ejecutamos:
+
+``` bash
+    cargo add pnet
+```
+
+Este comando añade al proyecto la dependencia correspondiente y
+actualiza `Cargo.toml` y `Cargo.lock`. A partir de ese momento,
+el programa puede utilizar los módulos proporcionados por la
+biblioteca, por ejemplo:
+
+``` rust
+    use pnet::datalink;
+    use pnet::packet::ethernet::EthernetPacket;
+```
+
+Si olvidamos añadir la dependencia e intentamos utilizar alguno
+de sus módulos, Rust mostrará un error parecido a:
+
+>    use of unresolved module or unlinked crate `pnet`
+
+
+## Conceptos generales de `pnet`
+
+Un programa Rust que utilice `pnet` necesitará normalmente al
+menos una interfaz de red, un canal asociado a ella y un objeto
+emisor y otro receptor. Esto permitirá enviar y recibir tramas,
+es decir, bytes en *crudo*, que normalmente se procesarán de
+forma más cómoda como *paquetes*.
+
+Primero describiremos conceptualmente estas entidades y después
+veremos cómo se utilizan.
+
+### Interfaces de red
+
+En `pnet`, una interfaz de red del host se representa mediante el
+tipo `NetworkInterface`. Contiene información sobre una interfaz
+concreta del sistema operativo, como su nombre, su índice y sus
+direcciones de red.
+
+### Canales
+
+Las interfaces de red no son suficientes para que el programa
+pueda trabajar con ellas enviand realizar esas operaciones
+necesita otra entidad: el *canal*.
+
+Un canal de `pnet` es un objeto que representa el acceso del
+programa a una interfaz de red. A través de ese acceso, el
+programa puede recibir tramas que llegan por la interfaz y
+transmitir tramas a través de ella. El canal actúa como
+intermediario entre las operaciones del programa y los mecanismos
+de comunicación proporcionados por el sistema operativo.
+
+### Transmisor y receptor
+
+Un canal proporciona los objetos que permiten realizar las dos
+operaciones básicas:
+
+    transmisión
+    recepción
+
+En esta asignatura nos centraremos en los canales Ethernet, que
+permiten trabajar con tramas en el nivel de enlace de datos. En
+los ejemplos básicos que trataremos aquí, cuando hablemos de un
+canal nos referiremos normalmente a la estructura:
+
+    Ethernet(tx, rx)
+
+Esta estructura representa un canal Ethernet con un transmisor y
+un receptor. Existen otros tipos de canales y otras formas de
+acceso a la red, pero no necesitamos tratarlos en estos apuntes.
+
+- El objeto `tx` es el transmisor (`DataLinkSender`) y permite
+  enviar tramas por la interfaz.
+
+- El objeto `rx` es el receptor (`DataLinkReceiver`) y permite
+  recibir tramas que llegan por la interfaz.
+
+Por tanto, la relación conceptual es:
+
+    interfaz de red
+            │
+            │ canal de pnet
+            ↓
+       ┌───────────────┐
+       │      tx       │
+       │      rx       │
+       └───────────────┘
+            │
+            ↓
+       programa Rust
+
+### Qué es y qué no es un canal
+
+El canal:
+
+- Proporciona los mecanismos necesarios para intercambiar tramas
+  con la red mediante una interfaz concreta;
+- Permite al programa recibir tramas desde esa interfaz;
+- Permite al programa transmitir tramas por esa interfaz;
+- Proporciona los objetos `tx` y `rx` para realizar esas
+  operaciones.
+
+El canal:
+
+- NO es la interfaz de red;
+- NO genera el contenido de las tramas;
+- NO decide qué tramas debe enviar el programa;
+- NO procesa o interpreta las tramas recibidas;
+- NO decide por qué interfaz debe reenviarse una trama;
+- NO representa la red completa ni una conexión entre dos
+  máquinas.
+
+La interfaz pertenece al sistema operativo. El canal es la
+representación que utiliza el programa para acceder a ella
+mediante `pnet`.
+
+El programa es quien analiza las tramas y toma las decisiones.
+`pnet` proporciona el acceso necesario para recibirlas y
+transmitirlas.
+
+### Un canal por cada interfaz
+
+En los ejemplos básicos que trataremos aquí supondremos la
+organización más sencilla: cada interfaz en uso tiene un canal, y
+cada canal proporciona un transmisor y un receptor.
+
+    interfaz
+        │
+        └── canal Ethernet
+                ├── tx
+                └── rx
+
+Así trabajaremos en esta asignatura, aunque en diseños más
+complejos puede haber otras configuraciones.
+
+Supongamos cuatro segmentos de red y un host conectado a cada uno
+mediante una interfaz.
+
+    programa
+       │
+       ├── canal ── eth0 ── red 0
+       ├── canal ── eth1 ── red 1
+       ├── canal ── eth2 ── red 2
+       └── canal ── eth3 ── red 3
+
+Como cada canal proporciona un transmisor y un receptor, la
+estructura conceptual completa sería:
+
+    programa
+       │
+       ├── tx_eth0 / rx_eth0 ── eth0 ── red 0
+       ├── tx_eth1 / rx_eth1 ── eth1 ── red 1
+       ├── tx_eth2 / rx_eth2 ── eth2 ── red 2
+       └── tx_eth3 / rx_eth3 ── eth3 ── red 3
+
+Así, el programa puede recibir una trama por el receptor asociado
+a una interfaz y transmitirla posteriormente por el transmisor
+asociado a otra.
+
+Por ejemplo:
+
+    rx_eth0
+        recibe una trama por eth0
+
+    tx_eth2
+        transmite esa trama por eth2
+
+### Canales de `pnet` y canales de Rust
+
+La palabra *canal* en este contexto puede resultar confusa. Estos
+canales no son canales de comunicación entre hilos de Rust, como
+los creados mediante:
+
+    std::sync::mpsc::channel
+
+Los canales de `pnet` representan el acceso del programa a una
+interfaz de red. No son colas de mensajes entre partes del
+programa.
+
+Del mismo modo, el canal tampoco es una interfaz virtual creada
+por `pnet`. La interfaz pertenece al sistema operativo; `pnet`
+proporciona una abstracción para utilizarla desde Rust.
+
+### Tramas y paquetes
+
+En terminología de redes, una trama y un paquete suelen designar
+unidades de datos de niveles distintos del modelo de capas. Por
+ejemplo, es frecuente hablar de *tramas Ethernet* y de *paquetes
+IP*. Pero en el contexto de la librería `pnet`, la palabra
+*paquete* tiene un significado ligeramente distinto al habitual.
+
+- Trama es el conjunto de bytes *en crudo*, tal y como se reciben
+  por la interfaz. Su interpretación depende de cada protocolo.
+
+- Paquete es una representación estructurada de esa misma trama,
+  que permite acceder de manera más cómoda a cada uno de sus
+  campos por separado.
+
+Aunque es posible trabajar directamente con una trama Ethernet,
+`pnet_packet` permite interpretarla como un paquete y acceder a
+sus campos mediante métodos con nombres significativos. No es
+necesario consultar continuamente la especificación del protocolo
+para recordar la posición de cada campo ni separar manualmente
+los bytes mediante índices y slices. Por ejemplo, en lugar de
+acceder directamente a los bytes que contienen la dirección MAC
+de origen, podemos escribir:
+
+``` rust
+    packet.get_source()
+```
+
+Y para consultar la dirección MAC de destino:
+
+``` rust
+    packet.get_destination()
+```
+
+Estos métodos conocen la estructura de la cabecera Ethernet y
+realizan internamente el acceso a los bytes correspondientes.
+
+Cuando se utiliza una representación mutable, también es posible
+modificar los campos mediante métodos como:
+
+``` rust
+    packet.set_source(mac)
+    packet.set_destination(mac)
+```
+
+La dirección MAC de origen puede ser la MAC propia de la interfaz
+o cualquier otra que el programa decida escribir. Esto puede
+tener usos legítimos, como la virtualización, la alta
+disponibilidad o ciertas funciones de encaminamiento, pero
+también puede utilizarse para suplantar a otro dispositivo. Por
+tanto, aunque técnicamente sea posible modificarla, hay que
+hacerlo con cuidado, porque puede afectar al funcionamiento de la
+red y tener consecuencias inesperadas.
+
+Además de las direcciones MAC, el paquete permite consultar el
+tipo de trama mediante:
+
+``` rust
+   packet.get_ethertype()
+```
+
+Este método devuelve el valor del campo EtherType, que identifica
+el protocolo transportado. Por ejemplo, `EtherTypes::Ipv4` indica
+que la trama contiene un datagrama IPv4.
+
+También podemos acceder a los datos transportados mediante:
+
+``` rust
+    packet.payload()
+```
+
+Este método devuelve un slice con los bytes situados después de
+la cabecera Ethernet. El programa puede utilizar esos bytes para
+interpretar el protocolo superior, por ejemplo, como una cabecera
+IPv4. Así, `get_ethertype()` permite identificar qué protocolo
+contiene la trama, mientras que `payload()` permite acceder a los
+datos de ese protocolo sin tener que calcular manualmente dónde
+termina la cabecera Ethernet.
+
+Por tanto, `pnet_packet` proporciona una capa de abstracción
+sobre los bytes de la trama: los datos siguen siendo bytes, pero
+el programa puede trabajar con los campos del protocolo
+utilizando sus nombres y operaciones específicas, en lugar de
+manipular directamente las posiciones de memoria.
+
+## Uso de `pnet`
+
+Para utilizar una interfaz de red mediante `pnet`, el programa
+debe realizar dos operaciones distintas:
+
+1.  Descubrir las interfaces disponibles y seleccionar las que
+    necesita utilizar.
+2.  Abrir un canal para cada interfaz seleccionada. Para ello,
+    además de la interfaz, necesita un objeto `Config` con los
+    parámetros que determinan cómo se realizará el acceso.
+
+La primera operación permite identificar las interfaces y obtener
+la información necesaria sobre ellas. La segunda establece el
+acceso operativo a cada interfaz, proporcionando el transmisor y
+el receptor que utilizará posteriormente el programa.
+
+### Descubrimiento de interfaces
+
+Como hemos visto, lo primero que necesita el programa es conocer
+qué interfaces de red están disponibles en el sistema. Para ello
+utiliza la función:
+
+    datalink::interfaces()
+
+Esta función devuelve una colección de objetos
+`NetworkInterface`, uno por cada interfaz que `pnet` puede
+descubrir. Son las interfaces que ya existen en el sistema
+operativo, no interfaces nuevas.
+
+El descubrimiento de interfaces no suele requerir privilegios
+especiales. Los privilegios para el acceso al canal dependen del
+Sistema Operativo:
+
+- En Linux, la apertura de un canal de acceso a tramas Ethernet
+  suele requerir privilegios elevados, normalmente mediante
+  `sudo` o mediante la capacidad `CAP_NET_RAW`.
+
+- En Windows, `pnet` necesita normalmente Npcap o WinPcap como
+  soporte para el acceso a las tramas. El programa puede
+  ejecutarse como usuario normal, aunque los permisos efectivos
+  dependen de la instalación y configuración de ese componente.
+
+- En macOS, `pnet` utiliza dispositivos BPF para acceder a las
+  tramas. El acceso a esos dispositivos está protegido por
+  permisos del sistema y puede requerir ejecutar el programa con
+  `sudo`.
+
+Una vez descubiertos, cada objeto `NetworkInterface` contiene
+información sobre una interfaz concreta. Sus campos principales
+son:
+
+- `name`: nombre de la interfaz, como `lo`, `eth0` o `eth1`;
+- `index`: índice de la interfaz en el sistema;
+- `mac`: dirección MAC de la interfaz, si está disponible;
+- `ips`: direcciones IP asociadas a la interfaz;
+- `flags`: características o estados de la interfaz.
+
+Por ejemplo, un programa mínimo puede obtener la colección y
+mostrar el nombre de cada interfaz:
+
+``` rust
+    use pnet::datalink;
+
+    fn main() {
+        let interfaces = datalink::interfaces();
+
+        for iface in interfaces {
+            println!("{}", iface.name);
+        }
+    }
+```
+
+La función `datalink::interfaces()` realiza el descubrimiento. El
+bucle recorre los objetos devueltos y permite consultar la
+información de cada interfaz.
+
+Si el sistema dispone, por ejemplo, de las interfaces `lo`,
+`eth0` y `eth1`, la salida podría ser:
+
+    lo
+    eth0
+    eth1
+
+El resultado concreto depende de las interfaces existentes en el
+sistema donde se ejecute el programa.
+
+### El objeto `Config`
+
+Además de la interfaz, para abrir un canal es necesario
+proporcionar un objeto `Config`, que contiene las opciones de
+configuración del canal.
+
+El tipo `Config` pertenece al módulo `pnet::datalink` y permite
+establecer distintos parámetros relacionados con la comunicación.
+Entre ellos se encuentran, por ejemplo:
+
+- El tamaño de los buffers de recepción y transmisión;
+- El tiempo máximo de espera al recibir datos;
+- El tiempo máximo de espera al transmitir;
+- El tipo de canal que se desea utilizar.
+
+No es necesario especificar todos estos parámetros. El programa
+puede utilizar los valores predeterminados y modificar únicamente
+aquellos que necesita.
+
+Para obtener una configuración inicial se utiliza:
+
+``` rust
+    Config {
+        ..Default::default()
+    }
+```
+
+La expresión `Default::default()` crea un objeto `Config` con los
+valores predeterminados definidos por `pnet`.
+
+Por ejemplo:
+
+``` rust
+    Config {
+        read_timeout: Some(Duration::from_millis(READ_TIMEOUT_MS)),
+        ..Default::default()
+    }
+```
+
+significa que se crea primero una configuración predeterminada y
+después se sustituye el valor de `read_timeout` por el indicado.
+Los demás campos conservan sus valores predeterminados.
+
+En este ejemplo se usa la constante:
+
+``` rust
+    READ_TIMEOUT_MS: u64 = 1;
+```
+
+Por tanto, el tiempo de espera configurado para la recepción es
+de un milisegundo.
+
+Este valor afecta a la operación que veremos a continuación:
+
+``` rust
+    rx.next()
+```
+
+Si no llega ninguna trama durante ese intervalo, la operación
+puede terminar sin haber recibido datos, en lugar de permanecer
+bloqueada indefinidamente.
+
+### Abrir un canal
+
+Una vez que tenemos la interfaz y el objeto `Config`, podemos
+solicitar a `pnet` que abra un canal para esa interfaz:
+
+``` rust
+    datalink::channel(&iface, config)
+```
+
+La función devuelve un `Result`, porque la apertura puede tener
+éxito o producir un error.
+
+Si la apertura tiene éxito, el resultado contiene un canal. En
+los ejemplos de esta asignatura trabajaremos con canales
+Ethernet, cuya estructura es:
+
+``` rust
+    Ethernet(tx, rx)
+```
+
+Esta estructura contiene el transmisor y el receptor asociados al
+canal abierto para esa interfaz.
+
+Si la apertura falla, el resultado contiene información sobre el
+error. El programa debe decidir entonces cómo tratar esa
+situación, por ejemplo, mostrando un mensaje y terminando su
+ejecución.
+
+Por tanto, la apertura del canal establece el acceso operativo a
+una interfaz que ya existe en el sistema. La interfaz se
+identifica mediante el objeto `NetworkInterface`, mientras que
+las opciones de acceso se indican mediante el objeto `Config`.
+
+### El transmisor `tx`
+
+El objeto `tx` es el transmisor (`DataLinkSender`) del canal.
+También se le puede llamar *extremo transmisor*. Permite entregar
+a `pnet` una trama que el programa quiere transmitir por la
+interfaz asociada al canal.
+
+La operación utilizada es:
+
+``` rust
+    tx.send_to(frame, None)
+```
+
+- El primer argumento, `frame`, contiene los bytes de la trama
+  que se quiere transmitir.
+
+- El segundo argumento, `dst`, permite proporcionar una dirección
+  de destino adicional para la transmisión.
+
+En el caso de las tramas Ethernet, normalmente el campo `dst` se
+pone a `None`, porque la dirección MAC del destinatario ya va
+incluida en la propia trama. En otros contextos podría utilizarse
+para proporcionar, por ejemplo, una dirección IP de destino.
+
+### El receptor `rx`
+
+El objeto `rx` es el receptor (`DataLinkReceiver`) del canal. En
+ocasiones se le denomina *extremo receptor*. Permite obtener las
+tramas que llegan por la interfaz asociada al canal.
+
+La operación utilizada es:
+
+``` rust
+    rx.next()
+```
+
+Esta operación intenta obtener la siguiente trama disponible. Si
+hay una trama, devuelve sus datos para que el programa pueda
+procesarlos.
+
+Si no hay ninguna trama disponible, el resultado depende de la
+configuración del canal. El uso más sencillo consiste en
+configurar previamente el tiempo de espera en el objeto `config`,
+como hemos visto, de forma que la operación pueda terminar sin
+recibir datos en lugar de permanecer bloqueada indefinidamente.
+
+### Almacenamiento de los canales en vectores
+
+Un programa que maneje un par de objetos `tx` y `rx` puede
+guardarlos en variables. Pero un programa de comunicaciones, como
+un switch o un router, normalmente trabajará con varias
+interfaces y, por tanto, con varios canales, transmisores y
+receptores.
+
+Este número puede ser elevado, pero, sobre todo, es un número
+variable que no se conoce en tiempo de compilación.
+
+Por tanto, almacenar los objetos directamente en variables
+individuales no sería viable. Será necesario almacenarlos en
+alguna estructura de datos, como por ejemplo un vector.
+
+Supongamos un programa que ha seleccionado las interfaces:
+
+    eth0
+    eth1
+    eth2
+    eth3
+
+Para cada una de ellas abre un canal y guarda sus objetos
+transmisor y receptor en dos vectores:
+
+    let mut senders = Vec::new();
+    let mut receivers = Vec::new();
+
+Si todas las aperturas tienen éxito, la estructura conceptual es:
+
+    índice       interfaz        senders         receivers
+    ──────       ────────       ──────────       ────────
+       0           eth0          tx_eth0          rx_eth0
+       1           eth1          tx_eth1          rx_eth1
+       2           eth2          tx_eth2          rx_eth2
+       3           eth3          tx_eth3          rx_eth3
+
+El índice identifica la interfaz dentro de las listas del
+programa.
+
+Por ejemplo:
+
+``` rust
+    receivers[2].next()
+```
+
+significa:
+
+    Intentar recibir una trama por la interfaz
+    que ocupa la posición 2.
+
+Y:
+
+``` rust
+    senders[3].send_to(frame, None)
+```
+
+significa:
+
+    Transmitir esta trama por la interfaz
+    que ocupa la posición 3.
+
+Es importante que ambos vectores mantengan el mismo orden. La
+correspondencia es:
+
+    senders[i]    ↔    receivers[i]    ↔    interfaz i
+
+El índice no es necesariamente el número que aparece en el nombre
+de la interfaz. En este ejemplo coinciden, pero eso solo ocurre
+porque las interfaces se han recorrido y seleccionado en ese
+orden.
+
+Por ejemplo, si el programa seleccionase únicamente:
+
+    eth2
+    eth0
+    eth3
+
+la correspondencia sería:
+
+    índice       interfaz
+    ──────       ────────
+       0           eth2
+       1           eth0
+       2           eth3
+
+Así, `senders[0]` y `receivers[0]` representan el acceso a
+`eth2`, aunque el nombre de esa interfaz contenga el número `2`.
+
+El índice representa la posición en los vectores del programa, no
+el número de la interfaz del sistema operativo.
+
+## Preparación y procesamiento de tramas
+
+Una vez abiertos los canales, el programa puede comenzar a
+trabajar con las tramas Ethernet.
+
+El proceso básico consiste en:
+
+1.  Preparar una trama para transmitirla;
+2.  Entregarla al transmisor correspondiente;
+3.  Obtener una trama mediante el receptor;
+4.  Analizar su contenido;
+5.  Decidir qué hacer con ella.
+
+La preparación y el procesamiento de las tramas se realizan
+mediante los tipos y las funciones proporcionados por `pnet`.
+
+### Preparar una trama para transmitirla
+
+Como hemos visto, es posible trabajar directamente sobre los
+bytes de una trama. Sin embargo, resulta más conveniente utilizar
+los tipos `EthernetPacket` y `MutableEthernetPacket` de `pnet`
+para interpretarla como un paquete Ethernet y acceder a sus
+campos de forma individual.
+
+`EthernetPacket` permite consultar los campos de una trama
+recibida. Cuando es necesario modificarla,
+`MutableEthernetPacket` permite cambiar esos campos directamente
+sobre los bytes de la trama.
+
+También podemos utilizar `MutableEthernetPacket` para construir
+un paquete nuevo. Para ello, primero reservamos un buffer con
+espacio para la cabecera Ethernet y los datos que queremos
+transportar.
+
+Por ejemplo, el siguiente fragmento construye una trama Ethernet
+sencilla, establece sus campos y obtiene finalmente los bytes de
+la trama:
+
+``` rust
+    use pnet::packet::ethernet::{
+        EtherTypes,
+        MutableEthernetPacket,
+    };
+    use pnet::util::MacAddr;
+
+    let payload = b"Hola";
+
+    let mut frame = vec![0u8; 14 + payload.len()];
+
+    {
+        let mut packet = MutableEthernetPacket::new(&mut frame)
+            .expect("El buffer es demasiado pequeño");
+
+        packet.set_destination(MacAddr::new(
+            0x02, 0x00, 0x00, 0x00, 0x00, 0x02,
+        ));
+
+        packet.set_source(MacAddr::new(
+            0x02, 0x00, 0x00, 0x00, 0x00, 0x01,
+        ));
+
+        packet.set_ethertype(EtherTypes::Ipv4);
+        packet.payload_mut().copy_from_slice(payload);
+    }
+```
+
+- El vector `frame` contiene inicialmente espacio para los 14
+  bytes de la cabecera Ethernet y para los bytes del mensaje.
+
+- El tipo `MacAddr` representa una dirección MAC. En este
+  ejemplo, `MacAddr::new(...)` construye una dirección a partir
+  de sus seis bytes. El mismo tipo se utiliza tanto para la
+  dirección de origen como para la de destino.
+
+- La variable `payload` contiene los datos que se quieren
+  transportar. En este caso, `b"Hola"` es una referencia a una
+  secuencia de bytes. Esos bytes se copian en la zona de datos de
+  la trama mediante `payload_mut()`.
+
+- `MutableEthernetPacket` permite rellenar los campos de la
+  cabecera. En este ejemplo se establecen las direcciones MAC de
+  destino y de origen, así como el tipo de trama.
+
+- Finalmente, `payload_mut()` permite acceder a la zona de datos
+  y copiar en ella el contenido de `payload`.
+
+Cuando termina el bloque en el que se utiliza `packet`, el vector
+`frame` sigue conteniendo los bytes de la trama ya preparada. Por
+tanto, puede entregarse al transmisor:
+
+``` rust
+    tx.send_to(&frame, None)
+```
+
+El paquete es una forma cómoda de construir y modificar la trama,
+pero los datos que se transmiten siguen siendo los bytes
+contenidos en `frame`.
+
+Conviene señalar que `pnet` no proporciona aquí una operación que
+cree un paquete Ethernet independiente y lo convierta después,
+mediante una única llamada, en una trama. `MutableEthernetPacket`
+es una representación estructurada de un buffer de bytes
+existente. Por eso, al construir una trama nueva, primero se
+reserva el buffer y después se utiliza el paquete para rellenar
+sus campos.
+
+### Procesar una trama recibida
+
+Cuando el receptor obtiene una trama, el programa puede utilizar
+`EthernetPacket` para disponer de un paquete equivalente, con
+acceso a los campos de la cabecera Ethernet.
+
+De este modo, puede examinar sus campos para decidir cómo
+tratarla. Entre las operaciones habituales se encuentran:
+
+- Consultar las direcciones MAC de origen y destino;
+- Identificar el tipo de trama;
+- Comprobar si la trama debe aceptarse o descartarse;
+- Consultar o actualizar información asociada a la trama;
+- Decidir por qué interfaz debe continuar su transmisión.
+
+El procesamiento comienza obteniendo la siguiente trama:
+
+``` rust
+    rx.next()
+```
+
+Si la operación devuelve una trama, el programa puede pasar sus
+bytes a `EthernetPacket`. La estructura permite consultar sus
+campos sin tener que calcular manualmente las posiciones de cada
+uno dentro del buffer.
+
+De esta forma, el programa puede expresar operaciones como:
+
+    packet.get_source()
+    packet.get_destination()
+    packet.get_ethertype()
+
+Estas operaciones permiten consultar, respectivamente, la
+dirección MAC de origen, la dirección MAC de destino y el tipo de
+trama.
+
+El siguiente ejemplo muestra:
+
+- El tamaño de la trama, en decimal;
+- La dirección MAC de origen, en hexadecimal;
+- La dirección MAC de destino, en hexadecimal;
+- Los primeros 80 bytes de la trama, en hexadecimal;
+- Los últimos 80 bytes de la trama, en hexadecimal.
+
+La dirección MAC de origen y la dirección MAC de destino se
+obtienen interpretando los bytes recibidos como una trama
+Ethernet. El tamaño y los fragmentos de la trama se obtienen
+directamente del buffer.
+
+``` rust
+    use pnet::packet::ethernet::EthernetPacket;
+
+    match rx.next() {
+        Ok(frame) => {
+            println!("Tamaño: {} bytes", frame.len());
+
+            match EthernetPacket::new(frame) {
+                Some(packet) => {
+                    println!("Origen:  {:02x?}", packet.get_source());
+                    println!("Destino: {:02x?}", packet.get_destination());
+                }
+                None => {
+                    println!("La trama no tiene una cabecera Ethernet válida");
+                }
+            }
+
+            let first_len = frame.len().min(80);
+            let last_start = frame.len().saturating_sub(80);
+
+            println!("Primeros {} bytes:", first_len);
+
+            for byte in &frame[..first_len] {
+                print!("{:02x} ", byte);
+            }
+
+            println!();
+            println!("Últimos {} bytes:", frame.len() - last_start);
+
+            for byte in &frame[last_start..] {
+                print!("{:02x} ", byte);
+            }
+
+            println!();
+            println!();
+        }
+
+        Err(error) => {
+            eprintln!("Error al recibir la trama: {error}");
+        }
+    }
+```
+
+El método `len()` devuelve el número de bytes de la trama. Se
+muestra directamente con `{}`, por lo que el tamaño aparece en
+decimal.
+
+La expresión:
+
+``` rust
+    frame.len().min(80)
+```
+
+permite obtener los primeros 80 bytes sin intentar acceder a una
+posición que no exista. Si la trama tiene menos de 80 bytes, se
+muestran todos sus bytes.
+
+De forma análoga:
+
+``` rust
+    frame.len().saturating_sub(80)
+```
+
+calcula la posición desde la que deben mostrarse los últimos 80
+bytes. Si la trama tiene menos de 80 bytes, la posición inicial
+será `0`, por lo que se mostrará la trama completa.
+
+El formato:
+
+``` rust
+    {:02x}
+```
+
+muestra cada byte en hexadecimal, utilizando al menos dos cifras.
+Por ejemplo, el byte decimal `10` se muestra como `0a`.
+
+El método `get_source()` devuelve la dirección MAC de origen y
+`get_destination()` devuelve la dirección MAC de destino. El
+formato `{:02x?}` permite mostrar sus bytes en hexadecimal.
+
+Una posible salida sería:
+
+    Tamaño: 1514 bytes
+    Origen:  [00, 11, 22, 33, 44, 55]
+    Destino: [aa, bb, cc, dd, ee, ff]
+    Primeros 80 bytes:
+    aa bb cc dd ee ff 00 11 22 33 44 55 08 00 ...
+    Últimos 80 bytes:
+    ... 3a 7f 21 00 9c 4d 18 72 6e 01 00 00
+
+## Ejemplo: recepción, modificación y reenvío de una trama
+
+Para reunir las operaciones anteriores, podemos construir un
+programa sencillo que reciba una trama por una interfaz y la
+transmita por otra.
+
+El programa recibirá como parámetro la dirección MAC de la
+máquina de destino. Cuando llegue una trama, preparará una copia
+modificable de sus bytes, sustituirá la dirección MAC de destino
+por la dirección indicada y transmitirá la trama por la interfaz
+de salida.
+
+Este ejemplo no pretende implementar un router completo. No
+interpreta cabeceras IP ni consulta una tabla de encaminamiento.
+Su objetivo es mostrar el ciclo básico de recepción,
+procesamiento y transmisión de una trama Ethernet.
+
+### Recepción de la trama
+
+El programa espera una trama mediante el receptor asociado a la
+interfaz de entrada:
+
+``` rust
+    rx.next()
+```
+
+Como no estamos considerando el modo promiscuo, suponemos que el
+sistema operativo y el controlador de red ya han filtrado las
+tramas dirigidas a otras máquinas.
+
+Por tanto, una trama obtenida por el programa estará normalmente
+destinada a la dirección MAC de la interfaz que la ha recibido, o
+será una trama broadcast. También podrían recibirse determinadas
+tramas multicast, según la configuración de la interfaz.
+
+El programa no necesita comprobar de nuevo que la trama estaba
+destinada a la interfaz de entrada. Esa selección ya se ha
+realizado antes de que la trama llegue al receptor.
+
+### Preparación de una copia modificable
+
+Los datos obtenidos mediante `rx.next()` pertenecen al buffer
+utilizado por el receptor. Para preparar una trama que podamos
+modificar, el programa copia sus bytes a un `Vec<u8>`:
+
+``` rust
+    let frame = frame.to_vec();
+```
+
+La copia permite modificar los campos de la trama sin depender
+del buffer original del receptor.
+
+A continuación, el programa interpreta esos bytes como una trama
+Ethernet mediante `EthernetPacket`. Esta estructura permite
+acceder a los campos de la cabecera Ethernet, como las
+direcciones MAC de origen y destino.
+
+### Modificación de la dirección MAC de destino
+
+La trama recibida conserva inicialmente la dirección MAC de
+destino original. En este ejemplo, esa dirección corresponde
+normalmente a la interfaz de entrada, o es una dirección
+broadcast.
+
+Antes de transmitir la trama por la interfaz de salida, el
+programa sustituye esa dirección por la MAC recibida como
+parámetro.
+
+Para modificar una trama Ethernet se utiliza
+`MutableEthernetPacket`:
+
+``` rust
+    let mut packet = MutableEthernetPacket::new(&mut frame);
+```
+
+Una vez creado el objeto, se puede establecer la nueva dirección
+MAC de destino:
+
+``` rust
+    packet.set_destination(destination);
+```
+
+La dirección MAC de origen no se modifica en este ejemplo. Por
+tanto, el programa conserva la dirección de la máquina que
+originó la trama y cambia únicamente su destino.
+
+### Transmisión por la interfaz de salida
+
+Cuando la trama ya está preparada, el programa la entrega al
+transmisor asociado a la interfaz de salida:
+
+``` rust
+    tx.send_to(&frame, None)
+```
+
+La trama se transmite con la nueva dirección MAC de destino.
+
+El programa decide por qué interfaz debe enviarse la trama. En
+este ejemplo, la interfaz de salida está fijada previamente, pero
+en un programa más completo podría seleccionarse mediante una
+tabla de encaminamiento u otra lógica de decisión.
+
+### Código completo
+
+El siguiente programa utiliza dos interfaces, cuyos nombres se
+indican mediante constantes. Recibe como argumento una dirección
+MAC, espera tramas por la interfaz de entrada y las reenvía por
+la interfaz de salida después de modificar su dirección MAC de
+destino.
+
+``` rust
+use std::env;
+use std::str::FromStr;
+use std::time::Duration;
+
+use pnet::datalink::{self, Channel, Config};
+use pnet::packet::ethernet::{
+    EthernetPacket,
+    MutableEthernetPacket,
+};
+use pnet::util::MacAddr;
+
+const INPUT_INTERFACE: &str = "eth0";
+const OUTPUT_INTERFACE: &str = "eth1";
+const READ_TIMEOUT_MS: u64 = 1;
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() != 2 {
+        eprintln!("Uso: {} MAC_DESTINO", args[0]);
+        return;
+    }
+
+    let destination = match MacAddr::from_str(&args[1]) {
+        Ok(mac) => mac,
+        Err(_) => {
+            eprintln!("Dirección MAC no válida: {}", args[1]);
+            return;
+        }
+    };
+
+    let interfaces = datalink::interfaces();
+
+    let input_interface = match interfaces
+        .iter()
+        .find(|iface| iface.name == INPUT_INTERFACE)
+    {
+        Some(iface) => iface,
+        None => {
+            eprintln!(
+                "No se encontró la interfaz de entrada: {}",
+                INPUT_INTERFACE
+            );
+            return;
+        }
+    };
+
+    let output_interface = match interfaces
+        .iter()
+        .find(|iface| iface.name == OUTPUT_INTERFACE)
+    {
+        Some(iface) => iface,
+        None => {
+            eprintln!(
+                "No se encontró la interfaz de salida: {}",
+                OUTPUT_INTERFACE
+            );
+            return;
+        }
+    };
+
+    let config = Config {
+        read_timeout: Some(Duration::from_millis(READ_TIMEOUT_MS)),
+        ..Default::default()
+    };
+
+    let (_, mut rx) = match datalink::channel(input_interface, config) {
+        Ok(Channel::Ethernet(tx, rx)) => (tx, rx),
+        Ok(_) => {
+            eprintln!("El canal de entrada no es Ethernet");
+            return;
+        }
+        Err(error) => {
+            eprintln!("Error al abrir el canal de entrada: {error}");
+            return;
+        }
+    };
+
+    let config = Config {
+        read_timeout: Some(Duration::from_millis(READ_TIMEOUT_MS)),
+        ..Default::default()
+    };
+
+    let mut tx = match datalink::channel(output_interface, config) {
+        Ok(Channel::Ethernet(tx, _)) => tx,
+        Ok(_) => {
+            eprintln!("El canal de salida no es Ethernet");
+            return;
+        }
+        Err(error) => {
+            eprintln!("Error al abrir el canal de salida: {error}");
+            return;
+        }
+    };
+
+    loop {
+        let received_frame = match rx.next() {
+            Ok(frame) => frame,
+            Err(_) => continue,
+        };
+
+        let mut frame = received_frame.to_vec();
+
+        let packet = match EthernetPacket::new(&frame) {
+            Some(packet) => packet,
+            None => {
+                eprintln!("Se recibió una trama Ethernet no válida");
+                continue;
+            }
+        };
+
+        println!(
+            "Trama recibida: {} -> {}",
+            packet.get_source(),
+            packet.get_destination()
+        );
+
+        let mut packet = match MutableEthernetPacket::new(&mut frame) {
+            Some(packet) => packet,
+            None => {
+                eprintln!("No se pudo preparar la trama para modificarla");
+                continue;
+            }
+        };
+
+        packet.set_destination(destination);
+
+        match tx.send_to(&frame, None) {
+            Some(Ok(())) => {
+                println!("Trama transmitida a {destination}");
+            }
+            Some(Err(error)) => {
+                eprintln!("Error al transmitir la trama: {error}");
+            }
+            None => {
+                eprintln!("No se pudo transmitir la trama");
+            }
+        }
+    }
+}
+```

@@ -1,0 +1,709 @@
+# Iteradores
+
+En la @sec-for estudiamos el bucle `for` para recorrer rangos y
+arrays. Aunque en ese momento no explicamos el concepto de
+iterador, el bucle `for` utiliza uno para obtener los elementos
+uno a uno.
+
+Un *iterador* es un objeto que permite recorrer una *colección*.
+Una colección es un objeto que contiene varios elementos que se
+pueden recorrer, como un array o un vector. Los rangos también
+pueden producir iteradores, aunque no sean colecciones.
+
+En este capítulo veremos cómo obtener y utilizar iteradores de
+tres formas principales:
+
+- `iter()`: recorre la colección mediante referencias inmutables.
+- `iter_mut()`: recorre la colección mediante referencias
+  mutables.
+- `into_iter()`: recorre la colección por valor, consumiendo sus
+  elementos.
+
+Y aprenderemos algunas operaciones habituales sobre iteradores,
+como buscar elementos, filtrarlos o transformar sus valores. La
+idea fundamental que debemos recordar es:
+
+> Un iterador permite obtener los elementos de una secuencia uno
+> a uno. El bucle `for` es una de las formas de utilizarlo.
+
+## Recorrido inmutable
+
+Ya sabemos usar `for` sobre rangos y arrays en programas como
+este:
+
+``` rust
+let puertos = [80, 443, 8080];
+
+for puerto in &puertos {
+    println!("{puerto}");
+}
+```
+
+El bucle permite obtener los elementos del array uno a uno. Pero
+¿cómo sabe Rust qué elemento debe proporcionar en cada vuelta? La
+respuesta es: mediante un iterador. Por ejemplo, podemos obtener
+un iterador de un array mediante el método `iter()`:
+
+``` rust
+let puertos = [80, 443, 8080];
+
+let iterador = puertos.iter();
+```
+
+Ahora `iterador` representa un recorrido por los elementos de
+`puertos`. Todavía no hemos recorrido el array ni hemos obtenido
+ningún elemento. Podemos utilizar ese iterador con un bucle
+`for`:
+
+``` rust
+{{< include c16/iter01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20for%20puerto%20in%20puertos.iter%28%29%20%7B%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%20%22%2C%20puerto%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%0A%20%20%20%20//%20O%20lo%20que%20es%20lo%20mismo%3A%0A%20%20%20%20for%20puerto%20in%20%26puertos%20%7B%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%20%22%2C%20puerto%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+Ambas formas permiten recorrer el array mediante un iterador.
+
+- La primera hace explícita la obtención del iterador. El método
+  `iter()` obtiene un iterador que recorre la colección mediante
+  referencias inmutables.
+
+- La segunda es una forma más cómoda y habitual de escribir un
+  recorrido inmutable. Es fundamental recordar que añadimos el
+  `&` para recorrer la colección mediante una referencia. En la
+  @sec-iter-valor omitiremos el `&` y veremos que esto es un
+  recorrido por valor, que puede consumir los elementos
+  impidiendo usarlos de nuevo.
+
+### Consultar los elementos
+
+Durante el recorrido podemos utilizar los elementos para realizar
+operaciones. El siguiente ejemplo hace lo mismo de dos formas
+equivalentes.
+
+``` rust
+{{< include c16/iter02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%20%20%20%20let%20puerto_buscado%20%3D%20443%3B%0A%0A%20%20%20%20for%20puerto%20in%20puertos.iter%28%29%7B%20%20//%20Iterador%20expl%C3%ADcito%0A%20%20%20%20%20%20%20%20if%20%2Apuerto%20%3D%3D%20puerto_buscado%20%7B%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22Encontrado%20el%20puerto%20%7B%7D%22%2C%20%2Apuerto%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20for%20puerto%20in%20%26puertos%20%7B%20%20%20%20%20%20//%20Sintaxis%20simplificada%0A%20%20%20%20%20%20%20%20if%20%2Apuerto%20%3D%3D%20puerto_buscado%20%7B%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22Encontrado%20el%20puerto%20%7B%7D%22%2C%20%2Apuerto%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+Aquí `puerto` es una referencia a un `i32`, esto es, su tipo es
+`&i32`. Como estudiamos en la @sec-desreferencias, el operador
+`*` permite acceder al valor de una referencia inmutable. No
+estamos modificando el elemento, sino simplemente consultándolo.
+
+La sintaxis simplificada tiene además una ventaja:
+
+- El ampersand `&` deja claro que estamos recorriendo referencias
+  a los elementos. Por tanto, sabemos que tendremos que
+  desreferenciarlas para acceder a sus valores.
+
+- Con `iter()`, en cambio, hay que recordar que el iterador
+  devuelve referencias. Es fácil olvidar este detalle y pensar
+  que `puerto` es directamente un `i32`.
+
+En resumen, `iter()` permite recorrer una colección mediante
+referencias inmutables. Es la forma adecuada cuando queremos
+consultar sus elementos sin modificarla ni consumir la colección.
+
+## Recorrido mutable
+
+Si queremos modificar los elementos de una colección durante el
+recorrido, podemos utilizar `iter_mut()`. Este método devuelve un
+iterador que proporciona referencias mutables a los elementos.
+
+En el siguiente ejemplo incrementamos en uno cada puerto de un
+array. De nuevo, hacemos lo mismo de dos formas distintas:
+
+``` rust
+{{< include c16/iter_mut/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20puertos%29%3B%0A%0A%20%20%20%20//%20Iterador%20expl%C3%ADcito%0A%20%20%20%20for%20puerto%20in%20puertos.iter_mut%28%29%20%7B%0A%20%20%20%20%20%20%20%20%2Apuerto%20%2B%3D%201%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20puertos%29%3B%0A%0A%20%20%20%20//%20Sintaxis%20simplificada%0A%20%20%20%20for%20puerto%20in%20%26mut%20puertos%20%7B%0A%20%20%20%20%20%20%20%20%2Apuerto%20%2B%3D%201%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20puertos%29%3B%0A%7D%0A)
+
+:::
+
+La variable `puertos` contiene un array cuyos elementos vamos a
+modificar, por lo que debe declararse como mutable mediante
+`let mut`.
+
+Las dos formas son equivalentes:
+
+- `puertos.iter_mut()` obtiene explícitamente un iterador de
+  referencias mutables.
+- `&mut puertos` utiliza la sintaxis simplificada del bucle `for`
+  para obtener ese mismo tipo de iterador.
+
+El ampersand en `&mut` deja claro que el recorrido proporciona
+referencias mutables y que, por tanto, podemos modificar los
+elementos mediante la desreferencia `*`.
+
+En ambos bucles, `puerto` es una referencia mutable a un `i32`,
+de tipo `&mut i32`. El operador `*` permite acceder al valor
+referido para modificarlo. La expresión `*puerto += 1` incrementa
+el valor del elemento, no el de la referencia.
+
+En resumen, `iter_mut()` permite recorrer una colección mediante
+referencias mutables. Es la forma adecuada cuando queremos
+modificar sus elementos sin consumir la colección.
+
+## Recorrido por valor {#sec-iter-valor}
+
+Para recorrer los elementos de una colección por valor, podemos
+utilizar `into_iter()`. Este método devuelve un iterador que
+proporciona directamente los elementos de la colección, no
+referencias a ellos.
+
+El nombre `into_iter()` sigue la convención de Rust para las
+conversiones por valor y está relacionado con el trait `Into`,
+que permite convertir un valor de un tipo en otro. En este caso,
+la colección se convierte en un iterador entregándole su
+propiedad.
+
+En general, al utilizar `into_iter()` la colección se mueve al
+iterador y se consume, por lo que deja de estar disponible. Sin
+embargo, si la colección implementa `Copy`, se puede copiar antes
+de recorrerla y la variable original sigue disponible. En el
+siguiente ejemplo recorremos un array y obtenemos sus elementos
+por valor:
+
+``` rust
+{{< include c16/iter_valor/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20for%20puerto%20in%20puertos.into_iter%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22Puerto%3A%20%7B%7D%22%2C%20puerto%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20puertos%29%3B%0A%7D%0A)
+
+:::
+
+Aquí `puerto` es un `i32`, no una referencia. Por tanto, podemos
+utilizarlo directamente, sin necesidad de desreferenciarlo. Y
+como `i32` implementa el trait `Copy`, la colección sigue
+disponible después de haber sido recorrida.
+
+El siguiente ejemplo recorre un array de `String`. Este tipo no
+implementa `Copy`, por tanto, na vez iniciado el recorrido la
+colección se consume y no podemos volver a utilizarla.
+
+``` rust
+{{< include c16/iter_valor02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B%0A%20%20%20%20%20%20%20%20String%3A%3Afrom%28%22HTTP%22%29%2C%0A%20%20%20%20%20%20%20%20String%3A%3Afrom%28%22HTTPS%22%29%2C%0A%20%20%20%20%20%20%20%20String%3A%3Afrom%28%22SSH%22%29%2C%0A%20%20%20%20%5D%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20puertos%29%3B%0A%0A%20%20%20%20for%20puerto%20in%20puertos.into_iter%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22Puerto%3A%20%7B%7D%22%2C%20puerto%29%3B%0A%20%20%20%20%7D%0A//%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20puertos%29%3B%20//%20Error%0A%7D%0A)
+
+:::
+
+La sintaxis simplificada también permite recorrer una colección
+por valor:
+
+``` rust
+{{< include c16/iter_valor03/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2Cpuertos%29%3B%0A%0A%20%20%20%20for%20puerto%20in%20puertos%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22Puerto%3A%20%7B%7D%22%2C%20puerto%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2Cpuertos%29%3B%0A%7D%0A)
+
+:::
+
+En este ejemplo, los elementos de la colección son de tipo
+`&str`, que implementa el trait `Copy`. Por tanto, el array
+también implementa `Copy` y no se consume al recorrerlo.
+
+## Iterador como objeto
+
+Hasta ahora hemos utilizado los iteradores principalmente
+mediante un bucle `for`. Sin embargo, un iterador también puede
+almacenarse en una variable y utilizarse directamente.
+
+Un iterador implementa el trait `Iterator`. Este trait define,
+entre otras cosas, el método `next()`, que devuelve el siguiente
+elemento del recorrido:
+
+``` rust
+{{< include c16/iter_objeto/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%20%20%20%20let%20mut%20iterador%20%3D%20puertos.iter%28%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20iterador.next%28%29%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20iterador.next%28%29%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20iterador.next%28%29%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20iterador.next%28%29%29%3B%20%20//%20None%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20iterador.next%28%29%29%3B%20%20//%20None%0A%7D%0A)
+
+:::
+
+El método `next()` devuelve un valor de tipo `Option`. Mientras
+queden elementos, devuelve `Some` con el siguiente elemento.
+Cuando el recorrido termina, devuelve `None`.
+
+En este ejemplo invocamos cinco veces al método `next()` a pesar
+de que el array solo tiene tres elementos. Esto no causa ningún
+problema, simplemente, en las dos últimas llamadas, obtenemos
+`None`.
+
+La variable `iterador` debe declararse como mutable porque cada
+llamada a `next()` avanza el estado interno del iterador. El
+iterador recuerda qué elementos ha proporcionado y continúa desde
+el siguiente en la llamada posterior.
+
+Por tanto, un iterador no es simplemente una colección, sino un
+objeto que mantiene el estado de un recorrido y permite obtener
+sus elementos uno a uno. El bucle `for` utiliza internamente este
+mismo mecanismo: obtiene un iterador y llama repetidamente a
+`next()` hasta que devuelve `None`.
+
+### Recorrido con `loop`
+
+En la @sec-loop tratamos el uso de un bucle `loop`. Ahora lo
+combinaremos con un iterador. Una forma de recorrer todos los
+elementos consiste en consiste en llamar repetidamente a `next()`
+hasta que devuelve `None`:
+
+``` rust
+{{< include c16/iter_while/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%20%20%20%20let%20mut%20iterador%20%3D%20puertos.iter%28%29%3B%0A%0A%20%20%20%20loop%20%7B%0A%20%20%20%20%20%20%20%20match%20iterador.next%28%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20Some%28puerto%29%20%3D%3E%20println%21%28%22Puerto%3A%20%7B%7D%22%2C%20puerto%29%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20None%20%3D%3E%20break%2C%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+En cada iteración, `next()` proporciona el siguiente elemento.
+Cuando devuelve `None`, el recorrido ha terminado y `break`
+finaliza el bucle.
+
+Este código hace explícito el mecanismo que utiliza internamente
+un bucle `for`. En la @sec-operaciones-iteradores veremos formas
+más cómodas y expresivas de recorrer un iterador completo.
+
+## Operaciones sobre iteradores {#sec-operaciones-iteradores}
+
+Los iteradores proporcionan métodos que permiten realizar
+operaciones habituales sobre sus elementos. Estas operaciones
+pueden buscar valores, seleccionar determinados elementos,
+transformarlos o calcular un resultado.
+
+Muchas de estas operaciones reciben una clausura que se aplica a
+cada elemento del iterador. Antes de utilizarlas, veremos
+brevemente qué es una clausura.
+
+### Clausuras
+
+En Rust, las clausuras (*closures*) son la implementación directa
+del concepto matemático y de programación de funciones lambda,
+también llamadas funciones anónimas. Una clausura es una función
+que podemos definir directamente en el lugar donde vamos a
+utilizarla. Se escribe entre barras verticales y puede recibir
+parámetros y devolver un resultado:
+
+``` rust
+{{< include c16/closure01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20duplicar%20%3D%20%7Cnumero%7C%20numero%20%2A%202%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20duplicar%285%29%29%3B%0A%7D%0A)
+
+:::
+
+En este ejemplo, `|numero| numero * 2` es una clausura. Recibe un
+número, lo multiplica por dos y devuelve el resultado. La
+clausura se almacena en la variable `duplicar` y después podemos
+utilizarla como si fuera una función.
+
+También podemos escribir una clausura con varias instrucciones:
+
+``` rust
+{{< include c16/closure02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20describir%20%3D%20%7Cnumero%7C%20%7B%0A%20%20%20%20%20%20%20%20let%20doble%20%3D%20numero%20%2A%202%3B%0A%20%20%20%20%20%20%20%20format%21%28%22El%20doble%20es%20%7B%7D%22%2C%20doble%29%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20describir%285%29%29%3B%0A%7D%0A)
+
+:::
+
+Cuando el cuerpo de una clausura contiene varias instrucciones,
+se escribe entre llaves. La última expresión, si no termina en
+punto y coma, es el valor que devuelve. Las clausuras pueden
+recibir referencias. Por ejemplo:
+
+``` rust
+{{< include c16/closure03/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puerto%20%3D%20443%3B%0A%0A%20%20%20%20let%20es_seguro%20%3D%20%7Cnumero%3A%20%26i32%7C%20%2Anumero%20%3D%3D%20443%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20es_seguro%28%26puerto%29%29%3B%0A%7D%0A)
+
+:::
+
+Aquí la clausura recibe una referencia inmutable a un `i32`.
+Utilizamos `*numero` para acceder al valor referido.
+
+En muchos casos, Rust puede deducir los tipos de los parámetros y
+del resultado a partir del contexto. Por eso normalmente no es
+necesario escribirlos explícitamente:
+
+``` rust
+let es_seguro = |numero| *numero == 443;
+```
+
+Las clausuras son especialmente útiles con los iteradores, porque
+permiten indicar qué operación queremos realizar sobre cada
+elemento.
+
+### Transformar elementos con `map()`
+
+El método `map()` permite transformar cada elemento de un
+iterador. Recibe una clausura que indica cómo obtener el nuevo
+valor a partir de cada elemento. Por ejemplo, podemos recorrer un
+array de puertos y obtener un nuevo iterador cuyos elementos sean
+cadenas de texto:
+
+``` rust
+{{< include c16/map/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20nombres%20%3D%20puertos%0A%20%20%20%20%20%20%20%20.iter%28%29%0A%20%20%20%20%20%20%20%20.map%28%7Cpuerto%7C%20format%21%28%22Puerto%20%7B%7D%22%2C%20puerto%29%29%3B%0A%0A%20%20%20%20for%20nombre%20in%20nombres%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20nombre%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+La clausura `|puerto| format!("Puerto {}", puerto)` recibe cada
+elemento y devuelve una nueva cadena. El método `map()` no
+modifica el array original, sino que produce un iterador con los
+valores transformados.
+
+El método `map()` es perezoso: la transformación no se realiza
+cuando se llama a `map()`, sino cuando se solicitan los elementos
+del iterador resultante, por ejemplo, mediante un bucle `for`.
+
+### Seleccionar elementos con `filter()`
+
+El método `filter()` permite seleccionar únicamente los elementos
+que cumplen una condición. Recibe una clausura que devuelve
+`true` si el elemento debe conservarse y `false` si debe
+descartarse. El siguiente ejemplo selecciona los puertos
+superiores a 1024:
+
+``` rust
+fn main() {
+    let puertos = [80, 443, 8080, 3306, 22];
+
+    let puertos_altos = puertos
+        .iter()
+        .filter(|puerto| **puerto > 1024);
+
+    for puerto in puertos_altos {
+        println!("{}", puerto);
+    }
+}
+```
+
+Como `iter()` devuelve referencias, cada elemento del iterador es
+de tipo `&i32`. Sin embargo, `filter()` recibe la condición
+mediante una referencia al elemento que está comprobando. Por
+tanto, el parámetro de la clausura es de tipo `&&i32`. Por eso la
+condición utiliza `**puerto` para acceder al valor `i32`:
+
+- El primer `*` elimina la referencia utilizada por `filter()`.
+- El segundo `*` elimina la referencia proporcionada por
+  `iter()`.
+
+El método `filter()` tampoco modifica la colección original.
+Simplemente produce un iterador que proporciona los elementos que
+cumplen la condición.
+
+### Buscar un elemento con `find()`
+
+El método `find()` busca el primer elemento que cumple una
+condición. Devuelve un `Option`:
+
+- `Some(elemento)` si encuentra un elemento que cumple la
+  condición.
+- `None` si termina el recorrido sin encontrarlo.
+
+Por ejemplo:
+
+``` rust
+{{< include c16/find/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20resultado%20%3D%20puertos.iter%28%29.find%28%7Cpuerto%7C%20%2A%2Apuerto%20%3D%3D%20443%29%3B%0A%0A%20%20%20%20match%20resultado%20%7B%0A%20%20%20%20%20%20%20%20Some%28puerto%29%20%3D%3E%20println%21%28%22Encontrado%3A%20%7B%7D%22%2C%20puerto%29%2C%0A%20%20%20%20%20%20%20%20None%20%3D%3E%20println%21%28%22No%20encontrado%22%29%2C%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+Al igual que `filter()`, `find()` recibe la condición mediante
+una referencia al elemento que está comprobando. Por eso, cuando
+el iterador procede de `iter()`, el parámetro de la clausura es
+de tipo `&&i32` y necesitamos utilizar `**puerto`.
+
+El método `find()` deja de recorrer el iterador cuando encuentra
+el primer elemento que cumple la condición.
+
+### Comprobar condiciones con `any()` y `all()`
+
+El método `any()` comprueba si al menos un elemento cumple una
+condición. Devuelve un valor booleano y termina el recorrido en
+cuanto encuentra un elemento que cumple dicha condición.
+
+``` rust
+{{< include c16/any/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20hay_puerto_seguro%20%3D%20puertos.iter%28%29.any%28%7Cpuerto%7C%20%2Apuerto%20%3D%3D%20443%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20hay_puerto_seguro%29%3B%0A%7D%0A)
+
+:::
+
+En este caso, `iter()` proporciona elementos de tipo `&i32` y
+`any()` pasa directamente cada elemento a la clausura. Por tanto,
+el parámetro `puerto` es de tipo `&i32` y basta una desreferencia
+para acceder al valor `i32`.
+
+El método `all()` realiza la comprobación contraria: devuelve
+`true` si todos los elementos cumplen la condición. Termina el
+recorrido en cuanto encuentra un elemento que no la cumple.
+
+``` rust
+{{< include c16/all/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20todos_mayores%20%3D%20puertos.iter%28%29.all%28%7Cpuerto%7C%20%2Apuerto%20%3E%200%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20todos_mayores%29%3B%0A%7D%0A)
+
+:::
+
+Tanto `any()` como `all()` producen un resultado booleano, no
+otro iterador.
+
+### Contar elementos con `count()`
+
+El método `count()` consume el iterador y devuelve el número de
+elementos que quedan por recorrer.
+
+``` rust
+{{< include c16/count01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20cantidad%20%3D%20puertos.iter%28%29.count%28%29%3B%0A%0A%20%20%20%20println%21%28%22Hay%20%7B%7D%20puertos%22%2C%20cantidad%29%3B%0A%7D%0A)
+
+:::
+
+En este caso, `count()` devuelve `3`. Como el método consume el
+iterador, no podemos seguir utilizándolo después de llamar a
+`count()`. Sin embargo, esto no significa necesariamente que se
+consuma la colección original. En el ejemplo, `iter()` había
+creado un iterador de referencias, por lo que el array sigue
+disponible:
+
+``` rust
+{{< include c16/count02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20cantidad%20%3D%20puertos.iter%28%29.count%28%29%3B%0A%0A%20%20%20%20println%21%28%22Hay%20%7B%7D%20puertos%22%2C%20cantidad%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20puertos%29%3B%0A%7D%0A)
+
+:::
+
+### Encadenar operaciones
+
+Una de las ventajas de los iteradores es que podemos encadenar
+varias operaciones. Por ejemplo, podemos seleccionar los puertos
+superiores a 1024 y transformarlos en cadenas de texto:
+
+``` rust
+{{< include c16/encadenar/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%2C%203306%2C%2022%5D%3B%0A%0A%20%20%20%20let%20nombres%20%3D%20puertos%0A%20%20%20%20%20%20%20%20.iter%28%29%0A%20%20%20%20%20%20%20%20.filter%28%7Cpuerto%7C%20%2A%2Apuerto%20%3E%201024%29%0A%20%20%20%20%20%20%20%20.map%28%7Cpuerto%7C%20format%21%28%22Puerto%20%7B%7D%22%2C%20puerto%29%29%3B%0A%0A%20%20%20%20for%20nombre%20in%20nombres%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20nombre%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+El recorrido es el siguiente:
+
+1.  `iter()` obtiene un iterador de referencias.
+2.  `filter()` conserva los puertos superiores a 1024.
+3.  `map()` transforma cada puerto seleccionado en una cadena.
+4.  `for` obtiene los elementos del iterador resultante y los
+    muestra.
+
+Las operaciones se ejecutan de forma perezosa. Esto significa que
+`filter()` y `map()` no recorren inmediatamente la colección ni
+realizan todas las transformaciones al crear el iterador.
+
+En el ejemplo anterior, estas instrucciones:
+
+``` rust
+let nombres = puertos
+    .iter()
+    .filter(|puerto| **puerto > 1024)
+    .map(|puerto| format!("Puerto {}", puerto));
+```
+
+solo preparan una cadena de operaciones. El iterador resultante
+sabe que debe:
+
+1.  Obtener un elemento del array.
+2.  Comprobar si cumple la condición de `filter()`.
+3.  Descartarlo si no la cumple.
+4.  Aplicar `map()` si la cumple.
+5.  Proporcionar el resultado transformado.
+
+Cuando el bucle `for` solicita el siguiente elemento, se ejecutan
+esas operaciones hasta obtener un resultado. Después, cuando el
+bucle solicita otro elemento, el proceso continúa desde donde
+había terminado.
+
+Por ejemplo, para el array `[80, 443, 8080, 3306, 22]`, el
+recorrido funciona conceptualmente así:
+
+- Se obtiene `80`. `filter()` lo descarta.
+- Se obtiene `443`. `filter()` lo descarta.
+- Se obtiene `8080`. `filter()` lo acepta y `map()` lo transforma
+  en `"Puerto 8080"`.
+- Se obtiene `3306`. `filter()` lo acepta y `map()` lo transforma
+  en `"Puerto 3306"`.
+- Se obtiene `22`. `filter()` lo descarta.
+
+No es necesario crear primero un nuevo array con los puertos
+superiores a 1024 y después recorrerlo para transformarlos. Las
+operaciones se aplican sobre la marcha, a medida que el bucle
+solicita resultados.
+
+## Iteradores frente a los índices
+
+Los iteradores no son imprescindibles para recorrer una
+colección, también se pueden emplear índices al estilo de
+lenguajes como C. En el siguiente ejemplo, la variable `i`
+representa la posición del elemento y en cada iteración
+utilizamos ese índice para acceder al array.
+
+``` rust
+{{< include c16/indice/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20for%20i%20in%200..puertos.len%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20puertos%5Bi%5D%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+Pero los iteradores presentan varias ventajas frente al recorrido
+mediante índices:
+
+- No necesitamos calcular la longitud de la colección.
+- No podemos acceder accidentalmente a una posición inexistente.
+- El código expresa directamente qué queremos hacer con cada
+  elemento.
+- Podemos encadenar operaciones como `filter()`, `map()` o
+  `find()`.
+- El compilador puede comprobar mejor cómo se utilizan las
+  referencias y la propiedad de los elementos.
+
+Si bien los iteradores no sustituyen siempre a los índices. Los
+índices son útiles cuando necesitamos conocer la posición de un
+elemento o acceder a varios elementos relacionados por su
+posición. Por ejemplo, si queremos mostrar cada puerto junto con
+su índice, podemos utilizar `enumerate()`:
+
+``` rust
+{{< include c16/enumerate/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20for%20%28indice%2C%20puerto%29%20in%20puertos.iter%28%29.enumerate%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%C3%8Dndice%20%7B%7D%3A%20puerto%20%7B%7D%22%2C%20indice%2C%20puerto%29%3B%0A%20%20%20%20%7D%0A%7D%0A%0A)
+
+:::
+
+El método `enumerate()` añade un contador al iterador. En cada
+iteración proporciona una pareja formada por:
+
+- El índice del elemento.
+- El elemento correspondiente.
+
+También podemos utilizar índices cuando necesitamos acceder a un
+elemento concreto:
+
+``` rust
+{{< include c16/indice02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20println%21%28%22Primer%20puerto%3A%20%7B%7D%22%2C%20puertos%5B0%5D%29%3B%0A%7D%0A)
+
+:::
+
+Por tanto, la elección depende de lo que necesitemos expresar:
+
+- Si queremos recorrer los elementos, normalmente utilizaremos un
+  iterador.
+- Si necesitamos transformar, filtrar o buscar elementos,
+  utilizaremos las operaciones de los iteradores.
+- Si necesitamos conocer la posición, podemos utilizar
+  `enumerate()`.
+- Si necesitamos acceder directamente a una posición concreta,
+  podemos utilizar un índice.
+
+En resumen, los índices permiten trabajar con las posiciones de
+una colección, mientras que los iteradores permiten trabajar
+directamente con sus elementos. Cuando la posición no es
+importante, los iteradores suelen producir un código más sencillo
+y expresivo.
+
+## Resumen
+
+- `iter()` o `for valor in &coleccion`
+
+  recorre la colección mediante referencias inmutables.
+
+- `iter_mut()` o `for valor in &mut coleccion`
+
+  recorre la colección mediante referencias mutables.
+
+- `into_iter()` o `for valor in coleccion`
+
+  recorre la colección por valor y, normalmente, la consume. Si
+  la colección implementa `Copy`, se puede copiar antes de
+  recorrerla y la variable original sigue disponible.
+
+La elección depende de lo que necesitemos hacer con los
+elementos: consultarlos, modificarlos o tomarlos de la colección.
+
+Los iteradores permiten expresar recorridos mediante operaciones
+encadenadas:
+
+- `map()` transforma los elementos.
+- `filter()` selecciona los elementos que cumplen una condición.
+- `find()` busca el primer elemento que cumple una condición.
+- `any()` comprueba si algún elemento cumple una condición.
+- `all()` comprueba si todos los elementos cumplen una condición.
+- `count()` cuenta los elementos restantes y consume el iterador.
+
+Estas operaciones permiten recorrer y procesar colecciones sin
+necesidad de utilizar índices ni escribir manualmente toda la
+lógica del recorrido.
