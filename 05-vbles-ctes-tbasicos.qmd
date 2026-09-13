@@ -138,6 +138,22 @@ podemos hacer que implementen `Debug` utilizando el atributo
 implementación de `Debug` para ese tipo. Lo veremos en la
 @sec-struct-completo.
 
+### La macro `format!`
+
+La macro `format!` funciona como `print!`, pero en lugar de
+escribir en la salida estándar, devuelve un `String` con el texto
+formateado.
+
+``` rust
+{{< include c05/format/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20fqdn%20%3D%20%22dns.google%22%3B%0A%20%20%20%20let%20ip%20%3D%20%228.8.8.8%22%3B%0A%0A%20%20%20%20let%20mensaje%20%3D%20format%21%28%22La%20direcci%C3%B3n%20de%20%7B%7D%20es%20%7B%7D%22%2C%20fqdn%2C%20ip%29%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20mensaje%29%3B%0A%7D%0A)
+
+:::
+
 ## Tipos de datos básicos {#sec-tipos-basicos}
 
 Las variables se declaran mediante la palabra reservada `let`. Lo
@@ -270,8 +286,8 @@ descarta y la expresión pasa a producir el valor `()`.
 | `&str` | Cadena de texto inmutable | `"Hola"` |
 | `i8`, `i16`, `i32`, `i64`, `i128` | Enteros con signo | `-42` |
 | `u8`, `u16`, `u32`, `u64`, `u128` | Enteros sin signo | `42` |
-| `isize` | Entero con signo del tamaño de un puntero | `-42` |
-| `usize` | Entero sin signo del tamaño de un puntero | `42` |
+| `usize` | Entero sin signo para tamaños, índices y posiciones en memoria | `42` |
+| `isize` | Versión con signo de usize. | `-42` |
 | `f32` | Real de simple precisión | `3.14` |
 | `f64` | Real de doble precisión | `3.14` |
 | `()` | Tipo unitario | `()` |
@@ -405,6 +421,48 @@ C#, Java, JavaScript, Go, Kotlin, etc.
 Los operadores de asignación compuesta (`+=`, `-=`, `*=`, etc.)
 también están disponibles.
 
+## Alias de tipo
+
+Rust permite dar un nombre alternativo a un tipo mediante la
+palabra clave `type`. Por ejemplo:
+
+``` rust
+type EnteroGrande = i64;
+```
+
+A partir de ese momento podemos utilizar `EnteroGrande` como
+nombre del tipo:
+
+``` rust
+let x: EnteroGrande = 1000;
+```
+
+Un alias de tipo no crea un tipo nuevo. `EnteroGrande` y `i64`
+son exactamente el mismo tipo para el compilador. El alias
+simplemente proporciona un nombre alternativo que puede resultar
+más descriptivo.
+
+Los alias serán especialmente útiles cuando, en capítulos
+posteriores, usemos tipos complejo y queramos referirnos a ellos
+con un nombre más sencillo. Por ejemplo, podemos definir un alias
+para un array cuyos elementos sean `Option`:
+
+``` rust
+const TABLE_SIZE: usize = 10;
+
+type Tabla = [Option<i32>; TABLE_SIZE];
+```
+
+Ahora podemos utilizar `Tabla` en lugar de escribir el tipo
+completo:
+
+``` rust
+let tabla: Tabla = [None; TABLE_SIZE];
+```
+
+Los alias de tipo no están limitados a los tipos básicos: se
+pueden definir para cualquier tipo de Rust.
+
 ## Resumen
 
 En este capítulo hemos presentado los elementos básicos con los
@@ -426,6 +484,8 @@ Las ideas principales son las siguientes:
 - Rust proporciona los operadores aritméticos, relacionales y
   lógicos habituales en la mayoría de los lenguajes de
   programación.
+- Los alias de tipo permiten dar un nombre alternativo a un tipo
+  mediante type, sin crear un tipo nuevo.
 
 Estos conceptos constituyen la base sobre la que se apoyarán los
 capítulos siguientes, donde comenzaremos a trabajar con tipos más

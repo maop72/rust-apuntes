@@ -189,6 +189,24 @@ En ambos casos, el tipo de a es exactamente el mismo:
 `Option<i32>`. La única diferencia es que, para la variable `a`,
 el compilador lo deduce automáticamente.
 
+### Comprobar si un `Option` contiene un valor
+
+Podemos comprobar si un `Option` contiene un valor con
+`is_some()` o si está vacío con `is_none()`:
+
+``` rust
+{{< include c12/some_none/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20x%3A%20Option%3Ci32%3E%20%3D%20Some%2842%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20x.is_some%28%29%29%3B%20//%20true%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20x.is_none%28%29%29%3B%20//%20false%0A%7D%0A)
+
+:::
+
+Estas operaciones devuelven un valor de tipo `bool` y no extraen
+el contenido del `Option`.
+
 ### El método `unwrap()` {#sec-unwrap}
 
 En muchas ocasiones sabemos con certeza que un `Option` contiene

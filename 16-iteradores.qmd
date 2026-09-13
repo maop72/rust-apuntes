@@ -244,12 +244,10 @@ elemento del recorrido:
 
 El método `next()` devuelve un valor de tipo `Option`. Mientras
 queden elementos, devuelve `Some` con el siguiente elemento.
-Cuando el recorrido termina, devuelve `None`.
-
-En este ejemplo invocamos cinco veces al método `next()` a pesar
-de que el array solo tiene tres elementos. Esto no causa ningún
-problema, simplemente, en las dos últimas llamadas, obtenemos
-`None`.
+Cuando el recorrido termina, devuelve `None`. En este ejemplo
+invocamos cinco veces al método `next()` a pesar de que el array
+solo tiene tres elementos. Esto no causa ningún problema,
+simplemente, en las dos últimas llamadas, obtenemos `None`.
 
 La variable `iterador` debe declararse como mutable porque cada
 llamada a `next()` avanza el estado interno del iterador. El
@@ -266,8 +264,8 @@ mismo mecanismo: obtiene un iterador y llama repetidamente a
 
 En la @sec-loop tratamos el uso de un bucle `loop`. Ahora lo
 combinaremos con un iterador. Una forma de recorrer todos los
-elementos consiste en consiste en llamar repetidamente a `next()`
-hasta que devuelve `None`:
+elementos consiste en llamar repetidamente a `next()` hasta que
+devuelve `None`:
 
 ``` rust
 {{< include c16/iter_while/src/main.rs >}}
@@ -298,14 +296,28 @@ Muchas de estas operaciones reciben una clausura que se aplica a
 cada elemento del iterador. Antes de utilizarlas, veremos
 brevemente qué es una clausura.
 
-### Clausuras
+### Clausuras {#sec-clausuras}
 
-En Rust, las clausuras (*closures*) son la implementación directa
-del concepto matemático y de programación de funciones lambda,
-también llamadas funciones anónimas. Una clausura es una función
-que podemos definir directamente en el lugar donde vamos a
-utilizarla. Se escribe entre barras verticales y puede recibir
-parámetros y devolver un resultado:
+Rust dispone de *closures*, que en español se traducen a veces
+como *cierres*, aunque preferimos el término *clausuras*.
+
+- Una función anónima, también llamada función *lambda*, es una
+  función que se define directamente en el lugar donde se va a
+  utilizar, en lugar de declararse necesariamente como una
+  función con nombre. Aunque no tiene un nombre de función
+  propio, podemos asignarla a una variable y utilizar esa
+  variable para invocarla.
+
+- Una clausura es un caso particular de función anónima que,
+  además, puede capturar variables del entorno en el que se
+  define.
+
+Por tanto, *lambda* y *anónima* son términos generales, mientras
+que *clausura* designa una función anónima que puede capturar
+variables de su entorno.
+
+En Rust, una clausura se escribe entre barras verticales, puede
+recibir parámetros y devolver un resultado:
 
 ``` rust
 {{< include c16/closure01/src/main.rs >}}
@@ -345,7 +357,7 @@ recibir referencias. Por ejemplo:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puerto%20%3D%20443%3B%0A%0A%20%20%20%20let%20es_seguro%20%3D%20%7Cnumero%3A%20%26i32%7C%20%2Anumero%20%3D%3D%20443%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20es_seguro%28%26puerto%29%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puerto%20%3D%20443%3B%0A%0A%20%20%20%20let%20es_seguro%20%3D%20%7Cnumero%3A%20%26i32%7C%20%2Anumero%20%3D%3D%20443%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20es_seguro%28%26puerto%29%29%3B%0A%7D%0A)
 
 :::
 
@@ -378,7 +390,7 @@ cadenas de texto:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20nombres%20%3D%20puertos%0A%20%20%20%20%20%20%20%20.iter%28%29%0A%20%20%20%20%20%20%20%20.map%28%7Cpuerto%7C%20format%21%28%22Puerto%20%7B%7D%22%2C%20puerto%29%29%3B%0A%0A%20%20%20%20for%20nombre%20in%20nombres%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20nombre%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%20%20%20%20%0A%20%20%20%20let%20nombres%20%3D%20puertos%0A%20%20%20%20%20%20%20%20.iter%28%29%0A%20%20%20%20%20%20%20%20.map%28%7Cpuerto%7C%20format%21%28%22Puerto%20%7B%7D%22%2C%20puerto%29%29%3B%0A%0A%20%20%20%20for%20nombre%20in%20nombres%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20nombre%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
 
 :::
 
@@ -397,21 +409,17 @@ El método `filter()` permite seleccionar únicamente los elementos
 que cumplen una condición. Recibe una clausura que devuelve
 `true` si el elemento debe conservarse y `false` si debe
 descartarse. El siguiente ejemplo selecciona los puertos
-superiores a 1024:
+superiores a 1023:
 
 ``` rust
-fn main() {
-    let puertos = [80, 443, 8080, 3306, 22];
-
-    let puertos_altos = puertos
-        .iter()
-        .filter(|puerto| **puerto > 1024);
-
-    for puerto in puertos_altos {
-        println!("{}", puerto);
-    }
-}
+{{< include c16/filter/src/main.rs >}}
 ```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20ULTIMO_PUERTO_PRIV%3A%20u32%20%3D%201023%3B%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%2C%203306%2C%2022%5D%3B%0A%0A%20%20%20%20let%20puertos_priv%20%3D%20puertos%0A%20%20%20%20%20%20%20%20.iter%28%29%0A%20%20%20%20%20%20%20%20.filter%28%7Cpuerto%7C%20%2A%2Apuerto%20%3E%20ULTIMO_PUERTO_PRIV%29%3B%0A%0A%20%20%20%20for%20puerto%20in%20puertos_priv%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20puerto%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
 
 Como `iter()` devuelve referencias, cada elemento del iterador es
 de tipo `&i32`. Sin embargo, `filter()` recibe la condición
@@ -426,6 +434,52 @@ condición utiliza `**puerto` para acceder al valor `i32`:
 El método `filter()` tampoco modifica la colección original.
 Simplemente produce un iterador que proporciona los elementos que
 cumplen la condición.
+
+### Obtener la posición de un elemento con `position()`
+
+El método `position()` busca el primer elemento que cumple una
+condición y devuelve su posición dentro del recorrido. El
+resultado es un `Option<usize>`:
+
+- `Some(indice)` si encuentra un elemento que cumple la
+  condición.
+- `None` si termina el recorrido sin encontrarlo.
+
+El índice se expresa mediante el tipo `usize`, que es el tipo
+utilizado habitualmente para representar posiciones y tamaños en
+memoria y en colecciones. No debemos confundirlo con tipos
+enteros como `u32`. Aunque ambos representan números enteros sin
+signo, `usize` está diseñado para poder representar cualquier
+posición válida en la memoria del sistema. Su tamaño depende de
+la arquitectura: normalmente ocupa 32 bits en sistemas de 32 bits
+y 64 bits en sistemas de 64 bits.
+
+Por ejemplo:
+
+``` rust
+{{< include c16/position/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%20%20%20%20let%20puerto_buscado%20%3D%20443%3B%0A%0A%20%20%20%20let%20resultado%20%3D%20puertos%0A%20%20%20%20%20%20%20%20.iter%28%29%0A%20%20%20%20%20%20%20%20.position%28%7Cpuerto%7C%20%2Apuerto%20%3D%3D%20puerto_buscado%29%3B%0A%0A%20%20%20%20match%20resultado%20%7B%0A%20%20%20%20%20%20%20%20Some%28indice%29%20%3D%3E%20println%21%28%22Encontrado%20en%20el%20%C3%ADndice%20%7B%7D%22%2C%20indice%29%2C%0A%20%20%20%20%20%20%20%20None%20%3D%3E%20println%21%28%22No%20encontrado%22%29%2C%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+En este caso, `position()` devuelve `Some(1)`, porque el puerto
+`443` ocupa el índice `1` del array.
+
+Como ocurre con `find()`, el método `position()` deja de recorrer
+el iterador cuando encuentra el primer elemento que cumple la
+condición. Si no encuentra ninguno, devuelve `None`.
+
+La diferencia principal entre ambos métodos es el resultado:
+
+- `find()` devuelve el elemento encontrado.
+- `position()` devuelve su índice.
+
+Por tanto, `position()` resulta útil cuando necesitamos conocer
+la posición de un elemento dentro de una colección.
 
 ### Buscar un elemento con `find()`
 
@@ -444,7 +498,7 @@ Por ejemplo:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20resultado%20%3D%20puertos.iter%28%29.find%28%7Cpuerto%7C%20%2A%2Apuerto%20%3D%3D%20443%29%3B%0A%0A%20%20%20%20match%20resultado%20%7B%0A%20%20%20%20%20%20%20%20Some%28puerto%29%20%3D%3E%20println%21%28%22Encontrado%3A%20%7B%7D%22%2C%20puerto%29%2C%0A%20%20%20%20%20%20%20%20None%20%3D%3E%20println%21%28%22No%20encontrado%22%29%2C%0A%20%20%20%20%7D%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%20%20%20%20let%20puerto_buscado%20%3D%20443%3B%0A%0A%20%20%20%20let%20resultado%20%3D%20puertos%0A%20%20%20%20%20%20%20%20.iter%28%29%0A%20%20%20%20%20%20%20%20.find%28%7Cpuerto%7C%20%2A%2Apuerto%20%3D%3D%20puerto_buscado%29%3B%0A%0A%20%20%20%20match%20resultado%20%7B%0A%20%20%20%20%20%20%20%20Some%28puerto%29%20%3D%3E%20println%21%28%22Encontrado%3A%20%7B%7D%22%2C%20puerto%29%2C%0A%20%20%20%20%20%20%20%20None%20%3D%3E%20println%21%28%22No%20encontrado%22%29%2C%0A%20%20%20%20%7D%0A%7D%0A)
 
 :::
 
@@ -468,7 +522,7 @@ cuanto encuentra un elemento que cumple dicha condición.
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20hay_puerto_seguro%20%3D%20puertos.iter%28%29.any%28%7Cpuerto%7C%20%2Apuerto%20%3D%3D%20443%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20hay_puerto_seguro%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%20%20%20%20let%20puerto_seguro%20%3D%20443%3B%0A%0A%20%20%20%20let%20hay_puerto_seguro%20%3D%20puertos%0A%20%20%20%20%20%20%20%20.iter%28%29%0A%20%20%20%20%20%20%20%20.any%28%7Cpuerto%7C%20%2Apuerto%20%3D%3D%20puerto_seguro%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20hay_puerto_seguro%29%3B%0A%7D%0A)
 
 :::
 
@@ -477,9 +531,9 @@ En este caso, `iter()` proporciona elementos de tipo `&i32` y
 el parámetro `puerto` es de tipo `&i32` y basta una desreferencia
 para acceder al valor `i32`.
 
-El método `all()` realiza la comprobación contraria: devuelve
-`true` si todos los elementos cumplen la condición. Termina el
-recorrido en cuanto encuentra un elemento que no la cumple.
+El método `all()` devuelve `true` si todos los elementos cumplen
+la condición. Termina el recorrido en cuanto encuentra un
+elemento que no la cumple.
 
 ``` rust
 {{< include c16/all/src/main.rs >}}
@@ -487,7 +541,7 @@ recorrido en cuanto encuentra un elemento que no la cumple.
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20todos_mayores%20%3D%20puertos.iter%28%29.all%28%7Cpuerto%7C%20%2Apuerto%20%3E%200%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20todos_mayores%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20todos_positivos%20%3D%20puertos%0A%20%20%20%20%20%20%20%20.iter%28%29%0A%20%20%20%20%20%20%20%20.all%28%7Cpuerto%7C%20%2Apuerto%20%3E%200%29%3B%0A%20%20%20%20println%21%28%22Todos%20positivos%3A%20%7B%7D%22%2C%20todos_positivos%29%3B%0A%7D%0A)
 
 :::
 
@@ -505,7 +559,7 @@ elementos que quedan por recorrer.
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20cantidad%20%3D%20puertos.iter%28%29.count%28%29%3B%0A%0A%20%20%20%20println%21%28%22Hay%20%7B%7D%20puertos%22%2C%20cantidad%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20cantidad%20%3D%20puertos.iter%28%29.count%28%29%3B%0A%20%20%20%20println%21%28%22Hay%20%7B%7D%20puertos%22%2C%20cantidad%29%3B%0A%7D%0A)
 
 :::
 
@@ -522,7 +576,7 @@ disponible:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20cantidad%20%3D%20puertos.iter%28%29.count%28%29%3B%0A%0A%20%20%20%20println%21%28%22Hay%20%7B%7D%20puertos%22%2C%20cantidad%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20puertos%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20let%20cantidad%20%3D%20puertos.iter%28%29.count%28%29%3B%0A%20%20%20%20println%21%28%22Hay%20%7B%7D%20puertos%22%2C%20cantidad%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20puertos%29%3B%0A%7D%0A)
 
 :::
 
@@ -530,7 +584,7 @@ disponible:
 
 Una de las ventajas de los iteradores es que podemos encadenar
 varias operaciones. Por ejemplo, podemos seleccionar los puertos
-superiores a 1024 y transformarlos en cadenas de texto:
+superiores a 1023 y transformarlos en cadenas de texto:
 
 ``` rust
 {{< include c16/encadenar/src/main.rs >}}
@@ -538,7 +592,7 @@ superiores a 1024 y transformarlos en cadenas de texto:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%2C%203306%2C%2022%5D%3B%0A%0A%20%20%20%20let%20nombres%20%3D%20puertos%0A%20%20%20%20%20%20%20%20.iter%28%29%0A%20%20%20%20%20%20%20%20.filter%28%7Cpuerto%7C%20%2A%2Apuerto%20%3E%201024%29%0A%20%20%20%20%20%20%20%20.map%28%7Cpuerto%7C%20format%21%28%22Puerto%20%7B%7D%22%2C%20puerto%29%29%3B%0A%0A%20%20%20%20for%20nombre%20in%20nombres%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20nombre%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=const%20ULTIMO_PUERTO_PRIV%3A%20u32%20%3D%201023%3B%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%2C%203306%2C%2022%5D%3B%0A%0A%20%20%20%20let%20nombres%20%3D%20puertos%0A%20%20%20%20%20%20%20%20.iter%28%29%0A%20%20%20%20%20%20%20%20.filter%28%7Cpuerto%7C%20%2A%2Apuerto%20%3E%20ULTIMO_PUERTO_PRIV%29%0A%20%20%20%20%20%20%20%20.map%28%7Cpuerto%7C%20format%21%28%22Puerto%20%7B%7D%22%2C%20puerto%29%29%3B%0A%0A%20%20%20%20println%21%28%22Puertos%20de%20usuario%3A%22%29%3B%0A%20%20%20%20for%20nombre%20in%20nombres%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%22%2C%20nombre%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
 
 :::
 
@@ -559,7 +613,7 @@ En el ejemplo anterior, estas instrucciones:
 ``` rust
 let nombres = puertos
     .iter()
-    .filter(|puerto| **puerto > 1024)
+    .filter(|puerto| **puerto > ULTIMO_PUERTO_PRIV)
     .map(|puerto| format!("Puerto {}", puerto));
 ```
 
@@ -589,7 +643,7 @@ recorrido funciona conceptualmente así:
 - Se obtiene `22`. `filter()` lo descarta.
 
 No es necesario crear primero un nuevo array con los puertos
-superiores a 1024 y después recorrerlo para transformarlos. Las
+superiores a 1023 y después recorrerlo para transformarlos. Las
 operaciones se aplican sobre la marcha, a medida que el bucle
 solicita resultados.
 
@@ -623,9 +677,9 @@ mediante índices:
 - El compilador puede comprobar mejor cómo se utilizan las
   referencias y la propiedad de los elementos.
 
-Si bien los iteradores no sustituyen siempre a los índices. Los
-índices son útiles cuando necesitamos conocer la posición de un
-elemento o acceder a varios elementos relacionados por su
+Sin embargo, los iteradores no sustituyen siempre a los índices.
+Los índices son útiles cuando necesitamos conocer la posición de
+un elemento o acceder a varios elementos relacionados por su
 posición. Por ejemplo, si queremos mostrar cada puerto junto con
 su índice, podemos utilizar `enumerate()`:
 
@@ -635,7 +689,7 @@ su índice, podemos utilizar `enumerate()`:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20for%20%28indice%2C%20puerto%29%20in%20puertos.iter%28%29.enumerate%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%C3%8Dndice%20%7B%7D%3A%20puerto%20%7B%7D%22%2C%20indice%2C%20puerto%29%3B%0A%20%20%20%20%7D%0A%7D%0A%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20for%20%28indice%2C%20puerto%29%20in%20puertos%0A%20%20%20%20%20%20%20%20.iter%28%29%0A%20%20%20%20%20%20%20%20.enumerate%28%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22%C3%8Dndice%20%7B%7D%3A%20puerto%20%7B%7D%22%2C%20indice%2C%20puerto%29%3B%0A%20%20%20%20%7D%0A%7D%0A)
 
 :::
 
@@ -654,7 +708,7 @@ elemento concreto:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%0A%20%20%20%20println%21%28%22Primer%20puerto%3A%20%7B%7D%22%2C%20puertos%5B0%5D%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20puertos%20%3D%20%5B80%2C%20443%2C%208080%5D%3B%0A%20%20%20%20println%21%28%22Primer%20puerto%3A%20%7B%7D%22%2C%20puertos%5B0%5D%29%3B%0A%7D%0A)
 
 :::
 
@@ -675,35 +729,238 @@ directamente con sus elementos. Cuando la posición no es
 importante, los iteradores suelen producir un código más sencillo
 y expresivo.
 
+## Ejemplo: inserción en un array de `structs`
+
+Usaremos el siguiente ejemplo para tratar muchos aspectos
+importantes:
+
+Queremos gestionar en una tabla la relación entre una dirección
+IP y su dirección MAC asociada. Para ello tenemos un `struct` que
+representa una entrada de la tabla, con dos campos: `mac`, de
+tipo `MacAddr`, e `ip`, de tipo `String`.
+
+El tipo `MacAddr` está definido en el crate `pnet::util`, que
+trataremos en la @sec-trama. Representa una dirección MAC
+mediante sus seis octetos.
+
+``` rust
+{{< include c16/tabla01/src/main.rs >}}
+```
+
+::: {.callout-note} **Ejecución local:** este ejemplo debe
+ejecutarse en local. Utiliza el crate `pnet`, que no está
+disponible en el Rust Playground. :::
+
+### Inicialización de la tabla
+
+La tabla la inicializamos con
+
+``` rust
+let mut tabla: TipoTabla = from_fn(|_| None);
+```
+
+Como vimos en la @sec-from_fn, `from_fn(|_| None)` genera un
+elemento `None` para cada una de las posiciones del array. Para
+ello, `from_fn` recorre las posiciones del array y ejecuta la
+clausura `|_| None` para cada una de ellas. La clausura recibe el
+índice de la posición, aunque en este caso no nos interesa y por
+eso utilizamos `_`.
+
+### Iterar sobre un array recibido por referencia
+
+Una función que solo necesita consultar un array no tiene por qué
+recibirlo por valor. En este caso, la función `encuentra_hueco()`
+recibe el parámetro `tabla` que es una referencia al array. No
+necesitamos desreferenciarla explícitamente para llamar a
+`iter()`: Rust permite acceder a los métodos del array a través
+de una referencia.
+
+``` rust
+fn encuentra_hueco(
+    tabla: &[Option<EntradaTabla>; TABLE_SIZE]
+) -> Option<usize> {
+    tabla.iter().position(|x| x.is_none())
+}
+```
+
+Si quisiéramos desreferenciar explícitamente la referencia,
+tendríamos que poner paréntesis:
+
+``` rust
+(*tabla).iter()
+```
+
+Los paréntesis son necesarios porque, sin ellos, una expresión
+como
+
+``` rust
+*tabla.iter().position(|x| x.is_none())
+```
+
+se interpreta como:
+
+``` rust
+*(tabla.iter().position(|x| x.is_none()))
+```
+
+Es decir, el `*` se aplicaría al resultado de `position()`, que
+es un `Option<usize>`, y no a `tabla`.
+
+### Uso del enum `Option`
+
+En la @sec-enum-option estudiamos el enumerado `Option`, un
+aspecto del lenguaje Rust donde el principiante suele encontrar
+problemas, pero que es fundamental manejar con soltura porque se
+usa mucho. Por ejemplo, en este programa `Option` se utiliza para
+representar las posiciones de la tabla que pueden estar vacías.
+
+El tipo de cada elemento del array es `Option<EntradaTabla>`. Una
+posición vacía contiene `None`, mientras que una posición ocupada
+contiene `Some(entrada)`, donde `entrada` es una `EntradaTabla`.
+
+Por ello podemos buscar la primera posición libre mediante:
+
+``` rust
+tabla.iter().position(|x| x.is_none())
+```
+
+El método `position()` devuelve la posición del primer elemento
+que cumple la condición, pero puede ocurrir que ningún elemento
+la cumpla. Por eso su resultado es `Option<usize>`: devuelve
+`Some(posición)` si encuentra un hueco y `None` si la tabla está
+llena.
+
+El `match` permite tratar ambos casos:
+
+``` rust
+match hueco {
+    Some(h) => {
+        // `h` es el índice del hueco
+    }
+    None => {
+        // No hay posiciones libres
+    }
+}
+```
+
+Observemos que aquí aparecen dos `Option` diferentes:
+
+- `tabla[h]` es un `Option<EntradaTabla>` porque una posición de
+  la tabla puede estar ocupada o vacía.
+- `hueco` es un `Option<usize>` porque la búsqueda puede
+  encontrar o no una posición libre.
+
+## Ejemplo: búsqueda en un array de structs
+
+El siguiente programa
+implementa una tabla de tamaño fijo que relaciona
+direcciones IP con direcciones MAC. A partir de una dirección IP,
+busca su correspondiente dirección MAC y muestra el resultado,
+indicando también si la dirección no se encuentra en la tabla.
+
+``` rust
+{{< include c16/tabla02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20pnet%3A%3Autil%3A%3AMacAddr%3B%0Ause%20std%3A%3Aarray%3A%3Afrom_fn%3B%0A%0Aconst%20TABLE_SIZE%3A%20usize%20%3D%205%3B%0A%0A%23%5Bderive%28Debug%29%5D%0Astruct%20EntradaTabla%20%7B%0A%20%20%20%20mac%3A%20MacAddr%2C%0A%20%20%20%20ip%3A%20String%2C%0A%7D%0A%0Atype%20TipoTabla%20%3D%20%5BOption%3CEntradaTabla%3E%3B%20TABLE_SIZE%5D%3B%0A%0Afn%20busca_ip%28tabla%3A%20%26TipoTabla%2C%20ip%3A%20%26str%29%20-%3E%20Option%3CMacAddr%3E%20%7B%0A%20%20%20%20for%20x%20in%20tabla.iter%28%29%20%7B%0A%20%20%20%20%20%20%20%20match%20x%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20Some%28valor%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20//println%21%28%22mac%3A%7B%7D%20ip%3A%7B%7D%22%2Cvalor.mac%2Cvalor.ip%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20if%20valor.ip%20%3D%3D%20ip%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20return%20Some%28valor.mac%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20None%20%3D%3E%20%7B%7D%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%20%20%20%20None%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20tabla%3A%20TipoTabla%20%3D%20from_fn%28%7C_%7C%20None%29%3B%0A%0A%20%20%20%20let%20entrada%20%3D%20EntradaTabla%20%7B%0A%20%20%20%20%20%20%20%20mac%3A%20MacAddr%3A%3Anew%280x02%2C%200xa0%2C%200xc4%2C%200xb2%2C%200xd0%2C%200x02%29%2C%0A%20%20%20%20%20%20%20%20ip%3A%20String%3A%3Afrom%28%22192.168.1.1%22%29%2C%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20tabla%5B0%5D%20%3D%20Some%28entrada%29%3B%0A%20%20%20%20println%21%28%22Contenido%20del%20array%3A%5Cn%7B%3A%3F%7D%5Cn%22%2C%20tabla%29%3B%0A%0A%20%20%20%20let%20ip%20%3D%20%22192.168.1.1%22%3B%0A%20%20%20%20println%21%28%22Busquemos%20%7B%7D%22%2C%20ip%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20busca_ip%28%26tabla%2C%20ip%29%29%3B%0A%0A%20%20%20%20let%20ip%20%3D%20%22192.168.1.2%22%3B%0A%20%20%20%20println%21%28%22Busquemos%20%7B%7D%22%2C%20ip%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20busca_ip%28%26tabla%2C%20ip%29%29%3B%0A%7D%0A)
+
+:::
+
+La tabla está formada por elementos de tipo
+`Option<EntradaTabla>`. Cada posición puede contener una entrada
+(`Some`) o estar vacía (`None`):
+
+``` rust
+type TipoTabla = [Option<EntradaTabla>; TABLE_SIZE];
+```
+
+Para buscar una dirección IP recorremos la tabla con un iterador:
+
+``` rust
+for x in tabla.iter() {
+    // ...
+}
+```
+
+Cada elemento obtenido por `iter()` es una referencia a un
+`Option<EntradaTabla>`. Para acceder a la `EntradaTabla` solo nos
+interesa el caso `Some`, por lo que utilizamos un `match`:
+
+``` rust
+match x {
+    Some(valor) => {
+        // ...
+    }
+    None => {}
+}
+```
+
+En el caso `Some`, `valor` contiene la `EntradaTabla`, por lo que
+podemos acceder directamente a sus campos:
+
+``` rust
+if valor.ip == ip {
+    return Some(valor.mac);
+}
+```
+
+Si la IP coincide, devolvemos la dirección MAC asociada. Como la
+función devuelve un `Option<MacAddr>`, la MAC debe envolverse en
+`Some`.
+
+Si recorremos toda la tabla sin encontrar la IP buscada, llegamos
+al final de la función y devolvemos `None`:
+
+``` rust
+None
+```
+
+De esta forma, el resultado de `busca_ip` permite distinguir
+claramente los dos casos:
+
+- `Some(mac)` si la IP se encuentra en la tabla.
+- `None` si la IP no aparece.
+
 ## Resumen
 
-- `iter()` o `for valor in &coleccion`
+En este capítulo hemos visto que un iterador permite recorrer una
+secuencia de elementos uno a uno. El bucle `for` utiliza
+internamente un iterador, aunque también podemos utilizarlo
+directamente mediante el método `next()`.
 
-  recorre la colección mediante referencias inmutables.
+Las ideas fundamentales son las siguientes:
 
-- `iter_mut()` o `for valor in &mut coleccion`
-
-  recorre la colección mediante referencias mutables.
-
-- `into_iter()` o `for valor in coleccion`
-
-  recorre la colección por valor y, normalmente, la consume. Si
-  la colección implementa `Copy`, se puede copiar antes de
-  recorrerla y la variable original sigue disponible.
-
-La elección depende de lo que necesitemos hacer con los
-elementos: consultarlos, modificarlos o tomarlos de la colección.
-
-Los iteradores permiten expresar recorridos mediante operaciones
-encadenadas:
-
-- `map()` transforma los elementos.
+- `iter()` obtiene un iterador de referencias inmutables.
+- `iter_mut()` obtiene un iterador de referencias mutables.
+- `into_iter()` obtiene un iterador que proporciona los elementos
+  por valor y, normalmente, consume la colección.
+- El método `next()` devuelve el siguiente elemento mediante un
+  `Option`. Devuelve `Some` mientras quedan elementos y `None`
+  cuando termina el recorrido.
+- Un iterador mantiene el estado del recorrido. Por eso debe
+  declararse como mutable cuando avanzamos mediante llamadas a
+  `next()`.
+- El bucle `for` obtiene elementos del iterador hasta que este
+  devuelve `None`.
+- Una clausura es una función anónima que puede capturar
+  variables del entorno en el que se define. En Rust se escribe
+  entre barras verticales.
+- `map()` transforma los elementos de un iterador.
 - `filter()` selecciona los elementos que cumplen una condición.
 - `find()` busca el primer elemento que cumple una condición.
 - `any()` comprueba si algún elemento cumple una condición.
 - `all()` comprueba si todos los elementos cumplen una condición.
 - `count()` cuenta los elementos restantes y consume el iterador.
+- `enumerate()` añade un índice a cada elemento del iterador.
+- Las operaciones como `map()` y `filter()` son perezosas: se
+  ejecutan cuando se solicitan los elementos del iterador
+  resultante.
+- Las operaciones sobre iteradores se pueden encadenar para
+  expresar recorridos y transformaciones de forma clara.
 
-Estas operaciones permiten recorrer y procesar colecciones sin
-necesidad de utilizar índices ni escribir manualmente toda la
-lógica del recorrido.
+Los iteradores suelen ser preferibles a los índices cuando solo
+necesitamos recorrer los elementos de una colección. Los índices
+siguen siendo útiles cuando necesitamos conocer la posición de un
+elemento o acceder directamente a una posición concreta.

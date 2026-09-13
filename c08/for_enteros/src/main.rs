@@ -16,4 +16,9 @@ fn main() {
         print!("{} ", i);
     }
     println!();
+
+    for _ in 1..=3{
+        print!("hola ");
+    }
+    println!();
 }

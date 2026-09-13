@@ -215,7 +215,7 @@ instrucción `break` interrumpe la ejecución del bucle.
 
 Si eliminásemos la instrucción `break`, tendríamos un bucle
 infinito que solo se detendría con una interrupción externa, por
-ejemplo pulsando `Ctrl+c`. Esto es, las teclas *ctrl* y *c*, 
+ejemplo pulsando `Ctrl+c`. Esto es, las teclas *ctrl* y *c*,
 simultáneamente.
 
 En el siguiente ejemplo vemos cómo, además de finalizar el bucle,
@@ -237,7 +237,7 @@ En este caso, cuando `contador` alcanza el valor 5, el bucle
 termina y la expresión `loop` produce dicho valor, que se asigna
 a la variable `resultado`.
 
-### El bucle `while`  {#sec-while}
+### El bucle `while` {#sec-while}
 
 La construcción `while` ejecuta repetidamente un bloque de código
 mientras una condición sea verdadera. Antes de cada iteración se
@@ -313,7 +313,7 @@ valores enteros.
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20for%20i%20in%201..5%20%7B%0A%20%20%20%20%20%20%20%20//%20De%201%20a%204%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%20%22%2C%20i%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%0A%20%20%20%20for%20i%20in%201..%3D5%20%7B%0A%20%20%20%20%20%20%20%20//%20De%201%20a%205%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%20%22%2C%20i%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%0A%20%20%20%20for%20i%20in%20%281..%3D5%29.rev%28%29%20%7B%0A%20%20%20%20%20%20%20%20//%20de%205%20a%201%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%20%22%2C%20i%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20for%20i%20in%201..5%20%7B%0A%20%20%20%20%20%20%20%20//%20De%201%20a%204%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%20%22%2C%20i%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%0A%20%20%20%20for%20i%20in%201..%3D5%20%7B%0A%20%20%20%20%20%20%20%20//%20De%201%20a%205%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%20%22%2C%20i%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%0A%20%20%20%20for%20i%20in%20%281..%3D5%29.rev%28%29%20%7B%0A%20%20%20%20%20%20%20%20//%20de%205%20a%201%0A%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%20%22%2C%20i%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%0A%20%20%20%20for%20_%20in%201..%3D3%7B%0A%20%20%20%20%20%20%20%20print%21%28%22hola%20%22%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%7D%0A)
 
 :::
 
@@ -325,6 +325,9 @@ valores enteros.
 
 - El método `rev()` devuelve los elementos del rango en sentido
   descendente.
+
+- Si no necesitamos utilizar la variable, podemos escribir `_`
+  para indicar que no nos interesa su valor.
 
 ## Resumen
 

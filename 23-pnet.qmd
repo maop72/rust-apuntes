@@ -1,6 +1,5 @@
 # Los crates `pnet`
 
-## ¿Qué es `pnet`?
 
 `pnet` es el nombre general de una familia de crates del proyecto
 [libpnet](https://github.com/libpnet/libpnet), una biblioteca
@@ -655,7 +654,7 @@ El proceso básico consiste en:
 La preparación y el procesamiento de las tramas se realizan
 mediante los tipos y las funciones proporcionados por `pnet`.
 
-### Preparar una trama para transmitirla
+### Preparar una trama para transmitirla {#sec-trama}
 
 Como hemos visto, es posible trabajar directamente sobre los
 bytes de una trama. Sin embargo, resulta más conveniente utilizar

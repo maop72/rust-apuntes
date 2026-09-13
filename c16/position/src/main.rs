@@ -4,10 +4,10 @@ fn main() {
 
     let resultado = puertos
         .iter()
-        .find(|puerto| **puerto == puerto_buscado);
+        .position(|puerto| *puerto == puerto_buscado);
 
     match resultado {
-        Some(puerto) => println!("Encontrado: {}", puerto),
+        Some(indice) => println!("Encontrado en el índice {}", indice),
         None => println!("No encontrado"),
     }
 }

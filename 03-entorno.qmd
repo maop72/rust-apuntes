@@ -96,6 +96,26 @@ versión optimizada puede utilizarse:
 cargo run --release
 ```
 
+## Rust Analyzer
+
+[Rust Analyzer](https://rust-analyzer.github.io/) es una
+extensión para editores compatibles con Visual Studio Code que
+proporciona análisis del código Rust: autocompletado, detección
+de errores, navegación por el código y otras ayudas.
+
+Si utilizamos VSCodium, podemos instalarla desde la línea de
+comandos con:
+
+```bash
+codium --install-extension rust-lang.rust-analyzer
+```
+
+Si utilizamos Visual Studio Code, el comando equivalente es:
+
+```bash
+code --install-extension rust-lang.rust-analyzer
+```
+
 ## Formato
 
 La [Rust Style Guide](https://doc.rust-lang.org/style-guide)

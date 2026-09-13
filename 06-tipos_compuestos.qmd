@@ -146,19 +146,61 @@ el mismo valor. Por ejemplo:
 También se puede indicar explícitamente el tipo de los elementos:
 
 ``` rust
-let valores: [f64; 4] = [0.0; 4];
+let valores: [f64; 5] = [0.0; 5];
 ```
 
-Aquí `valores` es un array de cuatro elementos de tipo `f64`,
+Aquí `valores` es un array de cinco elementos de tipo `f64`,
 todos ellos inicializados a `0.0`.
 
+Para hacer estos ejemplos más sencillos, hemos escrito el tamaño
+del array como un literal, esto es, como un `5` *tal cual*. En un
+programa real, cuando ese valor tiene un significado concreto,
+nunca deberímos escribirlo así, lo adecuado es una constante:
+
+``` rust
+const TABLE_SIZE: usize = 5;
+let valores: [f64; TABLE_SIZE] = [0.0; TABLE_SIZE];
+```
+
+Esto tiene dos ventajas principales:
+
+- Documenta el significado del valor.
+
+  `TABLE_SIZE` resulta más informativo que un `5` cuyo
+  significado tenemos que deducir.
+
+- Permite modificarlo en un único lugar.
+
+  Si cambia el tamaño de la tabla, basta con modificar la
+  definición de la constante. De lo contrario, habría que
+  localizar y cambiar el valor en todas las líneas de todos los
+  ficheros del programa donde se utilice.
+
+### Inicializar un array con `std::array::from_fn` {#sec-from_fn}
+
 La forma `[valor; tamaño]` requiere que el valor pueda copiarse
-para inicializar los elementos. En este capítulo trabajaremos con
-tipos sencillos, como `i32`, `f64` o `bool`, que cumplen este
-requisito. En la @sec-copy veremos que no todos los tipos de Rust
-implementan el trait `Copy`. Con algunos de ellos no será posible
-utilizar esta forma de inicialización, aunque sí se podrán
-definir arrays escribiendo sus elementos uno a uno.
+para inicializar los elementos. Esto es, que el tipo implemente
+el trait `Copy`. Hasta ahora hemos visto tipos sencillos, como
+`i32`, `f64` o `bool`, que cumplen este requisito. En la
+@sec-copy hablaremos de los tipos que no lo cumplen.
+
+Si queremos inicializar un array con valores sin trait `Copy`,
+podemos usar `std::array::from_fn`:
+
+``` rust
+{{< include c06/from_fn/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Aarray%3A%3Afrom_fn%3B%0Aconst%20TABLE_SIZE%3A%20usize%20%3D%205%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20tabla%3A%20%5BOption%3CString%3E%3B%20TABLE_SIZE%5D%20%3D%20from_fn%28%7C_%7C%20None%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20tabla%29%3B%0A%0A%20%20%20%20tabla%5B0%5D%20%3D%20Some%28String%3A%3Afrom%28%22Hola%22%29%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20tabla%29%3B%0A%7D%0A)
+
+:::
+
+`from_fn` recibe una función que se ejecuta una vez por cada
+posición del array. En este caso, todas las posiciones se
+inicializan con `None`. La expresión `|_| None` es una clausura,
+que trataremos en la @sec-clausuras.
 
 En cualquier caso, el tamaño siempre forma parte del tipo del
 array. Por tanto, `[i32; 5]` y `[i32; 10]` son tipos distintos,
@@ -203,6 +245,10 @@ Las ideas principales son las siguientes:
 - En los arrays se pueden usar variables o expresiones para los
   índices. En las tuplas, no. Solo constantes numéricas
   literales.
+- `std::array::from_fn` permite inicializar un *array* generando
+  cada uno de sus elementos mediante una función o clausura, y
+  resulta especialmente útil cuando el tipo de los elementos no
+  implementa `Copy`.
 
 En los próximos capítulos estudiaremos nuevos tipos de datos que
 permiten representar estructuras más complejas y colecciones de
