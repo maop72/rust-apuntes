@@ -114,7 +114,7 @@ muestra cómo tratar ambos casos:
 Este patrón aparece con mucha frecuencia en Rust, ya que
 numerosas funciones y métodos devuelven un `Option` para indicar
 que un resultado puede existir o no. En capítulos posteriores
-veremos varios ejemplos de ello, como el método `Vec::get`.
+veremos varios ejemplos.
 
 ## `match` como expresión
 

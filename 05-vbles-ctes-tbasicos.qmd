@@ -17,7 +17,9 @@ de los siguientes capítulos.
 Las construcciones `print!` y `println!` son *macros* de Rust que
 permiten escribir texto y valores en la salida estándar. La
 diferencia entre ambas es que `println!` añade un salto de línea
-al final, mientras que `print!` no lo hace.
+al final, mientras que `print!` no lo hace. Para escribir en la
+salida de error estándar disponemos de las macros análogas,
+`eprint!` y `eprintln!`.
 
 Una macro es un mecanismo que permite al compilador generar
 código a partir de una plantilla, proporcionando una sintaxis más

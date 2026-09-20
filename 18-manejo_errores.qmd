@@ -325,7 +325,7 @@ hasta la `2`, pero no en la posición `3`.
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20numeros%20%3D%20vec%21%5B10%2C%2020%2C%2030%5D%3B%20%0A%20%20%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20numeros%5B3%5D%29%3B%20%20//%20%C2%A1Error%21%20%C3%8Dndice%20fuera%20de%20rango.%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20numeros%20%3D%20vec%21%5B10%2C%2020%2C%2030%5D%3B%20%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20numeros%5B3%5D%29%3B%20%20//%20%C2%A1Error%21%20%C3%8Dndice%20fuera%20de%20rango.%0A%7D%0A)
 
 :::
 

@@ -1,6 +1,5 @@
 # Los crates `pnet`
 
-
 `pnet` es el nombre general de una familia de crates del proyecto
 [libpnet](https://github.com/libpnet/libpnet), una biblioteca
 multiplataforma para trabajar con redes a bajo nivel. El proyecto
@@ -69,8 +68,7 @@ biblioteca, por ejemplo:
 Si olvidamos añadir la dependencia e intentamos utilizar alguno
 de sus módulos, Rust mostrará un error parecido a:
 
->    use of unresolved module or unlinked crate `pnet`
-
+> use of unresolved module or unlinked crate `pnet`
 
 ## Conceptos generales de `pnet`
 
@@ -93,8 +91,8 @@ direcciones de red.
 ### Canales
 
 Las interfaces de red no son suficientes para que el programa
-pueda trabajar con ellas enviand realizar esas operaciones
-necesita otra entidad: el *canal*.
+pueda trabajar con ellas enviando y recibiendo paquetes. Para
+realizar esas operaciones necesita otra entidad: el *canal*.
 
 Un canal de `pnet` es un objeto que representa el acceso del
 programa a una interfaz de red. A través de ese acceso, el
@@ -165,26 +163,23 @@ El canal:
 
 La interfaz pertenece al sistema operativo. El canal es la
 representación que utiliza el programa para acceder a ella
-mediante `pnet`.
-
-El programa es quien analiza las tramas y toma las decisiones.
-`pnet` proporciona el acceso necesario para recibirlas y
-transmitirlas.
+mediante `pnet`. El programa es quien analiza las tramas y toma
+las decisiones. `pnet` proporciona el acceso necesario para
+recibirlas y transmitirlas.
 
 ### Un canal por cada interfaz
 
 En los ejemplos básicos que trataremos aquí supondremos la
 organización más sencilla: cada interfaz en uso tiene un canal, y
-cada canal proporciona un transmisor y un receptor.
+cada canal proporciona un transmisor y un receptor. Así
+trabajaremos en esta asignatura, aunque en diseños más complejos
+puede haber otras configuraciones.
 
     interfaz
         │
         └── canal Ethernet
                 ├── tx
                 └── rx
-
-Así trabajaremos en esta asignatura, aunque en diseños más
-complejos puede haber otras configuraciones.
 
 Supongamos cuatro segmentos de red y un host conectado a cada uno
 mediante una interfaz.
@@ -270,7 +265,6 @@ Y para consultar la dirección MAC de destino:
 
 Estos métodos conocen la estructura de la cabecera Ethernet y
 realizan internamente el acceso a los bytes correspondientes.
-
 Cuando se utiliza una representación mutable, también es posible
 modificar los campos mediante métodos como:
 
@@ -297,9 +291,8 @@ tipo de trama mediante:
 
 Este método devuelve el valor del campo EtherType, que identifica
 el protocolo transportado. Por ejemplo, `EtherTypes::Ipv4` indica
-que la trama contiene un datagrama IPv4.
-
-También podemos acceder a los datos transportados mediante:
+que la trama contiene un datagrama IPv4. También podemos acceder
+a los datos transportados mediante:
 
 ``` rust
     packet.payload()
@@ -341,7 +334,9 @@ Como hemos visto, lo primero que necesita el programa es conocer
 qué interfaces de red están disponibles en el sistema. Para ello
 utiliza la función:
 
+``` rust
     datalink::interfaces()
+```
 
 Esta función devuelve una colección de objetos
 `NetworkInterface`, uno por cada interfaz que `pnet` puede
@@ -505,9 +500,7 @@ las opciones de acceso se indican mediante el objeto `Config`.
 El objeto `tx` es el transmisor (`DataLinkSender`) del canal.
 También se le puede llamar *extremo transmisor*. Permite entregar
 a `pnet` una trama que el programa quiere transmitir por la
-interfaz asociada al canal.
-
-La operación utilizada es:
+interfaz asociada al canal. La operación utilizada es:
 
 ``` rust
     tx.send_to(frame, None)
@@ -552,12 +545,9 @@ Un programa que maneje un par de objetos `tx` y `rx` puede
 guardarlos en variables. Pero un programa de comunicaciones, como
 un switch o un router, normalmente trabajará con varias
 interfaces y, por tanto, con varios canales, transmisores y
-receptores.
-
-Este número puede ser elevado, pero, sobre todo, es un número
-variable que no se conoce en tiempo de compilación.
-
-Por tanto, almacenar los objetos directamente en variables
+receptores. Este número puede ser elevado, pero, sobre todo, es
+un número variable que no se conoce en tiempo de compilación. Por
+este motivo, almacenar los objetos directamente en variables
 individuales no sería viable. Será necesario almacenarlos en
 alguna estructura de datos, como por ejemplo un vector.
 
@@ -848,9 +838,7 @@ La expresión:
 
 permite obtener los primeros 80 bytes sin intentar acceder a una
 posición que no exista. Si la trama tiene menos de 80 bytes, se
-muestran todos sus bytes.
-
-De forma análoga:
+muestran todos sus bytes. De forma análoga:
 
 ``` rust
     frame.len().saturating_sub(80)
@@ -911,12 +899,11 @@ interfaz de entrada:
 
 Como no estamos considerando el modo promiscuo, suponemos que el
 sistema operativo y el controlador de red ya han filtrado las
-tramas dirigidas a otras máquinas.
-
-Por tanto, una trama obtenida por el programa estará normalmente
-destinada a la dirección MAC de la interfaz que la ha recibido, o
-será una trama broadcast. También podrían recibirse determinadas
-tramas multicast, según la configuración de la interfaz.
+tramas dirigidas a otras máquinas. Por tanto, una trama obtenida
+por el programa estará normalmente destinada a la dirección MAC
+de la interfaz que la ha recibido, o será una trama broadcast.
+También podrían recibirse determinadas tramas multicast, según la
+configuración de la interfaz.
 
 El programa no necesita comprobar de nuevo que la trama estaba
 destinada a la interfaz de entrada. Esa selección ya se ha
@@ -949,9 +936,7 @@ broadcast.
 
 Antes de transmitir la trama por la interfaz de salida, el
 programa sustituye esa dirección por la MAC recibida como
-parámetro.
-
-Para modificar una trama Ethernet se utiliza
+parámetro. Para modificar una trama Ethernet se utiliza
 `MutableEthernetPacket`:
 
 ``` rust

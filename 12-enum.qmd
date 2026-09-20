@@ -59,6 +59,11 @@ Obsérvese que el nombre de la variante debe ir precedido por el
 nombre del `enum`. Esto evita posibles conflictos cuando
 distintos `enum` contienen variantes con el mismo nombre.
 
+Como *operador de resolución de ámbito* es una expresión un poco
+larga, en esta asignatura, de palabra y de manera informal
+podremos llamarlo *cuatro puntos*. Pero recuerda que ese no es su
+verdadero nombre.
+
 ## Enumeraciones con datos asociados
 
 A diferencia de las enumeraciones tradicionales de lenguajes como

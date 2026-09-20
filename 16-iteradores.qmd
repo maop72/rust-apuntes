@@ -747,9 +747,9 @@ mediante sus seis octetos.
 {{< include c16/tabla01/src/main.rs >}}
 ```
 
-::: {.callout-note} **Ejecución local:** este ejemplo debe
+**Ejecución local:** Este ejemplo debe
 ejecutarse en local. Utiliza el crate `pnet`, que no está
-disponible en el Rust Playground. :::
+disponible en el Rust Playground. 
 
 ### Inicialización de la tabla
 
@@ -862,11 +862,9 @@ indicando también si la dirección no se encuentra en la tabla.
 {{< include c16/tabla02/src/main.rs >}}
 ```
 
-::: {.text-end .small}
-
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20pnet%3A%3Autil%3A%3AMacAddr%3B%0Ause%20std%3A%3Aarray%3A%3Afrom_fn%3B%0A%0Aconst%20TABLE_SIZE%3A%20usize%20%3D%205%3B%0A%0A%23%5Bderive%28Debug%29%5D%0Astruct%20EntradaTabla%20%7B%0A%20%20%20%20mac%3A%20MacAddr%2C%0A%20%20%20%20ip%3A%20String%2C%0A%7D%0A%0Atype%20TipoTabla%20%3D%20%5BOption%3CEntradaTabla%3E%3B%20TABLE_SIZE%5D%3B%0A%0Afn%20busca_ip%28tabla%3A%20%26TipoTabla%2C%20ip%3A%20%26str%29%20-%3E%20Option%3CMacAddr%3E%20%7B%0A%20%20%20%20for%20x%20in%20tabla.iter%28%29%20%7B%0A%20%20%20%20%20%20%20%20match%20x%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20Some%28valor%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20//println%21%28%22mac%3A%7B%7D%20ip%3A%7B%7D%22%2Cvalor.mac%2Cvalor.ip%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20if%20valor.ip%20%3D%3D%20ip%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20return%20Some%28valor.mac%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20None%20%3D%3E%20%7B%7D%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%20%20%20%20None%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20tabla%3A%20TipoTabla%20%3D%20from_fn%28%7C_%7C%20None%29%3B%0A%0A%20%20%20%20let%20entrada%20%3D%20EntradaTabla%20%7B%0A%20%20%20%20%20%20%20%20mac%3A%20MacAddr%3A%3Anew%280x02%2C%200xa0%2C%200xc4%2C%200xb2%2C%200xd0%2C%200x02%29%2C%0A%20%20%20%20%20%20%20%20ip%3A%20String%3A%3Afrom%28%22192.168.1.1%22%29%2C%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20tabla%5B0%5D%20%3D%20Some%28entrada%29%3B%0A%20%20%20%20println%21%28%22Contenido%20del%20array%3A%5Cn%7B%3A%3F%7D%5Cn%22%2C%20tabla%29%3B%0A%0A%20%20%20%20let%20ip%20%3D%20%22192.168.1.1%22%3B%0A%20%20%20%20println%21%28%22Busquemos%20%7B%7D%22%2C%20ip%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20busca_ip%28%26tabla%2C%20ip%29%29%3B%0A%0A%20%20%20%20let%20ip%20%3D%20%22192.168.1.2%22%3B%0A%20%20%20%20println%21%28%22Busquemos%20%7B%7D%22%2C%20ip%29%3B%0A%20%20%20%20println%21%28%22%5Ct%7B%3A%3F%7D%22%2C%20busca_ip%28%26tabla%2C%20ip%29%29%3B%0A%7D%0A)
-
-:::
+**Ejecución local:** Este ejemplo debe
+ejecutarse en local. Utiliza el crate `pnet`, que no está
+disponible en el Rust Playground. 
 
 La tabla está formada por elementos de tipo
 `Option<EntradaTabla>`. Cada posición puede contener una entrada
