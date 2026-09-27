@@ -246,16 +246,16 @@ La biblioteca estándar proporciona numerosos métodos para
 manipular vectores. La @tbl-manipula-vectores tabla resume
 algunos de los más utilizados:
 
-| Método               | Descripción                                          |
-|----------------------|------------------------------------------------------|
-| `push(valor)`        | Añade un elemento al final del vector.               |
-| `pop()`              | Elimina y devuelve el último elemento del vector.    |
-| `len()`              | Devuelve el número de elementos almacenados.         |
-| `is_empty()`         | Indica si el vector está vacío.                      |
-| `clear()`            | Elimina todos los elementos del vector.              |
-| `insert(pos, valor)` | Inserta un elemento en la posición indicada.         |
-| `remove(pos)`        | Elimina el elemento situado en la posición indicada. |
-| `contains(&valor)`   | Indica si el vector contiene un determinado valor.   |
+| Método | Descripción |
+|----|----|
+| `push(valor)` | Añade un elemento al final del vector. |
+| `pop()` | Elimina y devuelve el último elemento del vector. |
+| `len()` | Devuelve el número de elementos almacenados. |
+| `is_empty()` | Indica si el vector está vacío. |
+| `clear()` | Elimina todos los elementos del vector. |
+| `insert(pos, valor)` | Inserta un elemento en la posición indicada. |
+| `remove(pos)` | Devuelve y elimina el elemento de la posición indicada. |
+| `contains(&valor)` | Indica si el vector contiene un determinado valor. |
 
 : Métodos más habituales para manipular vectores
 {#tbl-manipula-vectores}
@@ -268,7 +268,7 @@ El siguiente programa muestra el uso de todos estos métodos:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20protocolos%20%3D%20vec%21%5B%22HTTP%22%2C%20%22HTTPS%22%2C%20%22FTP%22%5D%3B%0A%0A%20%20%20%20protocolos.push%28%22SSH%22%29%3B%20%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20protocolos.insert%281%2C%20%22SMTP%22%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20protocolos.remove%282%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20println%21%28%22N%C3%BAmero%20de%20protocolos%3A%20%7B%7D%22%2C%20protocolos.len%28%29%29%3B%0A%20%20%20%20println%21%28%22%C2%BFContiene%20HTTPS%3F%20%7B%7D%22%2C%20protocolos.contains%28%26%22HTTPS%22%29%29%3B%0A%20%20%0A%20%20%20%20let%20ultimo%20%3D%20protocolos.pop%28%29%3B%0A%20%20%20%20println%21%28%22Extraemos%20%7B%3A%3F%7D%22%2C%20ultimo%29%3B%0A%20%20%20%20println%21%28%22Queda%20%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20protocolos.clear%28%29%3B%0A%20%20%20%20println%21%28%22%C2%BFVector%20vac%C3%ADo%3F%20%7B%7D%22%2C%20protocolos.is_empty%28%29%29%3B%0A%7D%20%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20protocolos%20%3D%20vec%21%5B%22HTTP%22%2C%20%22HTTPS%22%2C%20%22FTP%22%5D%3B%0A%0A%20%20%20%20protocolos.push%28%22SSH%22%29%3B%20%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20protocolos.insert%281%2C%20%22SMTP%22%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20println%21%28%22Extraemos%20%7B%7D%22%2Cprotocolos.remove%282%29%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20println%21%28%22N%C3%BAmero%20de%20protocolos%3A%20%7B%7D%22%2C%20protocolos.len%28%29%29%3B%0A%20%20%20%20println%21%28%22%C2%BFContiene%20HTTPS%3F%20%7B%7D%22%2C%20protocolos.contains%28%26%22HTTPS%22%29%29%3B%0A%20%20%0A%20%20%20%20let%20ultimo%20%3D%20protocolos.pop%28%29%3B%0A%20%20%20%20println%21%28%22Extraemos%20%7B%3A%3F%7D%22%2C%20ultimo%29%3B%0A%20%20%20%20println%21%28%22Queda%20%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20protocolos.clear%28%29%3B%0A%20%20%20%20println%21%28%22%C2%BFVector%20vac%C3%ADo%3F%20%7B%7D%22%2C%20protocolos.is_empty%28%29%29%3B%0A%7D%20%0A)
 
 :::
 
