@@ -149,8 +149,8 @@ los principales objetivos de diseño de Rust
 
 El nombre del parámetro va seguido de dos puntos y del tipo
 correspondiente. Los tipos básicos los resumimos en la
-@tbl-tipos-basicos, los tipos compuestos los tratamos en la
-@sec-tipos-compuestos.
+@tbl-tipos-basicos, los tipos compuestos (tuplas y arrays) los
+tratamos en la @sec-tuplas-arrays.
 
 En el ejemplo anterior, las expresiones `a: i32` y `b: i32`
 indican que ambos parámetros son números enteros de 32 bits con

@@ -1,4 +1,4 @@
-# Tipos de datos compuestos {#sec-tipos-compuestos}
+# Tuplas y Arrays {#sec-tuplas-arrays}
 
 En la @sec-tipos-basicos ya hemos visto los tipos básicos de
 datos: reales, enteros, caracteres, booleanos y unitario. Sin
