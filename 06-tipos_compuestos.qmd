@@ -206,6 +206,108 @@ En cualquier caso, el tamaño siempre forma parte del tipo del
 array. Por tanto, `[i32; 5]` y `[i32; 10]` son tipos distintos,
 aunque sus elementos sean del mismo tipo.
 
+## Todos los elementos de un array deben estar inicializados
+
+En los ejemplos anteriores, siempre hemos inicializado el array
+dando valor a todas sus posiciones.
+
+- O bien dando valor explícitamente a cada elemento
+
+  ``` rust
+  let numeros = [10, 20, 30, 40, 50];
+  ```
+
+- O bien inicializando todos los elementos con el mismo valor
+
+  ``` rust
+  let ceros = [0; 5];
+  ```
+
+- O bien usando `std::array::from_fn`
+
+  ``` rust
+  let mut tabla: [Option<String>; TABLE_SIZE] = from_fn(|_| None);
+  ```
+
+Esto no es casual. Una característica importante de los arrays de
+Rust es que todos sus elementos deben tener un valor desde el
+momento en que se crea el array. No es posible declarar un array
+y dejar algunos de sus elementos sin inicializar para asignarles
+un valor más adelante.
+
+Esto supone una diferencia con lenguajes como C, donde es posible
+declarar un array y asignar posteriormente valores solamente a
+algunos de sus elementos:
+
+``` c
+int numeros[5];
+numeros[0] = 10;
+```
+
+En este caso, `numeros[1]`, `numeros[2]`, etc. quedan sin un
+valor definido. En Rust esto no está permitido.
+
+## `Option<T>` para representar valores no disponibles
+
+En la sección anterior hemos visto tres formas de dar valor a
+todos los elementos de un array. Veremos aquí una cuarta muy
+idiomática en Rust: utilizar un `Option<T>`. Supondremos ahora
+que ya has estudiado el capítulo @sec-enum. Si no es el caso,
+ignora esta sección por el momento.
+
+Como sabes, un `Option<T>` puede contener un valor de tipo `T`, mediante
+`Some(valor)`, o indicar que no hay ningún valor, mediante
+`None`. Por tanto, podemos crear un array de `Option<T>`
+inicializando todas sus posiciones con `None`:
+
+``` rust
+let mut numeros: [Option<i32>; 5] = [None; 5];
+```
+
+El array está completamente inicializado: cada una de sus
+posiciones contiene un `Option<i32>`. Sin embargo, inicialmente
+todas ellas contienen `None`, que representa la ausencia de un
+valor.
+Posteriormente podemos asignar un valor a una posición concreta:
+
+``` rust
+numeros[0] = Some(10);
+numeros[1] = Some(20);
+```
+
+Ahora las dos primeras posiciones contienen un valor y las
+restantes continúan sin tenerlo:
+
+``` text
+[Some(10), Some(20), None, None, None]
+```
+
+Es importante entender que las posiciones restantes no están *sin
+inicializar*. Todas contienen un valor perfectamente válido:
+`None`. Lo que ocurre es que ese valor indica que todavía no hay
+un valor de tipo `i32` asociado a ellas.
+
+Esta técnica resulta especialmente útil cuando el array se va a
+ir rellenando durante la ejecución del programa. Por ejemplo:
+
+``` rust
+let mut tabla: [Option<i32>; 5] = [None; 5];
+
+tabla[0] = Some(100);
+tabla[3] = Some(400);
+```
+
+El contenido del array será:
+
+``` text
+[Some(100), None, None, Some(400), None]
+```
+
+De esta forma podemos distinguir entre una posición que todavía
+no ha recibido un valor y una posición que contiene realmente un
+valor. 
+
+
 ## Comparación entre tuplas y arrays
 
 La @tbl-tupla-vs-array resume las similitudes y diferencias entre
