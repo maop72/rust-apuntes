@@ -245,7 +245,11 @@ numeros[0] = 10;
 ```
 
 En este caso, `numeros[1]`, `numeros[2]`, etc. quedan sin un
-valor definido. En Rust esto no está permitido.
+valor definido. En Rust esto no estaría permitido. Esta restricción
+es una de las medidas de Rust para mejorar la seguridad de los
+programas: permitir que una variable contenga datos sin
+inicializar puede dar lugar a que el programa utilice
+accidentalmente un valor indefinido.
 
 ## `Option<T>` para representar valores no disponibles
 
@@ -255,9 +259,9 @@ idiomática en Rust: utilizar un `Option<T>`. Supondremos ahora
 que ya has estudiado el capítulo @sec-enum. Si no es el caso,
 ignora esta sección por el momento.
 
-Como sabes, un `Option<T>` puede contener un valor de tipo `T`, mediante
-`Some(valor)`, o indicar que no hay ningún valor, mediante
-`None`. Por tanto, podemos crear un array de `Option<T>`
+Como sabes, un `Option<T>` puede contener un valor de tipo `T`,
+mediante `Some(valor)`, o indicar que no hay ningún valor,
+mediante `None`. Por tanto, podemos crear un array de `Option<T>`
 inicializando todas sus posiciones con `None`:
 
 ``` rust
@@ -267,8 +271,8 @@ let mut numeros: [Option<i32>; 5] = [None; 5];
 El array está completamente inicializado: cada una de sus
 posiciones contiene un `Option<i32>`. Sin embargo, inicialmente
 todas ellas contienen `None`, que representa la ausencia de un
-valor.
-Posteriormente podemos asignar un valor a una posición concreta:
+valor. Posteriormente podemos asignar un valor a una posición
+concreta:
 
 ``` rust
 numeros[0] = Some(10);
@@ -305,8 +309,7 @@ El contenido del array será:
 
 De esta forma podemos distinguir entre una posición que todavía
 no ha recibido un valor y una posición que contiene realmente un
-valor. 
-
+valor.
 
 ## Comparación entre tuplas y arrays
 

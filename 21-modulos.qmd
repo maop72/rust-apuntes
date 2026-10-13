@@ -36,7 +36,7 @@ llaves. En el interior del módulo pueden declararse funciones,
 estructuras, enumeraciones, constantes e incluso otros módulos.
 
 ``` rust
-{{< include c20/geometria/src/main.rs >}}
+{{< include c21/geometria/src/main.rs >}}
 ```
 
 ::: {.text-end .small}
@@ -57,7 +57,7 @@ Los módulos también pueden anidarse para organizar el código de
 forma jerárquica.
 
 ``` rust
-{{< include c20/universidad/src/main.rs >}}
+{{< include c21/universidad/src/main.rs >}}
 ```
 
 ::: {.text-end .small}

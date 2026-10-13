@@ -49,7 +49,7 @@ de dos números enteros y dos tests que verifican algunos
 resultados.
 
 ``` rust
-{{< include c22/test01/src/main.rs >}}
+{{< include c23/test01/src/main.rs >}}
 ```
 
 ::: {.text-end .small}
@@ -130,7 +130,7 @@ El siguiente programa contiene un error en la función
 su suma.
 
 ``` rust
-{{< include c22/test02/src/main.rs >}}
+{{< include c23/test02/src/main.rs >}}
 ```
 
 ::: {.text-end .small}
@@ -164,7 +164,7 @@ propio test quien invoca directamente la función que se desea
 comprobar.
 
 ``` rust
-{{< include c22/test03/src/main.rs >}}
+{{< include c23/test03/src/main.rs >}}
 ```
 
 ::: {.text-end .small}

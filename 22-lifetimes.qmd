@@ -53,7 +53,7 @@ su definición tal y como está escrita. Supongamos ahora el
 siguiente programa, que intenta hacer uso de la función anterior:
 
 ``` rust
-{{< include c21/lifetime_mal01/src/main.rs >}}
+{{< include c22/lifetime_mal01/src/main.rs >}}
 ```
 
 ::: {.text-end .small}
@@ -104,7 +104,7 @@ el código de la función que llama a `mayor` (esto es, la funcion
 Y escribir algo así:
 
 ``` rust
-{{< include c21/lifetime_mal02/src/main.rs >}}
+{{< include c22/lifetime_mal02/src/main.rs >}}
 ```
 
 ::: {.text-end .small}
@@ -159,7 +159,7 @@ un apóstrofo (`'`).
 Este código ya compila correctamente:
 
 ``` rust
-{{< include c21/lifetime_ok/src/main.rs >}}
+{{< include c22/lifetime_ok/src/main.rs >}}
 ```
 
 ::: {.text-end .small}
