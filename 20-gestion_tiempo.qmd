@@ -14,11 +14,7 @@ distinguir:
 - Medición de intervalos: permite calcular cuánto tiempo
   transcurre entre dos instantes, por ejemplo, para medir la
   duración de una operación.
-<<<<<<< HEAD
 - Hora civil, o *del reloj de pared* (*wall-clock time*): permite
-=======
-- Hora civil, a veces llamada *de reloj de pared*: permite
->>>>>>> 70080cf5e5ee35507e62a1b63bc9c90c05fe8e3c
   conocer la fecha y hora del calendario, por ejemplo, para
   registrar cuándo se ha producido un evento.
 
@@ -88,11 +84,7 @@ transcurrido al finalizar.
 La función `Instant::now()` obtiene el instante inicial. Su
 representación interna depende del sistema y, cuando se muestra
 con `{:?}`, produce un valor que no se corresponde con la fecha y
-<<<<<<< HEAD
 hora del reloj de pared, que es la que normalmente usamos las personas.
-=======
-hora *civil*, que es la que normalmente usamos las personas.
->>>>>>> 70080cf5e5ee35507e62a1b63bc9c90c05fe8e3c
 
 El método `elapsed()` devuelve el tiempo transcurrido desde ese
 instante, representado mediante un valor de tipo `Duration`.
@@ -120,11 +112,7 @@ intervalos porque no retrocede como consecuencia de los ajustes
 del reloj del sistema. No obstante, no proporciona una hora
 absoluta que podamos guardar y utilizar como fecha de un evento.
 
-<<<<<<< HEAD
 ## Hora del reloj de pared (`SystemTime`)
-=======
-## Hora civil (`SystemTime`)
->>>>>>> 70080cf5e5ee35507e62a1b63bc9c90c05fe8e3c
 
 Cuando necesitamos conocer la fecha y hora en que se produce un
 suceso, Rust proporciona el tipo `SystemTime`, definido en el
@@ -189,11 +177,7 @@ según las necesidades del programa:
   `std::time`, permite medir el tiempo transcurrido entre dos
   instantes. El resultado se representa mediante un valor de tipo
   `Duration`.
-<<<<<<< HEAD
 - Hora del reloj de pared: el tipo `SystemTime`, también del módulo
-=======
-- Hora civil: el tipo `SystemTime`, también del módulo
->>>>>>> 70080cf5e5ee35507e62a1b63bc9c90c05fe8e3c
   `std::time`, permite obtener un instante del reloj del sistema.
   Para convertirlo en una fecha y hora legibles podemos utilizar
   bibliotecas externas, como `chrono`.
