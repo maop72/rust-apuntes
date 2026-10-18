@@ -134,14 +134,24 @@ Observaciones:
     en el vector. En este caso, 4. Por tanto el rango irá desde
     0, incluido, hasta 4, excluido. Esto es, desde 0 hasta 3.
 
+<<<<<<< HEAD
   - Recuerda que si en algún momento necesitas un rango desde el
     primer elmento hasta el último, ambos incluidos, puedes usar
     el operador `..=`.
+=======
+  - Recuerda que si en algún momento necesitas un rango desde
+    el primer elmento hasta el último, ambos incluidos, puedes
+    usar el operador `..=`.
+>>>>>>> 70080cf5e5ee35507e62a1b63bc9c90c05fe8e3c
 
     ``` rust
     for i in 0..=n   //  Desde 0 hasta n, ambos incluidos
     ```
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 70080cf5e5ee35507e62a1b63bc9c90c05fe8e3c
 ## El operador `[]` con índices fuera de rango {#sec-corchetes-fuera-rango}
 
 En lenguajes como C o C++, acceder a un elemento situado fuera de
