@@ -1,0 +1,187 @@
+# Gestión del tiempo
+
+En programación, trabajar con el tiempo puede implicar
+necesidades diferentes. En ocasiones solo necesitamos ordenar
+sucesos según el orden en que se producen; en otras, medir cuánto
+tiempo transcurre entre dos acontecimientos o conocer la fecha y
+hora en que ocurre un evento.
+
+Estas necesidades dan lugar a tres conceptos que conviene
+distinguir:
+
+- Hora lógica: permite establecer un orden entre sucesos sin
+  necesidad de medir el tiempo real.
+- Medición de intervalos: permite calcular cuánto tiempo
+  transcurre entre dos instantes, por ejemplo, para medir la
+  duración de una operación.
+- Hora civil, o *del reloj de pared* (*wall-clock time*): permite
+  conocer la fecha y hora del calendario, por ejemplo, para
+  registrar cuándo se ha producido un evento.
+
+Rust proporciona tipos y funciones para trabajar con estas dos
+últimas necesidades en el módulo `std::time`. La primera puede
+resolverse mediante mecanismos sencillos, como un contador,
+dependiendo de las necesidades del programa.
+
+## Hora lógica
+
+En ocasiones, un programa necesita establecer el orden en que se
+producen ciertos sucesos, pero no necesita conocer la hora real
+ni medir el tiempo transcurrido entre ellos. En estos casos
+podemos utilizar una hora lógica, representada mediante un
+contador que se incrementa cada vez que se registra un nuevo
+suceso. Por ejemplo, podemos asignar un número consecutivo a cada
+elemento que se introduce en una cola:
+
+``` rust
+let mut reloj: u64 = 0;
+
+reloj += 1;
+let suceso1 = reloj;
+
+reloj += 1;
+let suceso2 = reloj;
+```
+
+En este ejemplo, `suceso1` vale `1` y `suceso2` vale `2`. Estos
+valores permiten establecer que el primer suceso se registró
+antes que el segundo, pero no indican cuánto tiempo ha
+transcurrido entre ambos.
+
+Las horas lógicas pueden utilizarse, por ejemplo, para ordenar
+los mensajes recibidos, numerar las operaciones de un proceso o
+registrar el orden de inserción de elementos en una cola.
+
+La principal ventaja de este mecanismo es su sencillez: no
+depende del reloj del sistema y no requiere medir el tiempo
+físico. Sin embargo, el contador solo permite ordenar los sucesos
+que registra; no proporciona información sobre su duración ni
+sobre la fecha en que ocurrieron.
+
+## Medición de intervalos temporales
+
+Cuando necesitamos medir cuánto tiempo transcurre entre dos
+instantes, Rust proporciona el tipo `Instant`, definido en el
+módulo `std::time`. Podemos utilizarlo, por ejemplo, para medir
+cuánto tarda un algoritmo en ejecutarse, controlar tiempos de
+espera o calcular cuánto tiempo lleva un elemento en una cola.
+
+El siguiente ejemplo mide el tiempo que tarda en ejecutarse un
+bucle de un millón de iteraciones. Para ello, obtenemos un
+instante inicial antes del bucle y calculamos el tiempo
+transcurrido al finalizar.
+
+``` rust
+{{< include c20/intervalo/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Atime%3A%3AInstant%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20inicio%20%3D%20Instant%3A%3Anow%28%29%3B%0A%0A%20%20%20%20let%20mut%20suma%3A%20u64%20%3D%200%3B%0A%20%20%20%20for%20i%20in%200..1_000_000%20%7B%0A%20%20%20%20%20%20%20%20suma%20%2B%3D%20i%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20let%20intervalo%20%3D%20inicio.elapsed%28%29%3B%0A%0A%20%20%20%20//%20Error%3A%20Instant%20no%20implementa%20Display%2C%20por%20lo%20que%20no%20admite%20el%20formato%20%7B%7D%0A%20%20%20%20//%20println%21%28%22Instante%20inicial%3A%20%7B%7D%22%2C%20inicio%29%3B%0A%0A%20%20%20%20println%21%28%22Instante%20inicial%3A%20%7B%3A%3F%7D%22%2C%20inicio%29%3B%0A%0A%20%20%20%20println%21%28%22Tiempo%20transcurrido%3A%22%29%3B%0A%20%20%20%20println%21%28%22Nanosegundos%3A%20%7B%7D%22%2C%20intervalo.as_nanos%28%29%29%3B%0A%20%20%20%20println%21%28%22Microsegundos%3A%20%7B%7D%22%2C%20intervalo.as_micros%28%29%29%3B%0A%20%20%20%20println%21%28%22Milisegundos%3A%20%7B%7D%22%2C%20intervalo.as_millis%28%29%29%3B%0A%20%20%20%20println%21%28%22Segundos%3A%20%7B%7D%22%2C%20intervalo.as_secs_f64%28%29%29%3B%0A%20%20%20%20println%21%28%22Suma%3A%20%7B%7D%22%2C%20suma%29%3B%0A%7D%0A)
+
+:::
+
+La función `Instant::now()` obtiene el instante inicial. Su
+representación interna depende del sistema y, cuando se muestra
+con `{:?}`, produce un valor que no se corresponde con la fecha y
+hora del reloj de pared, que es la que normalmente usamos las personas.
+
+El método `elapsed()` devuelve el tiempo transcurrido desde ese
+instante, representado mediante un valor de tipo `Duration`.
+Podemos obtener esta duración en nanosegundos, microsegundos,
+milisegundos o segundos mediante los métodos `as_nanos()`,
+`as_micros()`, `as_millis()` y `as_secs_f64()`, respectivamente.
+
+- El método as_secs() devuelve los segundos como un entero de
+  tipo u64, descartando la fracción de segundo. Si necesitamos
+  conservarla, podemos utilizar `as_secs_f64()`, que devuelve un
+  número en coma flotante de tipo `f64`. También existe
+  `as_secs_f32()`, que devuelve un `f32`, de menor precisión.
+
+- No existen métodos específicos para obtener la duración en
+  minutos, horas o días, pero podemos calcularla fácilmente a
+  partir de los segundos, dividiendo por 60, 3600 o 86400,
+  respectivamente.
+
+También podemos obtener directamente la diferencia entre dos
+valores de tipo `Instant` mediante una resta. El resultado es
+igualmente un `Duration`.
+
+`Instant` utiliza un reloj monotónico, adecuado para medir
+intervalos porque no retrocede como consecuencia de los ajustes
+del reloj del sistema. No obstante, no proporciona una hora
+absoluta que podamos guardar y utilizar como fecha de un evento.
+
+## Hora del reloj de pared (`SystemTime`)
+
+Cuando necesitamos conocer la fecha y hora en que se produce un
+suceso, Rust proporciona el tipo `SystemTime`, definido en el
+módulo `std::time`.
+
+Sin embargo, `SystemTime` no dispone de métodos para convertir
+directamente un instante en una fecha y hora legibles. Para ello
+podemos utilizar bibliotecas externas, como `chrono`, que permite
+obtener la hora local y formatearla de distintas maneras. El
+siguiente ejemplo muestra la fecha y hora actuales en un formato
+habitual y en formato ISO 8601:
+
+``` rust
+use chrono::Local;
+
+fn main() {
+    let ahora = Local::now();
+
+    println!("Fecha y hora: {}", ahora.format("%Y-%m-%d %H:%M:%S"));
+    println!("Formato ISO 8601: {}", ahora.to_rfc3339());
+}
+```
+
+Este ejemplo utiliza una biblioteca externa, por lo que debemos
+ejecutarlo en un proyecto local en lugar de utilizar nuestro Rust
+Playground habitual, configurado para los ejemplos de la
+biblioteca estándar.
+
+El resultado será similar al siguiente:
+
+``` text
+Fecha y hora: 2026-10-13 22:01:03
+Formato ISO 8601: 2026-10-13T22:01:03.291221996+02:00
+```
+
+Para incorporar la biblioteca `chrono` al proyecto, ejecutamos el
+siguiente comando desde su directorio:
+
+``` bash
+cargo add chrono
+```
+
+Cargo añadirá la dependencia al fichero `Cargo.toml` y descargará
+la biblioteca cuando sea necesario compilar el proyecto.
+
+Si no disponemos del subcomando `cargo add`, podemos añadir
+manualmente la siguiente sección al fichero `Cargo.toml`:
+
+``` toml
+[dependencies]
+chrono = "0.4"
+```
+
+## Resumen
+
+En Rust podemos trabajar con el tiempo de distintas maneras,
+según las necesidades del programa:
+
+- Hora lógica: podemos utilizar un contador para ordenar sucesos
+  sin necesidad de medir el tiempo real.
+- Medición de intervalos: el tipo `Instant`, del módulo
+  `std::time`, permite medir el tiempo transcurrido entre dos
+  instantes. El resultado se representa mediante un valor de tipo
+  `Duration`.
+- Hora del reloj de pared: el tipo `SystemTime`, también del módulo
+  `std::time`, permite obtener un instante del reloj del sistema.
+  Para convertirlo en una fecha y hora legibles podemos utilizar
+  bibliotecas externas, como `chrono`.
+
+Es importante distinguir entre ordenar sucesos, medir cuánto
+tiempo transcurre y conocer la fecha y hora en que ocurre un
+evento. Cada necesidad requiere un enfoque diferente.
