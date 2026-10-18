@@ -1,0 +1,402 @@
+# Colas con prioridad
+
+Una cola con prioridades es una estructura de datos en la que
+cada elemento tiene asociada una prioridad. A diferencia de una
+cola convencional, el siguiente elemento que se extrae no es
+necesariamente el que lleva más tiempo esperando, sino el que
+tiene mayor prioridad.
+
+Por ejemplo, podemos tener una cola de paquetes que debe procesar
+un router:
+
+``` text
+    paquete A    prioridad 1
+    paquete B    prioridad 2
+    paquete C    prioridad 1
+    paquete D    prioridad 3
+```
+
+Al extraer elementos de la cola, el orden sería:
+
+``` text
+    paquete D
+    paquete B
+    paquete A
+    paquete C
+```
+
+En esta asignatura, para la prioridad usaremos un número natural
+excluyendo el 0, donde un número más alto implica prioridad más
+alta. También podría establecerse el convenio contrario, usar
+números negativos, números reales, enumerados, etc.
+
+## Elementos de la cola
+
+Consideraremos *elemento* o *item* como sinónimos. Cada elemento
+de la cola está formado conceptualmente por dos partes:
+
+``` text
+    Item:
+        dato
+        prioridad
+```
+
+El dato contiene la información que queremos almacenar y la
+prioridad es un número entero que determina el orden en que será
+atendido. Por ejemplo:
+
+``` text
+    Item:
+        paquete de red
+        prioridad: 2
+```
+
+La prioridad forma parte del item y, por tanto, la cola puede
+determinar qué elemento debe extraerse en cada momento.
+
+## Operaciones básicas
+
+Una cola con prioridades necesita, como mínimo, las siguientes
+operaciones:
+
+- `insertar(item)`
+
+  Añade un elemento a la cola.
+
+- `buscar_mas_prioritario() -> Option<Item>`
+
+  Busca el elemento que tiene mayor prioridad, pero no lo elimina
+  de la cola.
+
+  Si la cola está vacía, devuelve `None`. En caso contrario,
+  devuelve `Some(item)`.
+
+- `extraer() -> Option<Item>`
+
+  Busca y elimina el elemento que tiene mayor prioridad.
+
+  Si la cola está vacía, devuelve `None`. En caso contrario,
+  devuelve `Some(item)`.
+
+Estas operaciones permiten utilizar la cola sin necesidad de
+conocer cómo están almacenados internamente sus elementos.
+
+## La cola vacía
+
+El caso de la cola vacía debe tratarse explícitamente. Por
+ejemplo, ante:
+
+``` text
+    extraer()
+```
+
+pueden ocurrir dos situaciones:
+
+``` text
+    cola no vacía  →  Some(item)
+    cola vacía     →  None
+```
+
+En Rust, una operación cuyo resultado puede no existir se
+representa naturalmente mediante un `Option<T>`. Otros lenguajes
+no están tan orientados a contemplar este caso.
+
+No debemos suponer que siempre existe un elemento que extraer. El
+propio resultado de la operación obliga al programa que la
+utiliza a tener en cuenta esta posibilidad.
+
+## ¿Cómo se encuentra el elemento más prioritario?
+
+Una implementación sencilla puede utilizar un vector para
+almacenar los elementos. En ese caso, los elementos no tienen por
+qué estar ordenados:
+
+``` text
+    [ A(1), B(3), C(2), D(1) ]
+```
+
+Para encontrar el elemento más prioritario podemos recorrer todos
+los elementos y conservar la posición del que tenga mayor
+prioridad. Conceptualmente:
+
+``` text
+    buscar_mas_prioritario() -> Option<Elemento>
+
+        si la cola está vacía:
+            devolver None
+
+        mejor ← primer item
+
+        para cada item de la cola:
+            si item tiene mayor prioridad que mejor:
+                mejor ← item
+
+        devolver Some(mejor)
+```
+
+La operación recorre la cola para encontrar el elemento adecuado.
+Una vez conocida su posición, `extraer` puede eliminarlo:
+
+``` text
+    extraer() -> Option<Elemento>
+
+        si la cola está vacía:
+            devolver None
+
+        posición ← posición del elemento más prioritario
+
+        elemento ← eliminar elemento en posición
+
+        devolver Some(elemento)
+```
+
+Esta es una implementación sencilla y adecuada cuando el número
+de elementos no es muy grande. Existen estructuras de datos
+especializadas que permiten realizar estas operaciones de forma
+más eficiente.
+
+## Elementos con la misma prioridad
+
+Puede haber varios elementos con la misma prioridad:
+
+``` text
+    A(2)
+    B(2)
+    C(1)
+```
+
+En este caso, tanto `A` como `B` tienen la máxima prioridad.
+Habrá que decidir qué ocurre cuando existen empates. Una
+posibilidad sencilla es mantener el orden de llegada: si `A` se
+introdujo antes que `B`, se extrae primero `A`.
+
+De esta forma, entre elementos con la misma prioridad se mantiene
+el comportamiento de una cola convencional:
+
+``` text
+    A(2) → B(2) → C(1)
+     ↑
+     primero
+```
+
+Esta propiedad se conoce como FIFO entre elementos de igual
+prioridad. No todas las colas con prioridades tienen que
+comportarse de esta manera, pero es una decisión razonable para
+nuestra implementación.
+
+## Coste de las operaciones
+
+La implementación que hemos visto utiliza un `Vec` para almacenar
+los elementos de la cola. Los elementos no están ordenados por
+prioridad. Esto hace que el coste de las distintas operaciones
+sea diferente.
+
+### Insertar un elemento
+
+Para insertar un elemento basta con añadirlo al final del vector:
+
+``` text
+    insertar(item)
+
+        añadir item al final de la cola
+```
+
+Por tanto, el coste de esta operación es `O(1)` en promedio.
+
+### Buscar el elemento más prioritario
+
+Para encontrar el elemento más prioritario tenemos que recorrer
+todos los elementos de la cola:
+
+``` text
+    buscar_mas_prioritario()
+
+        recorrer todos los elementos
+        conservar el que tenga mayor prioridad
+```
+
+En el peor caso tendremos que examinar todos los elementos. Por
+tanto, el coste de esta operación es `O(n)`, donde `n` es el
+número de elementos de la cola.
+
+### Extraer el elemento más prioritario
+
+Para extraer un elemento primero tenemos que encontrar cuál es el
+más prioritario. Esto ya requiere recorrer la cola y tiene un
+coste `O(n)`. Una vez encontrada su posición, hay que eliminarlo
+del vector:
+
+``` text
+    extraer()
+
+        posición ← posición del elemento más prioritario
+
+        eliminar el elemento situado en posición
+```
+
+Al eliminar un elemento de un `Vec`, los elementos que estaban
+después de él pueden tener que desplazarse para ocupar el espacio
+que queda libre. Por tanto, esta operación también tiene un coste
+`O(n)`.
+
+En conjunto, nuestra implementación tiene los siguientes costes:
+
+| Operación                |              Coste |
+|--------------------------|-------------------:|
+| `insertar`               | `O(1)` en promedio |
+| `buscar_mas_prioritario` |             `O(n)` |
+| `extraer`                |             `O(n)` |
+
+Esta implementación es sencilla y puede ser perfectamente
+adecuada cuando la cola contiene pocos elementos. Sin embargo, si
+la cola puede crecer mucho, puede ser interesante utilizar una
+estructura de datos diseñada específicamente para trabajar con
+prioridades.
+
+### ¿Por qué no mantener la cola ordenada?
+
+Una alternativa sería mantener siempre los elementos ordenados
+por prioridad:
+
+``` text
+    [ A(3), B(2), C(2), D(1) ]
+```
+
+De esta forma, encontrar el elemento más prioritario sería muy
+sencillo, ya que estaría siempre en una posición conocida. Sin
+embargo, insertar un nuevo elemento puede ser más costoso. Para
+conservar el orden, puede ser necesario desplazar varios
+elementos:
+
+``` text
+    [ A(3), B(2), C(1), D(1) ]
+
+    insertar X(2)
+
+    [ A(3), B(2), X(2), C(1), D(1) ]
+```
+
+Por tanto, hemos intercambiado el coste de unas operaciones por
+el de otras. Esta es una cuestión habitual en el diseño de
+estructuras de datos: una representación puede hacer que
+determinadas operaciones sean más rápidas, pero a cambio de hacer
+otras más costosas.
+
+## El problema de la inanición
+
+En una cola con prioridades puede ocurrir un problema conocido
+como inanición (*starvation*). Se produce cuando un elemento de
+baja prioridad espera durante mucho tiempo porque continuamente
+aparecen elementos de mayor prioridad.
+
+Una conocida anécdota aparece en el libro *Operating System
+Concepts*, de A. Silberschatz *et al*, en el apartado dedicado a
+la planificación por prioridades. El libro se hace eco del rumor
+de que cuando se apagó el IBM 7094 del MIT en 1973, se encontró
+un proceso de baja prioridad que había sido enviado en 1967 y que
+todavía no había llegado a ejecutarse. Habría estado esperando
+unos seis años.
+
+La historia puede no ser cierta, pero ilustra perfectamente el
+problema de la inanición: si continuamente aparecen procesos de
+mayor prioridad, un proceso de baja prioridad puede quedar
+indefinidamente pospuesto.
+
+Por este motivo, los sistemas que utilizan prioridades pueden
+emplear mecanismos como el envejecimiento (`aging`), que aumenta
+gradualmente la prioridad de los procesos que llevan mucho tiempo
+esperando.
+
+Por ejemplo, supongamos que tenemos esta cola:
+
+``` text
+    A(1) → B(3) → C(2)
+```
+
+Si continuamente llegan nuevos elementos con prioridad 3, estos
+elementos serán atendidos antes que `A`:
+
+``` text
+    A(1) → B(3) → C(2)
+
+    llega D(3)
+    llega E(3)
+    llega F(3)
+    ...
+```
+
+Mientras sigan llegando elementos de prioridad superior, `A`
+puede permanecer indefinidamente en la cola sin ser extraído.
+
+Este problema puede ser especialmente importante en sistemas en
+los que algunos elementos tienen una prioridad muy baja pero
+deben ser atendidos tarde o temprano.
+
+### Una solución: *aging*
+
+El envejecimiento (*aging*) es una de las técnicas más habituales
+para evitar la inanición. Consiste en aumentar progresivamente la
+prioridad de los elementos que llevan mucho tiempo esperando. La
+prioridad efectiva de un elemento podría aumentar después de
+cierto tiempo:
+
+``` text
+    prioridad efectiva =
+        prioridad inicial + antigüedad
+```
+
+De esta forma, un elemento que lleva mucho tiempo esperando puede
+llegar a tener una prioridad suficiente para ser atendido.
+
+Por ejemplo:
+
+``` text
+    A(1) lleva mucho tiempo esperando
+    B(3) acaba de llegar
+
+    prioridad efectiva de A = 4
+    prioridad efectiva de B = 3
+
+    → se extrae A
+```
+
+No es imprescindible para una implementación sencilla de una cola
+con prioridades, pero muestra que elegir siempre el elemento de
+mayor prioridad puede tener consecuencias importantes.
+
+En aplicaciones reales, la política de prioridades debe tener en
+cuenta no solo qué elemento debe ser atendido antes, sino también
+cuánto tiempo puede esperar cada elemento.
+
+### Otras soluciones
+
+Existen distintas estrategias para evitar o reducir el problema
+de la inanición. Algunas de las más habituales son:
+
+- Límite de tiempo de espera
+
+  Se puede establecer un tiempo máximo que un elemento puede
+  permanecer esperando. Si se alcanza ese límite, el elemento
+  recibe un tratamiento especial, por ejemplo aumentando su
+  prioridad.
+
+- Atención periódica a las prioridades bajas
+
+  En lugar de seleccionar siempre el elemento de mayor prioridad,
+  se puede reservar ocasionalmente un turno para elementos de
+  prioridad inferior.
+
+  Por ejemplo, después de atender cierto número de elementos de
+  alta prioridad, se puede atender el elemento de mayor prioridad
+  entre los que llevan más tiempo esperando.
+
+- Prioridad dinámica
+
+  La prioridad de un elemento no tiene por qué permanecer
+  constante. El sistema puede modificarla en función de
+  circunstancias como el tiempo de espera, la importancia del
+  trabajo o los recursos que ya haya utilizado.
+
+Todas estas estrategias persiguen un objetivo común: mantener las
+ventajas de las prioridades sin permitir que un elemento pueda
+quedar esperando indefinidamente.

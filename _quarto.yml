@@ -31,6 +31,7 @@ book:
     - 22-lifetimes.qmd
     - 23-test_automaticos.qmd
     - 24-pnet.qmd
+    - 25-colas_prioridad.qmd
 
 
 lang: es-ES
