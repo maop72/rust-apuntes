@@ -1,0 +1,816 @@
+# Análisis y diseño de algoritmos
+
+Resolver un problema mediante un programa no consiste simplemente
+en escribir instrucciones hasta obtener el resultado esperado.
+Antes debemos decidir cómo vamos a resolverlo y diseñar un
+algoritmo adecuado.
+
+Para un mismo problema pueden existir algoritmos muy diferentes.
+Una solución puede ser más sencilla y clara, mientras que otra
+puede ser más eficiente en tiempo o memoria. Por tanto, diseñar
+un algoritmo implica valorar distintos criterios y encontrar un
+equilibrio adecuado.
+
+Una vez diseñada una solución, podemos estudiar su eficiencia y
+analizar cómo se comporta cuando aumenta el tamaño de los datos
+de entrada. El análisis de algoritmos proporciona herramientas
+para comparar soluciones y detectar aquellas que pueden resultar
+inadecuadas.
+
+En este tema estudiaremos estos criterios de diseño y alguna de
+las principales estrategias para construir algoritmos: *divide y
+vencerás*, *algoritmos voraces* y *búsqueda con retroceso*.
+
+## Claridad y calidad de los algoritmos
+
+Al diseñar un algoritmo podemos encontrar muchas formas
+diferentes de resolver el mismo problema. No todas tienen las
+mismas características. Podemos priorizar, entre otras cosas:
+
+- El tiempo necesario para su diseño, programación, prueba y mantenimiento. 
+- El tiempo que tarda en ejecutarse.
+- La claridad del algoritmo y del código.
+- El tamaño del código fuente.
+- La memoria utilizada.
+- El espacio ocupado en disco.
+- El uso de la red.
+
+Estos criterios pueden entrar en conflicto. Una solución que
+utiliza menos memoria, por ejemplo, puede ser más complicada de
+entender. Una solución muy rápida puede requerir mucha memoria. Y
+viceversa.
+
+En general, debemos dar una importancia especial a la claridad.
+Un algoritmo claro es más fácil de comprobar, probar, modificar y
+mantener. Además, disminuye la probabilidad de introducir
+errores.
+
+Esto es especialmente importante porque los programas reales no
+tienen unas pocas decenas de líneas. Pueden tener miles, cientos
+de miles o incluso millones de líneas, y pueden ser modificados
+durante años por personas diferentes. Una solución que resulta
+perfectamente comprensible para quien la acaba de escribir puede
+resultar difícil de entender para otra persona. O para el mismo
+autor apenas unos meses
+después. Por ello, que un programa funcione no es suficiente. La
+calidad del diseño y la claridad del código forman parte de la
+calidad del programa.
+
+### El coste del tiempo de programación
+
+Al diseñar un algoritmo solemos prestar mucha atención a los
+recursos que utilizará el programa: tiempo de CPU, memoria,
+espacio en disco, ancho de banda, etc. Sin embargo, existe otro
+recurso que puede ser mucho más costoso: el tiempo de las
+personas que desarrollan el programa.
+
+Un programador profesional normalmente cuesta a una empresa
+decenas de euros por hora, teniendo en cuenta no solo su salario,
+sino también las cotizaciones, el puesto de trabajo, las
+herramientas y otros costes asociados. En cambio, la capacidad de
+cálculo de un ordenador puede resultar extraordinariamente barata
+en comparación.
+
+Esto significa que una hora adicional de trabajo de un
+programador puede costar mucho más que las horas de CPU que ese
+mismo programa consumirá durante un largo periodo de tiempo. Y el
+coste no se limita a escribir el programa: también hay que tener
+en cuenta el tiempo necesario para entenderlo, probarlo,
+corregirlo y mantenerlo.
+
+Por tanto, el tiempo de los programadores es un recurso que
+debemos tener muy presente al diseñar algoritmos. No tiene
+sentido considerar únicamente los recursos que consumirá el
+ordenador: el coste de desarrollar y mantener la solución puede
+ser una parte mucho más importante del coste total del programa.
+
+### No sobreoptimizar
+
+Esto no significa que la eficiencia no sea importante. Elegir un
+algoritmo con un consumo mínimo de recursos hardware y tiempo de
+ejecución puede ser decisivo en muchas ocasiones.
+
+Sin embargo, debemos distinguir entre elegir bien un algoritmo y
+sobreoptimizar. Si una solución clara resulta suficientemente
+rápida, normalmente debemos quedarnos con ella. No tiene sentido
+sustituirla por una solución más complicada solamente porque sea,
+por ejemplo,
+un poco más rápida. Si un programa se va a ejecutar pocas veces o
+en pocas máquinas, que consuma una cantidad relativamente elevada
+de tiempo de CPU, memoria, red o cualquier otro recurso
+probablemente no sea relevante.
+
+Naturalmente, hay situaciones en las que una optimización sí está
+justificada. Por ejemplo, si un programa se ejecuta millones de
+veces o es utilizado por miles de personas, una pequeña mejora
+puede suponer un ahorro considerable. Pero incluso en estos casos
+debemos valorar si la mejora compensa la complejidad introducida.
+
+Cuando sospechemos que el rendimiento es insuficiente, debemos
+medirlo. No debemos basarnos únicamente en nuestras intuiciones:
+somos bastante malos estimando *a ojo* cuánto tiempo tarda un
+programa o cuánta memoria utiliza.
+
+La regla práctica es:
+
+> Primero escribimos una solución clara y correcta. Si el
+> rendimiento es insuficiente, medimos y optimizamos aquello que
+> realmente constituye un problema.
+
+El cronómetro —o las herramientas de medición apropiadas— es
+mucho más fiable que nuestras suposiciones.
+
+### Claridad y errores
+
+La claridad también tiene una relación directa con los errores.
+Podemos distinguir varios tipos:
+
+- Errores de compilación: el programa incumple lo especificado
+  por el lenguaje de programación. Esto impiden que el programa
+  se compile, es detectado por el compilador.
+- Errores en tiempo de ejecución: se producen al ejecutar
+  determinadas instrucciones bajo determinadas condiciones. Por
+  ejemplo archivo inexistente, división entre cero, índice fuera
+  de rango, uso de valor nulo, etc.
+- Errores lógicos: el programa se ejecuta, pero produce un
+  resultado incorrecto. Son los denominados *bugs* y suelen ser
+  más difíciles de detectar.
+- Defectos de claridad: el programa puede funcionar correctamente
+  en la actualidad, pero su diseño o su código son confusos y
+  aumentan la probabilidad de introducir errores en el futuro.
+
+Un programa puede producir hoy el resultado correcto y, sin
+embargo, estar mal diseñado.
+
+### Probar también forma parte del desarrollo
+
+Un esquema tradicional del desarrollo de un programa, el llamado
+*desarrollo en casacada* puede resumirse como:
+
+1.  Definir el problema.
+2.  Diseñar el algoritmo.
+3.  Implementar la solución.
+4.  Probarla.
+5.  Corregir los problemas encontrados.
+
+En la práctica, estas etapas no tienen por qué realizarse una
+sola vez y en ese orden. En los enfoques modernos de desarrollo
+es habitual repetirlas, construyendo y mejorando progresivamente
+la solución. El llamado *desarrollo ágil*.
+
+Probar un programa correctamente puede ser muy complicado. Un
+programa mínimamente realista tiene muchas combinaciones de datos
+y situaciones posibles, y normalmente no podemos comprobarlas
+todas. Las pruebas reducen el riesgo de errores, pero no permiten
+afirmar en general que un programa está libre de ellos al cien
+por cien.
+
+En sistemas críticos puede ser necesario dedicar incluso más
+esfuerzo a las pruebas que al desarrollo. En otros sistemas puede
+resultar económicamente razonable aceptar un cierto riesgo y
+corregir los problemas que aparezcan.
+
+En cualquier caso, una de las responsabilidades del programador
+es reducir todo lo posible la probabilidad de errores. Un diseño
+claro ayuda a conseguirlo.
+
+### Cuando una solución sencilla parece peor
+
+Es habitual que un programador principiante prefiera una solución
+que él mismo ha elaborado frente a otra que un programador
+experimentado considera más clara. Esto es comprensible:
+conocemos muy bien el código que acabamos de escribir y hemos
+invertido tiempo en él. Además, en un ejemplo pequeño, como por
+ejemplo una práctica de una asignatura, suele ocurrir que las
+ventajas de una solución más clara no sean visibles.
+
+Sin embargo, los defectos de diseño que parecen irrelevantes en
+un programa pequeño pueden convertirse en problemas importantes
+cuando el programa crece hasta tener miles de líneas y debe ser
+modificado por un número muy grande de personas. Que es
+precisamente el caso más habitual en la industria real.
+
+Por eso, al aprender a programar no basta con aprender a obtener
+la respuesta correcta. También hay que adquirir hábitos que
+permitan construir programas claros y mantenibles.
+
+## Eficiencia: primero elegir bien, después medir
+
+Una vez diseñado un algoritmo, podemos estudiar su eficiencia. El
+análisis de algoritmos permite comparar distintas soluciones y
+estudiar cómo cambia su coste cuando aumenta la cantidad de datos
+que deben procesar.
+
+Por ejemplo, supongamos que tenemos un vector con mil elementos y
+queremos comprobar si contiene un determinado valor. Podemos
+recorrer todos sus elementos hasta encontrarlo. El algoritmo es
+sencillo y funciona correctamente, pero ¿qué ocurre si el vector
+tiene diez millones de elementos? ¿Y cien millones?
+
+El análisis de la complejidad de un algoritmo estudia
+precisamente cómo varía su coste cuando aumenta el tamaño de los
+datos. Los dos aspectos que nos interesan principalmente son:
+
+- Tiempo de ejecución: Cuánto trabajo tiene que realizar el
+  algoritmo.
+- Uso de memoria: Cuánta memoria adicional necesita el algoritmo
+  para realizar su trabajo.
+
+Normalmente no nos interesa calcular el tiempo exacto que tarda
+un programa en ejecutarse. Ese tiempo depende del procesador, del
+sistema operativo, del compilador y de otros factores. Nos
+interesa saber cómo crece el coste del algoritmo cuando aumenta
+el tamaño de los datos.
+
+Por ejemplo, si tenemos que buscar repetidamente entre millones
+de elementos, la diferencia entre una búsqueda `O(n)` y una
+búsqueda `O(log n)` puede ser decisiva. En este caso, el análisis
+de complejidad nos permite identificar una diferencia importante
+entre las dos soluciones.
+
+Por tanto, el análisis de complejidad y la medición del
+rendimiento cumplen funciones diferentes. La complejidad nos
+permite estudiar cómo se comporta un algoritmo al aumentar el
+tamaño de los datos, mientras que la medición nos permite conocer
+el comportamiento real de una implementación concreta.
+
+## Estrategias de diseño de algoritmos
+
+La complejidad nos permite analizar y comparar algoritmos una vez
+que han sido diseñados. Pero antes de llegar a un algoritmo
+concreto hay otra cuestión importante: ¿cómo podemos construirlo?
+
+Existen distintas estrategias generales para diseñar algoritmos.
+En este curso veremos especialmente tres especialmente
+relevantes:
+
+- Divide y vencerás: consiste en dividir un problema en problemas
+  más pequeños, resolverlos y combinar sus soluciones.
+  *Mergesort* y *quicksort* son ejemplos de algoritmos que
+  utilizan esta estrategia.
+
+- Algoritmos voraces: construyen la solución paso a paso, tomando
+  en cada momento la decisión que parece más conveniente. El
+  algoritmo de Dijkstra es un ejemplo de esta estrategia.
+
+- Búsqueda con retroceso: explora diferentes posibilidades para
+  construir una solución y retrocede cuando descubre que una
+  determinada elección no puede conducir a una solución válida.
+
+Estas estrategias no son algoritmos concretos, sino formas
+generales de plantear la solución de un problema. Un mismo
+problema puede admitir distintas estrategias y, en algunos casos,
+es necesario analizar sus características para decidir cuál
+resulta más adecuada.
+
+A lo largo del curso encontraremos ejemplos de estas estrategias
+al estudiar algoritmos de ordenación, búsqueda y procesamiento de
+grafos. No es necesario aprenderlas como un conjunto
+independiente de algoritmos: lo importante es aprender a
+reconocer la estrategia utilizada y entender la idea general en
+la que se basa.
+
+## Tamaño de los datos
+
+Para analizar un algoritmo necesitamos identificar primero el
+tamaño de los datos que recibe. Normalmente utilizaremos la letra
+`n` para representar ese tamaño. Por ejemplo, si tenemos un
+`Vec`:
+
+``` rust
+let datos = vec![10, 20, 30, 40, 50];
+```
+
+podemos considerar que:
+
+``` text
+n = datos.len()
+```
+
+es el número de elementos del vector. Si un algoritmo recorre
+todos los elementos del vector, su coste dependerá de `n`.
+
+Por ejemplo:
+
+``` rust
+for x in &datos {
+    println!("{x}");
+}
+```
+
+- Si el vector tiene 10 elementos, se ejecutará el cuerpo del
+  bucle 10 veces.
+
+- Si tiene 1000 elementos, se ejecutará 1000 veces.
+
+- Si tiene un millón de elementos, se ejecutará un millón de
+  veces.
+
+Por tanto, el trabajo realizado crece proporcionalmente al número
+de elementos.
+
+## Tiempo de ejecución
+
+Una primera forma sencilla de analizar un algoritmo consiste en
+contar aproximadamente cuántas operaciones realiza. No
+necesitamos contar todas las instrucciones del procesador. Nos
+basta con identificar las operaciones cuyo número depende del
+tamaño de los datos.
+
+### Tiempo constante
+
+Consideremos:
+
+``` rust
+let primero = datos[0];
+```
+
+El acceso a un elemento de un `Vec` mediante su índice requiere,
+en condiciones normales, un tiempo que no depende del número de
+elementos del vector. Da igual que el vector tenga 10 elementos o
+un millón, decimos que esta operación tiene complejidad
+constante:
+
+``` text
+O(1)
+```
+
+Se lee «orden de uno». Otros ejemplos habituales son:
+
+``` rust
+let n = datos.len();
+```
+
+o:
+
+``` rust
+let ultimo = datos[datos.len() - 1];
+```
+
+El tamaño del vector puede ser enorme, pero estas operaciones
+realizan una cantidad de trabajo que podemos considerar
+constante.
+
+### Tiempo lineal
+
+Consideremos ahora:
+
+``` rust
+for x in &datos {
+    println!("{x}");
+}
+```
+
+El bucle se ejecuta una vez por cada elemento. Si hay `n`
+elementos, aproximadamente se realizarán `n` iteraciones. Por
+tanto, su complejidad es:
+
+``` text
+O(n)
+```
+
+Se denomina complejidad lineal. Podemos representar
+aproximadamente el crecimiento de esta forma:
+
+``` text
+n       trabajo
+
+10         10
+100       100
+1000     1000
+10000   10000
+```
+
+Si duplicamos el número de elementos, aproximadamente duplicamos
+el trabajo.
+
+### Tiempo cuadrático
+
+Veamos ahora un caso diferente:
+
+``` rust
+for x in &datos {
+    for y in &datos {
+        println!("{x} {y}");
+    }
+}
+```
+
+El primer bucle se ejecuta `n` veces. Por cada una de esas
+iteraciones, el segundo bucle también se ejecuta `n` veces. Por
+tanto, el número total de iteraciones es aproximadamente:
+
+``` text
+n × n = n²
+```
+
+La complejidad es:
+
+``` text
+O(n²)
+```
+
+Se denomina complejidad cuadrática. La diferencia respecto a
+`O(n)` es importante. Por ejemplo:
+
+``` text
+n       O(n)       O(n²)
+
+10        10          100
+100      100        10000
+1000    1000      1000000
+```
+
+Cuando `n` es pequeño, puede no tener demasiada importancia. Pero
+cuando los datos crecen, un algoritmo `O(n²)` puede resultar
+mucho más costoso que uno `O(n)`.
+
+## Complejidad asintótica y notación O
+
+La notación `O` permite describir cómo crece el coste de un
+algoritmo cuando aumenta el tamaño de los datos. No indica el
+tiempo exacto de ejecución. Por ejemplo, dos algoritmos podrían
+tardar:
+
+``` text
+A: 3n + 10 operaciones
+B: 100n + 500 operaciones
+```
+
+Ambos tienen complejidad:
+
+``` text
+O(n)
+```
+
+Aunque el segundo pueda ser considerablemente más lento para
+determinados tamaños.
+
+En este curso nos centraremos principalmente en estas
+complejidades:
+
+| Complejidad | Nombre      | Ejemplo                          |
+|-------------|-------------|----------------------------------|
+| `O(1)`      | constante   | Acceso a un elemento de un `Vec` |
+| `O(log n)`  | logarítmica | Búsqueda binaria                 |
+| `O(n)`      | lineal      | Recorrer un `Vec`                |
+| `O(n²)`     | cuadrática  | Dos bucles anidados              |
+
+La diferencia entre ellas se hace especialmente importante cuando
+`n` es grande.
+
+## Búsqueda lineal
+
+Una operación muy habitual consiste en buscar un elemento dentro
+de una colección.
+
+Por ejemplo:
+
+``` rust
+fn buscar(datos: &[i32], valor: i32) -> Option<usize> {
+    for i in 0..datos.len() {
+        if datos[i] == valor {
+            return Some(i);
+        }
+    }
+    None
+}
+```
+
+La función devuelve un `Option<usize>`:
+
+- `Some(i)` si encuentra el elemento.
+- `None` si no lo encuentra.
+
+En el peor caso tendremos que recorrer todo el vector. Si el
+vector tiene `n` elementos, podemos realizar hasta `n`
+comparaciones. Por tanto:
+
+``` text
+O(n)
+```
+
+Esta es una búsqueda lineal. Es un buen ejemplo de que la
+complejidad de un algoritmo depende de los datos que recibe. Si
+tenemos un vector de un millón de elementos, en el peor caso
+tendremos que comprobar un millón de elementos.
+
+## Búsqueda binaria
+
+Existe otra forma de buscar un elemento mucho más eficiente, pero
+requiere que los datos estén ordenados.
+
+Por ejemplo:
+
+``` text
+10  20  30  40  50  60  70  80
+```
+
+En lugar de comenzar por el primer elemento, podemos comprobar el
+elemento central.
+
+Si buscamos `70`:
+
+``` text
+10  20  30  40  50  60  70  80
+                ↑
+```
+
+Como `70` es mayor que el elemento central, sabemos que debemos
+continuar buscando solamente en la mitad derecha. Después
+volvemos a dividir esa mitad en dos. Cada operación elimina
+aproximadamente la mitad de los elementos que quedan por
+comprobar.
+
+Este procedimiento se denomina búsqueda binaria y tiene una
+complejidad:
+
+``` text
+O(log n)
+```
+
+La diferencia puede ser muy importante. Por ejemplo, para un
+millón de elementos:
+
+``` text
+búsqueda lineal:    hasta 1 000 000 comprobaciones
+búsqueda binaria:   unas 20 comprobaciones
+```
+
+No es necesario que conozcamos en profundidad las propiedades
+matemáticas del logaritmo. Basta con recordar esta idea:
+
+> Una complejidad `O(log n)` aparece habitualmente cuando en cada
+> paso podemos descartar aproximadamente la mitad de los datos.
+
+## Combinar operaciones
+
+Un algoritmo puede realizar varias operaciones con diferentes
+costes. Por ejemplo:
+
+``` rust
+let primero = datos[0];
+
+for x in &datos {
+    println!("{x}");
+}
+```
+
+Tenemos:
+
+``` text
+O(1) + O(n)
+```
+
+Cuando `n` crece, la parte importante es `O(n)`, por lo que
+podemos decir que el algoritmo tiene complejidad:
+
+``` text
+O(n)
+```
+
+De forma general, cuando sumamos varios costes, nos quedamos con
+el que crece más rápidamente.
+
+Por ejemplo:
+
+``` text
+O(1) + O(n)       → O(n)
+
+O(n) + O(n)       → O(n)
+
+O(n) + O(n²)      → O(n²)
+
+O(n²) + O(n³)     → O(n³)
+```
+
+Esto es una simplificación muy útil para nuestro análisis.
+
+## Uso de memoria
+
+Además del tiempo de ejecución, podemos analizar cuánta memoria
+utiliza un algoritmo. Por ejemplo:
+
+``` rust
+let suma = 0;
+
+for x in &datos {
+    // ...
+}
+```
+
+El algoritmo utiliza unas pocas variables adicionales,
+independientemente del tamaño del vector. Podemos considerar que
+su uso de memoria adicional es:
+
+``` text
+O(1)
+```
+
+Sin embargo, imaginemos que necesitamos crear otro vector que
+contenga un elemento por cada elemento del original:
+
+``` rust
+let mut resultado = Vec::new();
+
+for x in &datos {
+    resultado.push(x * 2);
+}
+```
+
+Si `datos` tiene `n` elementos, `resultado` puede llegar a tener
+también `n` elementos. La memoria adicional utilizada crece con
+`n`:
+
+``` text
+O(n)
+```
+
+Por tanto, al analizar un algoritmo podemos preguntarnos dos
+cosas diferentes:
+
+``` text
+Tiempo:   ¿cuánto trabajo realiza?
+
+Memoria:  ¿cuánta memoria adicional necesita?
+```
+
+Un algoritmo puede ser rápido pero utilizar mucha memoria, o
+utilizar muy poca memoria pero necesitar más tiempo.
+
+## Complejidad de algunas estructuras de datos
+
+El análisis de algoritmos está estrechamente relacionado con las
+estructuras de datos utilizadas. Por ejemplo, para un `Vec`,
+podemos considerar:
+
+| Operación                    | Complejidad aproximada |
+|------------------------------|-----------------------:|
+| Acceder por índice           |                 `O(1)` |
+| Buscar un elemento           |                 `O(n)` |
+| Recorrer todos los elementos |                 `O(n)` |
+| Añadir al final              |                 `O(1)` |
+| Insertar al principio        |                 `O(n)` |
+| Eliminar el primer elemento  |                 `O(n)` |
+
+En un `Vec`, los elementos se almacenan de forma contigua en
+memoria. Por ello, insertar un elemento al principio obliga a
+desplazar todos los elementos existentes una posición para
+dejarle espacio. De forma similar, eliminar el primer elemento
+obliga a desplazar una posición hacia la izquierda todos los
+elementos restantes. En ambos casos, si hay `n` elementos, puede
+ser necesario recolocarlos prácticamente todos, por lo que el
+coste es `O(n)`.
+
+Existen otras estructuras de datos que permiten realizar estas
+operaciones de forma más eficiente. Por ejemplo, una cola doble
+(`deque`) puede mantener espacio disponible en ambos extremos y
+permitir insertar y eliminar por el principio en `O(1)`. Una
+lista enlazada también puede insertar o eliminar el primer
+elemento en `O(1)`, ya que basta con modificar algunos enlaces,
+sin necesidad de mover los demás elementos. La contrapartida es
+que estas estructuras tienen otras operaciones menos eficientes
+que las de un `Vec`, como el acceso directo a un elemento
+mediante su índice.
+
+## El caso de `HashMap`
+
+Un `HashMap` permite asociar una clave con un valor:
+
+``` rust
+use std::collections::HashMap;
+
+let mut edades = HashMap::new();
+
+edades.insert("Ana", 20);
+edades.insert("Luis", 25);
+edades.insert("María", 22);
+```
+
+Una búsqueda mediante una clave:
+
+``` rust
+let edad = edades.get("Luis");
+```
+
+tiene una complejidad media que podemos considerar:
+
+``` text
+O(1)
+```
+
+Esto significa que, en condiciones normales, el tiempo de
+búsqueda no crece proporcionalmente al número de elementos
+almacenados. Esta es precisamente una de las ventajas
+fundamentales de utilizar una tabla hash.
+
+Hay que tener en cuenta que `O(1)` no significa que la operación
+tarde literalmente cero tiempo ni que tarde exactamente lo mismo
+en todas las situaciones. Significa que su coste no crece de
+forma significativa con `n`, bajo las condiciones normales de
+funcionamiento de la estructura.
+
+## ¿Por qué importa la complejidad?
+
+Supongamos que tenemos dos algoritmos para resolver el mismo
+problema. Uno tiene complejidad:
+
+``` text
+O(n)
+```
+
+y otro:
+
+``` text
+O(n²)
+```
+
+Para unos pocos elementos, la diferencia puede ser pequeña. Pero
+a medida que aumenta `n`, la diferencia crece rápidamente.
+
+Por ejemplo:
+
+``` text
+n       O(n)       O(n²)
+
+10        10          100
+100      100        10000
+1000    1000      1000000
+10000  10000    100000000
+```
+
+Por eso, cuando diseñamos un programa, no basta con preguntarnos:
+
+> ¿Funciona?
+
+También debemos preguntarnos:
+
+> ¿Qué ocurre cuando la cantidad de datos aumenta?
+
+Esta cuestión es especialmente importante en programas que
+trabajan con grandes cantidades de información.
+
+## Resumen
+
+Hay múltiples estrategias generales para construir algoritmos.
+Entre ellas están divide y vencerás, los algoritmos voraces y la
+búsqueda con retroceso. Estas técnicas aparecerán en distintos
+algoritmos que estudiaremos a lo largo del curso.
+
+El análisis de algoritmos nos permite estudiar el coste de un
+algoritmo sin depender de un ordenador concreto. Las dos
+características principales son:
+
+- Tiempo de ejecución: cantidad de trabajo que realiza el
+  algoritmo.
+- Uso de memoria: cantidad de memoria adicional que necesita.
+
+La notación `O` permite describir cómo crece ese coste con el
+tamaño `n` de los datos.
+
+Las complejidades más importantes en este tema son:
+
+``` text
+O(1)       constante
+
+O(log n)   logarítmica
+
+O(n)       lineal
+
+O(n²)      cuadrática
+```
+
+Algunos ejemplos:
+
+``` text
+datos[5]                 → O(1)
+
+recorrer un Vec          → O(n)
+
+buscar secuencialmente   → O(n)
+
+búsqueda binaria         → O(log n)
+
+dos bucles anidados      → O(n²)
+```
+
+La eficiencia de un programa depende también de las estructuras
+de datos utilizadas. Elegir una estructura adecuada puede reducir
+considerablemente el tiempo necesario para realizar determinadas
+operaciones.
+
+Pero la eficiencia no es el único criterio de calidad. En general
+debemos priorizar soluciones claras, correctas y mantenibles. El
+tiempo de programación y mantenimiento puede ser mucho más
+costoso que el consumo de CPU, memoria o disco. No debemos
+sobreoptimizar: si una solución clara es suficientemente rápida,
+no hay motivo para hacerla más complicada. Cuando el rendimiento
+sea realmente un problema, debemos medirlo y optimizar con datos
+reales.
+
+La claridad también ayuda a reducir los errores. Un programa real
+debe ser diseñado, implementado, probado y corregido, y estas
+actividades se repiten normalmente a medida que el programa
+evoluciona. La calidad de un algoritmo incluye, por tanto, tanto
+su eficiencia como la facilidad con la que podemos entenderlo,
+probarlo y mantenerlo.
