@@ -1,4 +1,4 @@
-# Control de flujo
+# Control de flujo: if, bucles
 
 Hasta ahora hemos visto cómo almacenar datos y organizar código
 en funciones. En este capítulo aprenderemos a controlar el flujo

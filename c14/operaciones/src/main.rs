@@ -7,7 +7,7 @@ fn main() {
     protocolos.insert(1, "SMTP");
     println!("{:?}", protocolos);
 
-    protocolos.remove(2);
+    println!("Extraemos {}",protocolos.remove(2));
     println!("{:?}", protocolos);
 
     println!("Número de protocolos: {}", protocolos.len());

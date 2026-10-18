@@ -26,10 +26,11 @@ book:
     - 17-hashmap.qmd
     - 18-manejo_errores.qmd
     - 19-entrada_salida.qmd
-    - 20-modulos.qmd
-    - 21-lifetimes.qmd
-    - 22-test_automaticos.qmd
-    - 23-pnet.qmd
+    - 20-gestion_tiempo.qmd
+    - 21-modulos.qmd
+    - 22-lifetimes.qmd
+    - 23-test_automaticos.qmd
+    - 24-pnet.qmd
 
 
 lang: es-ES

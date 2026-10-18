@@ -134,6 +134,14 @@ Observaciones:
     en el vector. En este caso, 4. Por tanto el rango irá desde
     0, incluido, hasta 4, excluido. Esto es, desde 0 hasta 3.
 
+  - Recuerda que si en algún momento necesitas un rango desde el
+    primer elmento hasta el último, ambos incluidos, puedes usar
+    el operador `..=`.
+
+    ``` rust
+    for i in 0..=n   //  Desde 0 hasta n, ambos incluidos
+    ```
+
 ## El operador `[]` con índices fuera de rango {#sec-corchetes-fuera-rango}
 
 En lenguajes como C o C++, acceder a un elemento situado fuera de
@@ -240,22 +248,64 @@ programa sustituye el primer elemento por un nuevo valor:
 
 :::
 
+## Slices de vectores {#sec-slices-vectores}
+
+Como vimos en la @sec-slices, un slice permite trabajar con una
+secuencia de elementos sin adquirir su propiedad. También podemos
+obtener slices a partir de un vector. Por ejemplo, podemos pasar
+a una función una parte de un vector:
+
+``` rust
+{{< include c14/slice01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20mostrar%28numeros%3A%20%26%5Bi32%5D%29%20%7B%0A%20%20%20%20println%21%28%22%7Bnumeros%3A%3F%7D%22%29%3B%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20numeros%20%3D%20vec%21%5B0%2C%2010%2C%2020%2C%2030%2C%2040%2C%2050%5D%3B%0A%0A%20%20%20%20mostrar%28%26numeros%29%3B%0A%20%20%20%20mostrar%28%26numeros%5B1..4%5D%29%3B%0A%7D%0A)
+
+:::
+
+La función `mostrar` recibe un slice inmutable, por lo que puede
+consultar sus elementos, pero no modificarlos. Además, no
+necesita conocer el tamaño del vector ni adquirir su propiedad.
+También podemos obtener slices mutables para modificar una parte
+del vector:
+
+``` rust
+{{< include c14/slice02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20duplicar%28numeros%3A%20%26mut%20%5Bi32%5D%29%20%7B%0A%20%20%20%20for%20numero%20in%20numeros%20%7B%0A%20%20%20%20%20%20%20%20%2Anumero%20%2A%3D%202%3B%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20numeros%20%3D%20vec%21%5B0%2C%2010%2C%2020%2C%2030%2C%2040%2C%2050%5D%3B%0A%0A%20%20%20%20duplicar%28%26mut%20numeros%5B1..4%5D%29%3B%0A%0A%20%20%20%20println%21%28%22%7Bnumeros%3A%3F%7D%22%29%3B%0A%7D%0A)
+
+:::
+
+En este caso, únicamente se modifican los elementos comprendidos
+entre los índices `1` y `3`.
+
+Es importante recordar que un slice representa una secuencia de
+longitud fija. Aunque sea mutable, permite modificar sus
+elementos, pero no añadir ni eliminar elementos. Para ello
+debemos utilizar métodos del propio vector, como `push` o
+`remove`.
+
 ## Operaciones habituales
 
 La biblioteca estándar proporciona numerosos métodos para
 manipular vectores. La @tbl-manipula-vectores tabla resume
 algunos de los más utilizados:
 
-| Método               | Descripción                                          |
-|----------------------|------------------------------------------------------|
-| `push(valor)`        | Añade un elemento al final del vector.               |
-| `pop()`              | Elimina y devuelve el último elemento del vector.    |
-| `len()`              | Devuelve el número de elementos almacenados.         |
-| `is_empty()`         | Indica si el vector está vacío.                      |
-| `clear()`            | Elimina todos los elementos del vector.              |
-| `insert(pos, valor)` | Inserta un elemento en la posición indicada.         |
-| `remove(pos)`        | Elimina el elemento situado en la posición indicada. |
-| `contains(&valor)`   | Indica si el vector contiene un determinado valor.   |
+| Método | Descripción |
+|----|----|
+| `push(valor)` | Añade un elemento al final del vector. |
+| `pop()` | Elimina y devuelve el último elemento del vector. |
+| `len()` | Devuelve el número de elementos almacenados. |
+| `is_empty()` | Indica si el vector está vacío. |
+| `clear()` | Elimina todos los elementos del vector. |
+| `insert(pos, valor)` | Inserta un elemento en la posición indicada. |
+| `remove(pos)` | Devuelve y elimina el elemento de la posición indicada. |
+| `contains(&valor)` | Indica si el vector contiene un determinado valor. |
 
 : Métodos más habituales para manipular vectores
 {#tbl-manipula-vectores}
@@ -268,7 +318,7 @@ El siguiente programa muestra el uso de todos estos métodos:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20protocolos%20%3D%20vec%21%5B%22HTTP%22%2C%20%22HTTPS%22%2C%20%22FTP%22%5D%3B%0A%0A%20%20%20%20protocolos.push%28%22SSH%22%29%3B%20%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20protocolos.insert%281%2C%20%22SMTP%22%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20protocolos.remove%282%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20println%21%28%22N%C3%BAmero%20de%20protocolos%3A%20%7B%7D%22%2C%20protocolos.len%28%29%29%3B%0A%20%20%20%20println%21%28%22%C2%BFContiene%20HTTPS%3F%20%7B%7D%22%2C%20protocolos.contains%28%26%22HTTPS%22%29%29%3B%0A%20%20%0A%20%20%20%20let%20ultimo%20%3D%20protocolos.pop%28%29%3B%0A%20%20%20%20println%21%28%22Extraemos%20%7B%3A%3F%7D%22%2C%20ultimo%29%3B%0A%20%20%20%20println%21%28%22Queda%20%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20protocolos.clear%28%29%3B%0A%20%20%20%20println%21%28%22%C2%BFVector%20vac%C3%ADo%3F%20%7B%7D%22%2C%20protocolos.is_empty%28%29%29%3B%0A%7D%20%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20protocolos%20%3D%20vec%21%5B%22HTTP%22%2C%20%22HTTPS%22%2C%20%22FTP%22%5D%3B%0A%0A%20%20%20%20protocolos.push%28%22SSH%22%29%3B%20%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20protocolos.insert%281%2C%20%22SMTP%22%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20println%21%28%22Extraemos%20%7B%7D%22%2Cprotocolos.remove%282%29%29%3B%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20println%21%28%22N%C3%BAmero%20de%20protocolos%3A%20%7B%7D%22%2C%20protocolos.len%28%29%29%3B%0A%20%20%20%20println%21%28%22%C2%BFContiene%20HTTPS%3F%20%7B%7D%22%2C%20protocolos.contains%28%26%22HTTPS%22%29%29%3B%0A%20%20%0A%20%20%20%20let%20ultimo%20%3D%20protocolos.pop%28%29%3B%0A%20%20%20%20println%21%28%22Extraemos%20%7B%3A%3F%7D%22%2C%20ultimo%29%3B%0A%20%20%20%20println%21%28%22Queda%20%7B%3A%3F%7D%22%2C%20protocolos%29%3B%0A%0A%20%20%20%20protocolos.clear%28%29%3B%0A%20%20%20%20println%21%28%22%C2%BFVector%20vac%C3%ADo%3F%20%7B%7D%22%2C%20protocolos.is_empty%28%29%29%3B%0A%7D%20%0A)
 
 :::
 

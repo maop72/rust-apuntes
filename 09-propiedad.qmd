@@ -532,7 +532,142 @@ el mismo valor. Por tanto:
 
 O en otras palabras: *muchos lectores o un único escritor*.
 
-## Desreferenciación: el operador `*`  {#sec-desreferencias}
+## Slices {#sec-slices}
+
+Un slice es una referencia a una secuencia contigua de elementos
+de una colección. Permite acceder a todos los elementos o
+solamente a una parte de ellos, sin necesidad de copiarlos ni
+adquirir su propiedad. Por ejemplo, podemos obtener un slice a
+partir de un array:
+
+``` rust
+{{< include c09/slice01/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20numeros%20%3D%20%5B0%2C%2010%2C%2020%2C%2030%2C%2040%2C%2050%5D%3B%0A%0A%20%20%20%20let%20parte%20%3D%20%26numeros%5B1..4%5D%3B%0A%20%20%20%20println%21%28%22%7Bparte%3A%3F%7D%22%29%3B%0A%7D%0A)
+
+:::
+
+La expresión `&numeros[1..4]` obtiene una referencia a los
+elementos comprendidos entre los índices `1`, incluido, y `4`,
+excluido. Recuerda que en las colecciones indexadas la primera
+posición es la `0`, por lo que `1` es la segunda y `4`, la
+quinta.
+
+El tipo de un slice de enteros es `&[i32]`. Observa que, a
+diferencia del tipo de un array, como `[i32; 5]`, no se indica el
+número de elementos.
+
+### Rangos en los slices
+
+En el ejemplo anterior hemos utilizado el rango `1..4`. Rust
+permite expresar otros intervalos de forma abreviada:
+
+- `&numeros[1..4]` selecciona los elementos desde el índice `1`
+  hasta el `3`.
+- `&numeros[1..=4]` selecciona los elementos desde el índice `1`
+  hasta el `4`, ambos incluidos.
+- `&numeros[..3]` selecciona los tres primeros elementos.
+- `&numeros[2..]` selecciona todos los elementos desde el índice
+  `2` hasta el final.
+- `&numeros[..]` selecciona todos los elementos del array.
+
+Los índices de un rango deben corresponder a posiciones válidas.
+Si el intervalo excede los límites de la colección, el programa
+provocará un error durante la ejecución.
+
+### Slices y propiedad
+
+Un slice no es propietario de los elementos a los que hace
+referencia. Por tanto, obtener un slice no transfiere la
+propiedad de la colección ni de sus elementos. Por ejemplo, en el
+siguiente programa, la variable `numeros` sigue siendo
+propietaria del array:
+
+``` rust
+{{< include c09/slice02/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20numeros%20%3D%20%5B0%2C%2010%2C%2020%2C%2030%2C%2040%2C%2050%5D%3B%0A%20%20%20%20let%20parte%20%3D%20%26numeros%5B1..4%5D%3B%0A%0A%20%20%20%20println%21%28%22%7Bparte%3A%3F%7D%22%29%3B%0A%20%20%20%20println%21%28%22%7Bnumeros%3A%3F%7D%22%29%3B%0A%7D%0A)
+
+:::
+
+Las dos instrucciones de impresión son válidas: la referencia
+`parte` permite consultar una parte del array, pero no consume ni
+mueve el array. Esta característica permite escribir funciones
+que reciben slices en lugar de recibir la colección completa por
+valor. Por ejemplo:
+
+``` rust
+{{< include c09/slice03/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20mostrar%28numeros%3A%20%26%5Bi32%5D%29%20%7B%0A%20%20%20%20for%20numero%20in%20numeros%20%7B%0A%20%20%20%20%20%20%20%20print%21%28%22%7Bnumero%7D%20%22%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20println%21%28%29%3B%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20numeros%20%3D%20%5B0%2C%2010%2C%2020%2C%2030%2C%2040%2C%2050%5D%3B%0A%0A%20%20%20%20mostrar%28%26numeros%29%3B%0A%20%20%20%20mostrar%28%26numeros%5B1..4%5D%29%3B%0A%7D%0A)
+
+:::
+
+La función `mostrar` puede trabajar tanto con el array completo
+como con una parte de él. En ambos casos recibe una referencia
+inmutable y no adquiere la propiedad de los datos.
+
+### Slices mutables
+
+También podemos obtener slices mutables, que permiten modificar
+los elementos de la secuencia a la que hacen referencia. Su tipo
+se escribe `&mut [T]`, donde `T` representa el tipo de los
+elementos.
+Por ejemplo:
+
+``` rust
+{{< include c09/slice04/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20duplicar%28numeros%3A%20%26mut%20%5Bi32%5D%29%20%7B%0A%20%20%20%20for%20numero%20in%20numeros%20%7B%0A%20%20%20%20%20%20%20%20%2Anumero%20%2A%3D%202%3B%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20numeros%20%3D%20%5B0%2C%2010%2C%2020%2C%2030%2C%2040%2C%2050%5D%3B%0A%0A%20%20%20%20duplicar%28%26mut%20numeros%5B1..4%5D%29%3B%0A%20%20%20%20println%21%28%22%7Bnumeros%3A%3F%7D%22%29%3B%0A%7D%0A)
+
+:::
+
+En este caso, la función recibe un préstamo mutable de una parte
+del array y multiplica por dos cada uno de sus elementos. Los
+elementos que no pertenecen al slice permanecen sin cambios.
+
+Aunque la función puede modificar los elementos prestados, no
+adquiere su propiedad. Cuando termina el préstamo, el programa
+puede volver a utilizar el array de acuerdo con las reglas
+habituales de Rust.
+
+Como hemos visto al estudiar los préstamos mutables, no podemos
+mantener simultáneamente referencias incompatibles a los mismos
+datos. Por ello, mientras el préstamo mutable está activo, no
+podemos acceder al mismo intervalo mediante otra referencia
+incompatible, como intenta hacer el siguiente ejemplo:
+
+
+``` rust
+{{< include c09/slice05/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20numeros%20%3D%20%5B0%2C%2010%2C%2020%2C%2030%2C%2040%2C%2050%5D%3B%0A%0A%20%20%20%20let%20parte%20%3D%20%26mut%20numeros%5B1..4%5D%3B%0A%20%20%20%20let%20referencia%20%3D%20%26numeros%5B2%5D%3B%20//%20%C2%A1ERROR%21%20Pr%C3%A9stamos%20incompatibles%0A%0A%20%20%20%20println%21%28%22%7Breferencia%7D%22%29%3B%0A%20%20%20%20parte%5B0%5D%20%3D%20200%3B%0A%7D%0A)
+
+:::
+
+
+
+Un slice mutable permite modificar los elementos de la secuencia,
+pero no cambiar su longitud. Para añadir o eliminar elementos de
+un vector necesitaremos trabajar con el propio vector, como
+veremos en el capítulo @sec-vectores.
+
+## Desreferenciación: el operador `*` {#sec-desreferencias}
 
 Hasta ahora hemos utilizado referencias para pasar cadenas a una
 función. En concreto, el tipo `&str` que hemos utilizado en esos
