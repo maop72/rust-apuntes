@@ -1,0 +1,272 @@
+# Algoritmos de ordenación
+
+La ordenación consiste en reorganizar los elementos de una
+secuencia de acuerdo con un determinado criterio. Por ejemplo,
+podemos ordenar una secuencia de números enteros de menor a
+mayor:
+
+``` text
+Secuencia original:  7  3  9  1  5
+Secuencia ordenada:  1  3  5  7  9
+```
+
+También podemos ordenar los elementos de mayor a menor, o
+utilizar otros criterios de ordenación, como el orden alfabético
+de una colección de palabras o el orden cronológico de una serie
+de fechas.
+
+En este tema estudiaremos algoritmos que ordenan secuencias de
+números enteros. Aunque los ejemplos utilizarán enteros, los
+mismos principios pueden aplicarse a otros tipos de datos siempre
+que exista un criterio para compararlos.
+
+La ordenación es una operación habitual en informática. Entre
+otras aplicaciones, permite presentar información de forma más
+comprensible, facilitar la búsqueda de elementos y procesar datos
+siguiendo un determinado orden.
+
+Existen diferentes algoritmos para resolver el problema de la
+ordenación. Aunque todos persiguen el mismo objetivo, pueden
+presentar diferencias importantes en su funcionamiento y en los
+recursos que necesitan.
+
+Para comparar algoritmos de ordenación utilizaremos los
+siguientes criterios:
+
+- Complejidad temporal: cómo aumenta el número de operaciones
+  necesarias a medida que crece el tamaño de la secuencia.
+- Memoria adicional: cuánta memoria necesita el algoritmo, aparte
+  de la ocupada por la propia secuencia que se ordena.
+- Comportamiento según los datos de entrada: algunos algoritmos
+  funcionan especialmente bien cuando la secuencia ya está
+  ordenada o casi ordenada, mientras que otros pueden presentar
+  un comportamiento muy diferente según la distribución de los
+  elementos.
+
+En el análisis de la complejidad temporal distinguiremos entre el
+mejor caso, el caso medio y el peor caso cuando resulte
+relevante.
+
+Estudiaremos cuatro algoritmos de ordenación:
+
+- Ordenación por inserción (*insertion sort*).
+- Ordenación por selección (*selection sort*).
+- Ordenación por mezcla (*mergesort*).
+- Ordenación rápida (*quicksort*).
+
+Los dos primeros se basan en estrategias iterativas sencillas.
+Los otros dos utilizan la técnica de divide y vencerás, que
+consiste en descomponer un problema en otros más pequeños,
+resolverlos y combinar sus resultados cuando sea necesario.
+
+El objetivo no es únicamente aprender a implementar estos
+algoritmos, sino también comprender sus diferencias y ser capaces
+de razonar sobre su eficiencia.
+
+## Convenciones de implementación en Rust
+
+Para implementar los algoritmos de ordenación utilizaremos slices
+mutables de enteros. Todos los algoritmos seguirán unas
+convenciones comunes, lo que facilitará su comparación y
+permitirá centrarnos en las diferencias entre sus estrategias.
+
+### Representación de los datos
+
+Utilizaremos slices mutables de tipo `&mut [i32]` para
+representar las secuencias que vamos a ordenar.
+
+Un slice permite acceder a una parte de una secuencia mediante
+índices, sin necesidad de conocer el tipo de contenedor que
+almacena los datos. En nuestro caso, podremos trabajar tanto con
+arrays como con vectores.
+
+Por ejemplo, la siguiente función recibe un slice mutable de
+enteros y modifica sus elementos:
+
+``` rust
+{{< include c27/intro/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20modificar%28datos%3A%20%26mut%20%5Bi32%5D%29%20%7B%0A%20%20%20%20datos%5B0%5D%20%3D%2010%3B%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20numeros%20%3D%20%5B3%2C%205%2C%207%5D%3B%0A%0A%20%20%20%20modificar%28%26mut%20numeros%29%3B%0A%20%20%20%20println%21%28%22%7Bnumeros%3A%3F%7D%22%29%3B%0A%7D%0A)
+
+:::
+
+El uso de un slice mutable permite modificar los elementos de la
+secuencia sin tener que devolver una nueva secuencia como
+resultado.
+
+### Interfaz de los algoritmos
+
+Para mantener la firma de las funciones homogénea:
+
+- Cada algoritmo se implementará mediante una función que
+  recibirá un slice mutable de enteros y ordenará sus elementos
+  de menor a mayor. Por ejemplo, la interfaz de una función de
+  ordenación será:
+
+``` rust
+fn insertion_sort(datos: &mut [i32]) {
+    // Implementación del algoritmo
+}
+```
+
+- Las funciones no devolverán ningún valor: su resultado será la
+  propia modificación de la secuencia recibida.
+
+- Utilizaremos nombres descriptivos para las funciones, como
+  `insertion_sort`, `selection_sort`, `merge_sort` y
+  `quick_sort`.
+
+### Propiedades que debe cumplir una ordenación
+
+Una implementación correcta debe satisfacer dos propiedades
+fundamentales:
+
+- La secuencia resultante debe estar ordenada de menor a mayor.
+  Es decir, cada elemento debe ser menor o igual que el
+  siguiente.
+- La secuencia debe conservar los elementos originales, incluidas
+  sus repeticiones. El algoritmo puede cambiar sus posiciones,
+  pero no debe añadir ni eliminar elementos ni modificar sus
+  valores.
+
+Por ejemplo, si la secuencia inicial es:
+
+``` text
+[4, 2, 4, 1, 2]
+```
+
+Una ordenación correcta producirá:
+
+``` text
+[1, 2, 2, 4, 4]
+```
+
+No sería correcto obtener `[1, 2, 4, 4]`, porque se habría
+perdido un elemento, ni `[1, 2, 2, 4, 5]`, porque se habría
+alterado uno de los valores originales.
+
+También comprobaremos que los algoritmos funcionan correctamente
+con secuencias vacías, secuencias de un solo elemento y
+secuencias que contienen valores repetidos.
+
+Estas propiedades nos servirán para diseñar pruebas con las que
+verificar las implementaciones que iremos desarrollando.
+
+## Ordenación por inserción (*insertion sort*)
+
+La ordenación por inserción construye progresivamente una
+secuencia ordenada. En cada paso, toma un elemento de la parte
+todavía no ordenada y lo inserta en la posición que le
+corresponde dentro de la parte ordenada.
+
+La idea es similar a la forma en que muchas personas ordenan las
+cartas de una baraja: mantienen las cartas que ya han colocado
+ordenadas y, cada vez que reciben una nueva carta, buscan dónde
+colocarla y desplazan las demás si es necesario.
+
+El algoritmo comienza considerando que el primer elemento está
+ordenado, ya que una secuencia de un solo elemento siempre está
+ordenada. A continuación, procesa los elementos restantes, de
+izquierda a derecha.
+
+En cada paso:
+
+- Se toma el siguiente elemento de la secuencia. Lo llamaremos
+  elemento que se va a insertar.
+- Se compara con los elementos de la parte ordenada, empezando
+  por el que está inmediatamente a su izquierda.
+- Mientras los elementos de la parte ordenada sean mayores que el
+  elemento que se va a insertar, se desplazan una posición hacia
+  la derecha.
+- Cuando se encuentra un elemento menor o igual que el elemento
+  que se va a insertar, o se alcanza el principio de la
+  secuencia, se coloca el elemento en la posición que ha quedado
+  libre.
+
+Al terminar cada paso, la parte ordenada contiene un elemento
+más. El algoritmo finaliza cuando se han procesado todos los
+elementos.
+
+Es importante observar que el algoritmo no busca el mínimo de
+toda la parte no ordenada, sino que toma sus elementos en orden y
+los inserta en la posición adecuada de la parte ya ordenada.
+
+### Ejecución paso a paso
+La siguiente animación permite observar paso a paso cómo funciona el algoritmo. En cada paso se compara el elemento que se está insertando con el elemento inmediatamente anterior. Si es menor, ambos intercambian sus posiciones. El proceso continúa hacia la izquierda hasta que el elemento queda situado en su posición correcta.
+
+<https://maop72.github.io/rust-apuntes/animaciones/insertion-sort.html>
+
+![Código QR para acceder a la animación de ordenación por inserción](img/qr-insertion-sort.png){width=3cm}
+
+### Implementación en Rust
+
+### Análisis de complejidad
+
+### Ventajas e inconvenientes
+
+## Ordenación por selección (*selection sort*)
+
+### Idea del algoritmo
+
+### Ejecución paso a paso
+
+### Implementación en Rust
+
+### Análisis de complejidad
+
+### Comparación con la ordenación por inserción
+
+## Ordenación por mezcla (*mergesort*)
+
+### Divide y vencerás
+
+### División de la secuencia
+
+### Fusión de secuencias ordenadas
+
+### Implementación en Rust
+
+### Análisis de complejidad
+
+### Memoria adicional
+
+## Ordenación rápida (*quicksort*)
+
+### Idea del algoritmo
+
+### Elección del pivote y partición
+
+### Llamadas recursivas
+
+### Implementación en Rust
+
+### Análisis de complejidad
+
+### Influencia de la elección del pivote
+
+## Comparación de los algoritmos
+
+### Complejidad temporal
+
+### Memoria adicional
+
+### Comparación de sus características
+
+### Elección del algoritmo según el problema
+
+## Ejercicios
+
+### Seguimiento de algoritmos
+
+### Implementación y pruebas
+
+### Detección y corrección de errores
+
+### Comparación de algoritmos
+
+### Análisis de complejidad
+
+## Resumen

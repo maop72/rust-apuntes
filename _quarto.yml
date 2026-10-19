@@ -1,5 +1,7 @@
 project:
   type: book
+  resources:
+    - animaciones/insertion-sort.html
 
 book:
   title: "Apuntes de programación en Rust"
@@ -33,6 +35,7 @@ book:
     - 24-pnet.qmd
     - 25-analisis_algoritmos.qmd
     - 26-colas_prioridad.qmd
+    - 27-ordenacion.qmd
 
 
 lang: es-ES
