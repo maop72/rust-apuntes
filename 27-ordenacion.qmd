@@ -155,6 +155,12 @@ secuencias que contienen valores repetidos.
 Estas propiedades nos servirán para diseñar pruebas con las que
 verificar las implementaciones que iremos desarrollando.
 
+## Permutación de valores
+
+TO-DO. DESCRIBIR COMO PERMUTAR VALORES. PRIMERO EL CASO BASICO,
+CON ASIGNACIONES Y UNA VARIABLE AUXILIAR. LUEGO, EL SWAP DE LAS
+SECUENCIAS EN RUST.
+
 ## Ordenación por inserción (*insertion sort*)
 
 La ordenación por inserción construye progresivamente una
@@ -220,9 +226,6 @@ el algoritmo.
 
 ![Código QR para acceder a la animación de ordenación por
 inserción](img/qr-insertion-sort.png){width=3cm}
-
-
-
 
 ### Implementación en Rust
 
@@ -346,28 +349,217 @@ En otras palabras:
 
 ### Ejecución paso a paso
 
-Esta animación permite observar paso a paso cómo funciona
-el algoritmo.
+Esta animación permite observar paso a paso cómo funciona el
+algoritmo.
 
 <https://maop72.github.io/rust-apuntes/animaciones/selection-sort.html>
 
 ![Código QR para acceder a la animación de ordenación por
 inserción](img/qr-selection-sort.png){width=3cm}
 
-
 ### Implementación en Rust
+
+``` rust
+{{< include c27/selection/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20selection_sort%28datos%3A%20%26mut%20%5Bi32%5D%29%20%7B%0A%20%20%20%20for%20i%20in%200..datos.len%28%29%20%7B%0A%20%20%20%20%20%20%20%20let%20mut%20minimo%20%3D%20i%3B%0A%0A%20%20%20%20%20%20%20%20for%20j%20in%20i%20%2B%201..datos.len%28%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20if%20datos%5Bj%5D%20%3C%20datos%5Bminimo%5D%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20minimo%20%3D%20j%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20datos.swap%28i%2C%20minimo%29%3B%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20numeros%20%3D%20%5B7%2C%203%2C%205%2C%202%2C%208%2C%203%5D%3B%0A%20%20%20%20println%21%28%22Antes%3A%20%20%20%7B%3A%3F%7D%22%2C%20numeros%29%3B%0A%0A%20%20%20%20selection_sort%28%26mut%20numeros%29%3B%0A%20%20%20%20println%21%28%22Despu%C3%A9s%3A%20%7B%3A%3F%7D%22%2C%20numeros%29%3B%0A%7D%0A)
+
+:::
+
+El algoritmo utiliza dos bucles anidados:
+
+1.  El bucle exterior recorre las posiciones `i` en las que debe
+    colocarse el siguiente elemento más pequeño.
+2.  Inicialmente, suponemos que el menor elemento está en la
+    posición `i`, por lo que guardamos ese índice en `minimo`.
+3.  El bucle interior recorre los elementos que quedan por
+    ordenar. Si encuentra uno menor que el mínimo conocido,
+    actualiza `minimo`.
+4.  Cuando termina la búsqueda, `minimo` contiene el índice del
+    menor elemento del tramo desordenado. Intercambiamos ese
+    elemento con el situado en `i`, mediante
+    `datos.swap(i, minimo)`.
+5.  Al finalizar cada pasada, queda un elemento más en su
+    posición definitiva.
+
+La condición `datos[j] < datos[minimo]` compara los valores,
+mientras que `minimo` almacena una posición, no el valor mínimo.
 
 ### Análisis de complejidad
 
-### Comparación con la ordenación por inserción
+En cada pasada se examinan los elementos que quedan por ordenar.
+Aunque los datos ya estén ordenados, el algoritmo sigue
+realizando las comparaciones.
+
+- Mejor caso, caso medio y peor caso: (O(n\^2)).
+- Espacio adicional: (O(1)), porque solo necesitamos unas pocas
+  variables auxiliares.
+
+Una ventaja frente a la ordenación por inserción es que realiza
+como máximo (n-1) intercambios. Sin embargo, no es estable: puede
+cambiar el orden relativo de elementos iguales.
+
+## Recursividad {#sec-recursividad}
+
+El siguiente algoritmo que estudiaremos, *mergesort*, es un
+algoritmo *recursivo*. Por motivos didácticos, aparcaremos por un
+momento los algoritmos de ordenación para centrarnos en la
+recursividad, con un ejemplo básico.
 
 ## Ordenación por mezcla (*mergesort*)
 
-### Divide y vencerás
+Los algoritmos de ordenación que hemos visto hasta ahora,
+*insertion sort* y *selection sort*, siguen estrategias
+diferentes, pero ambos trabajan directamente sobre la secuencia
+que queremos ordenar.
 
-### División de la secuencia
+El algoritmo que veremos a continuación introduce una estrategia
+más general, conocida como *divide y vencerás* (*divide and
+conquer*). Esta técnica consiste en descomponer un problema en
+otros más pequeños del mismo tipo, resolverlos por separado y
+combinar sus resultados para obtener la solución del problema
+original.
 
-### Fusión de secuencias ordenadas
+En el caso de la ordenación, la idea es sencilla: si conseguimos
+ordenar dos partes de una secuencia, podemos combinarlas para
+obtener la secuencia completa ordenada.
+
+El algoritmo *mergesort* aplica esta estrategia siguiendo tres
+pasos:
+
+1.  *Dividir:* separamos la secuencia en dos partes,
+    aproximadamente del mismo tamaño.
+2.  *Resolver:* ordenamos cada parte aplicando recursivamente el
+    mismo algoritmo.
+3.  *Combinar:* mezclamos las dos partes ya ordenadas para
+    obtener una única secuencia ordenada.
+
+El caso más sencillo se produce cuando la secuencia tiene uno o
+ningún elemento: en ese caso, ya está ordenada y no es necesario
+hacer nada.
+
+La idea fundamental es que no necesitamos resolver el problema
+completo de una vez. Lo descomponemos en problemas más pequeños,
+hasta llegar a casos sencillos, y después construimos la solución
+combinando sus resultados.
+
+### Mezcla de las secuencias ordenadas {#sec-mezcla}
+
+Supongamos que tenemos dos secuencias ordenadas y queremos
+combinarlas en una única secuencia, también ordenada. Para ello,
+utilizaremos una tercera secuencia, inicialmente vacía, en la que
+iremos colocando los elementos en el orden correcto.
+
+Por ejemplo, partimos de estas dos secuencias de entrada:
+
+``` text
+[2, 5, 7]    [1, 3, 8]   Resultado: []
+```
+
+Comparamos los primeros elementos de las dos secuencias de
+entrada. El menor es el `1`, así que lo extraemos de la segunda
+secuencia y lo añadimos al resultado:
+
+``` text
+[2, 5, 7]    [3, 8]       Resultado: [1]
+```
+
+Ahora comparamos de nuevo los primeros elementos de las dos
+secuencias de entrada. El menor es el `2`, que extraemos de la
+primera secuencia y añadimos al resultado:
+
+``` text
+[5, 7]       [3, 8]       Resultado: [1, 2]
+```
+
+Repetimos el procedimiento. Esta vez, el menor es el `3`:
+
+``` text
+[5, 7]       [8]          Resultado: [1, 2, 3]
+```
+
+A continuación, extraemos el `5`:
+
+``` text
+[7]          [8]          Resultado: [1, 2, 3, 5]
+```
+
+Después, extraemos el `7`:
+
+``` text
+[]           [8]          Resultado: [1, 2, 3, 5, 7]
+```
+
+En este momento, la primera secuencia de entrada se ha agotado.
+Ya no es necesario comparar elementos: como la segunda secuencia
+está ordenada, podemos añadir directamente al resultado los
+elementos que quedan.
+
+``` text
+[]           []            Resultado: [1, 2, 3, 5, 7, 8]
+```
+
+Hemos obtenido una única secuencia ordenada a partir de las dos
+secuencias iniciales.
+
+Observa que en cada paso solo necesitamos comparar los primeros
+elementos de las dos secuencias de entrada. Como ambas están
+ordenadas, el menor de esos dos elementos es también el menor de
+todos los que quedan por incorporar al resultado.
+
+Esta operación se denomina *mezcla* (*merge*) y constituye la
+parte fundamental de *mergesort*: permite combinar dos secuencias
+ordenadas en una sola, recorriendo sus elementos una única vez.
+
+### Ordenación recursiva
+
+En la \@sec-mezcla hemos visto cómo combinar dos secuencias
+ordenadas para obtener una única secuencia ordenada. Ahora
+podemos utilizar esta operación para construir un algoritmo que
+ordene cualquier secuencia.
+
+Para ello, utilizaremos la recursividad: ordenaremos una
+secuencia dividiéndola en dos partes, ordenando cada una de ellas
+mediante el mismo algoritmo y combinando finalmente los
+resultados.
+
+El procedimiento es el siguiente:
+
+1.  Si la secuencia tiene uno o ningún elemento, ya está ordenada
+    y no es necesario hacer nada.
+
+2.  En caso contrario:
+
+    2.1 Dividimos la secuencia en dos secuencias de tamaño
+    aproximadamente igual.
+
+    2.2 Ordenamos recursivamente las dos secuencias.
+
+    2.3 Mezclamos las dos secuencias ya ordenadas.
+
+La condición inicial es importante: cuando llegamos a una
+secuencia de uno o ningún elemento, sabemos que está ordenada sin
+necesidad de seguir dividiéndola. Estos casos permiten que las
+llamadas recursivas terminen.
+
+La idea fundamental de mergesort es descomponer el problema
+original en otros más pequeños, hasta llegar a secuencias que ya
+están ordenadas. Después, vamos combinando las soluciones
+mediante la operación de mezcla hasta obtener la secuencia
+completa ordenada.
+
+### Ejecución paso a paso
+La siguiente animación permite observar paso a paso cómo funciona
+el algoritmo.
+
+<https://maop72.github.io/rust-apuntes/animaciones/mergesort.html>
+
+![Código QR para acceder a la animación de ordenación por
+inserción](img/qr-mergesort.png){width=3cm}
+
 
 ### Implementación en Rust
 

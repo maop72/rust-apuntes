@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animación interactiva: mergesort</title>
+<style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--panel:#fff;--text:#20242b;--muted:#5d6673;--line:#d5dbe3;--blue:#dcecff;--bb:#5b8ed1;--green:#e1f5d9;--gb:#66a84e;--accent:#2563eb;--orange:#fff0d5;--ob:#d49a31}
+@media(prefers-color-scheme:dark){:root{--bg:#15191f;--panel:#20262e;--text:#edf2f7;--muted:#b2bdc9;--line:#414b58;--blue:#203d5e;--bb:#77a9eb;--green:#29452a;--gb:#8ecb78;--accent:#78a7ff;--orange:#4a3920;--ob:#d8ad5d}}
+*{box-sizing:border-box}body{margin:0;padding:16px;background:var(--bg);color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+.app{max-width:1200px;margin:auto;display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:16px;min-width:0}
+h1{font-size:1.35rem;margin:0 0 4px}h2{font-size:1.05rem;margin:0 0 10px}.muted{color:var(--muted)}.small{font-size:.88rem}
+.progress{display:flex;justify-content:space-between;gap:8px;font-weight:650;margin-top:12px}input[type=range]{width:100%;accent-color:var(--accent)}
+.controls{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}button{font:inherit;padding:8px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);cursor:pointer}button.primary{background:var(--accent);border-color:var(--accent);color:white}button:disabled{opacity:.4;cursor:not-allowed}
+.treebox{overflow-x:auto;padding:12px 4px 8px;min-height:330px}.active-merge{border:1px solid var(--line);border-radius:9px;padding:10px;margin:0 auto 16px;max-width:100%;background:var(--bg)}.merge-title{text-align:center;color:var(--muted);font-size:.82rem;margin-bottom:8px}.merge-row{display:flex;justify-content:center;align-items:flex-start;gap:14px;flex-wrap:wrap}.merge-table-wrap{overflow-x:auto}.merge-table{width:100%;border-collapse:collapse;font-size:.9rem;font-variant-numeric:tabular-nums}.merge-table th,.merge-table td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}.merge-table th{font-weight:700;background:var(--panel)}.merge-table tr:last-child td{border-bottom:0}.merge-table td:last-child{background:var(--green)}.mini-wrap{text-align:center}.result-cell{background:var(--green)!important;border-color:var(--gb)!important}.consumed{text-decoration:line-through;opacity:.58}.tree{min-width:610px;display:flex;flex-direction:column;gap:22px;align-items:stretch}.level{display:flex;justify-content:center;align-items:flex-start;gap:8px}.node{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}.cells{display:flex;justify-content:center;gap:2px;min-height:34px}.cell{min-width:29px;height:33px;padding:5px 6px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--bb);border-radius:5px;background:var(--blue);font-weight:650}.node.merging .cell{background:var(--orange);border-color:var(--ob)}.node.done .cell{background:var(--green);border-color:var(--gb)}.cell.hidden-cell{visibility:hidden}.cell.blank-cell{background:transparent;border-color:transparent;box-shadow:none}.cell.picked{background:var(--orange)!important;border:2px solid var(--ob)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--ob) 22%,transparent)}.node-label{font-size:.75rem;color:var(--muted);min-height:1em;text-align:center}.arrowline{height:12px;color:var(--muted);font-size:12px;text-align:center;margin-top:-17px;margin-bottom:-12px}
+.explanation{background:var(--bg);border-radius:9px;padding:12px;min-height:115px}.explanation p{margin:5px 0 0}.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;font-size:.82rem;color:var(--muted)}.key{display:inline-block;width:12px;height:12px;vertical-align:-2px;margin-right:4px;border-radius:3px;background:var(--blue);border:1px solid var(--bb)}.key.green{background:var(--green);border-color:var(--gb)}.key.orange{background:var(--orange);border-color:var(--ob)}
+label{display:block;font-size:.9rem;margin:10px 0 5px}input[type=text]{width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text)}.error{color:#c2410c;min-height:1.2em;font-size:.85rem}
+@media(max-width:850px){.app{grid-template-columns:1fr}.treebox{min-height:260px}.panel{padding:13px}}
+</style></head><body>
+<div class="app">
+<main class="panel">
+<h1>Ordenación por mezcla (<i>mergesort</i>)</h1>
+<p class="muted small">Todos los elementos permanecen visibles. Avanza para ver las divisiones y cómo se reconstruye la secuencia ordenada mediante mezclas.</p>
+<div class="progress"><span id="stepTitle">Secuencia inicial</span><span id="stepCount" class="muted small"></span></div>
+<input id="slider" type="range" min="0" max="1" value="0" aria-label="Paso de la animación">
+<div class="controls"><button id="prev">← Anterior</button><button id="next" class="primary">Siguiente →</button><button id="reset">Reiniciar</button></div>
+<div id="treebox" class="treebox"></div>
+<div class="legend"><span><i class="key"></i>Secuencia por dividir</span><span><i class="key orange"></i>Elementos comparados / extraídos</span><span><i class="key green"></i>Secuencia ordenada</span></div>
+</main>
+<aside class="panel">
+<h2 id="sideTitle">Secuencia inicial</h2><div id="explanation" class="explanation"></div>
+<h2 style="margin-top:17px">Probar otra secuencia</h2><p class="muted small">Introduce entre 2 y 8 enteros separados por espacios o comas. Se muestran todos simultáneamente.</p>
+<label for="values">Números</label><input id="values" type="text" value="7, 3, 5, 2, 8, 3, 6, 1">
+<div class="controls"><button id="apply" class="primary">Aplicar secuencia</button></div><div id="error" class="error"></div>
+</aside></div>
+<script>
+const $=id=>document.getElementById(id);
+let frames=[],idx=0,vals=[7,3,5,2,8,3,6,1],treeRoot=null;
+function makeTree(a,path="",start=0){
+ const n={a:a.slice(),path,start,end:start+a.length,left:null,right:null,sorted:false};
+ if(a.length>1){const m=Math.floor(a.length/2);n.left=makeTree(a.slice(0,m),path+"L",start);n.right=makeTree(a.slice(m),path+"R",start+m);}
+ return n;
+}
+function byPath(n,p){if(!p)return n;return byPath(p[0]==="L"?n.left:n.right,p.slice(1))}
+function addSplitFrames(n){
+ if(!n.left)return;
+ frames.push({kind:"split",path:n.path,title:"División de la secuencia",heading:"Dividimos esta secuencia en dos partes.",text:"Todavía no ordenamos los valores: dividimos el problema en otros más pequeños. Seguimos hasta llegar a secuencias de un solo elemento."});
+ addSplitFrames(n.left);addSplitFrames(n.right);
+}
+function traceMerges(n){
+ if(!n.left){n.sorted=true;return n.a.slice();}
+ const l=traceMerges(n.left),r=traceMerges(n.right);
+ let a=l.slice(),b=r.slice(),res=[];
+ const leftFull=a.slice(),rightFull=b.slice();
+ const history=[{left:leftFull.slice(),right:rightFull.slice(),leftUsed:0,rightUsed:0,res:[]}];
+ frames.push({kind:"startMerge",path:n.path,left:a.slice(),right:b.slice(),res:[],history:history.map(x=>({left:x.left.slice(),right:x.right.slice(),leftUsed:x.leftUsed||0,rightUsed:x.rightUsed||0,res:x.res.slice()})),title:"Mezcla: elementos que vamos a comparar",heading:"Consideramos los primeros elementos de ambas secuencias.",text:"Antes de empezar, observamos las dos secuencias de entrada. Los elementos resaltados en mostaza son los primeros candidatos a entrar en el resultado."});
+ while(a.length&&b.length){
+  const rowLeft=a.slice(),rowRight=b.slice();
+  const side=a[0]<=b[0]?"left":"right",v=side==="left"?a[0]:b[0];
+  if(side==="left")a.shift();else b.shift();res.push(v);
+  // Cada fila muestra las entradas al comienzo del paso y el resultado tras extraer su mínimo.
+  history.push({left:leftFull.slice(),right:rightFull.slice(),leftUsed:leftFull.length-a.length,rightUsed:rightFull.length-b.length,res:res.slice()});
+  frames.push({kind:"compare",path:n.path,left:a.slice(),right:b.slice(),res:res.slice(),history:history.map(x=>({left:x.left.slice(),right:x.right.slice(),leftUsed:x.leftUsed||0,rightUsed:x.rightUsed||0,res:x.res.slice()})),side,picked:v,title:"Mezcla: comparamos los primeros elementos",heading:`Comparamos ${rowLeft[0]} y ${rowRight[0]}.`,text:`El menor es ${v}. Lo extraemos de la secuencia ${side==="left"?"izquierda":"derecha"} y lo añadimos al resultado parcial.`});
+  frames.push({kind:"take",path:n.path,left:a.slice(),right:b.slice(),res:res.slice(),history:history.map(x=>({left:x.left.slice(),right:x.right.slice(),leftUsed:x.leftUsed||0,rightUsed:x.rightUsed||0,res:x.res.slice()})),title:"Mezcla: actualizamos las secuencias",heading:`Añadimos ${v} al resultado.`,text:"El elemento extraído deja de estar en su secuencia de entrada. Comparamos de nuevo los primeros elementos que quedan."});
+ }
+ if(a.length||b.length){
+  const remaining=(a.length?a:b).slice();
+  while(a.length&&a.length===remaining.length)break;
+  // La secuencia agotada aparece vacía y se añade un elemento restante por fila.
+  const rest=a.length?a:b, exhausted=a.length?b:a;
+  while(rest.length){const rowLeft=a.slice(),rowRight=b.slice();const side= a.length?"left":"right";const v=rest.shift();res.push(v);history.push({left:leftFull.slice(),right:rightFull.slice(),leftUsed:leftFull.length-a.length,rightUsed:rightFull.length-b.length,res:res.slice()});}
+  frames.push({kind:"append",path:n.path,left:a.slice(),right:b.slice(),res:res.slice(),history:history.map(x=>({left:x.left.slice(),right:x.right.slice(),leftUsed:x.leftUsed||0,rightUsed:x.rightUsed||0,res:x.res.slice()})),title:"Mezcla: añadimos los elementos restantes",heading:"Una secuencia se ha agotado.",text:"Ya no hace falta comparar: los elementos restantes de la otra secuencia están ordenados y se añaden directamente."});
+ }
+ n.a=res.slice();n.sorted=true;
+ const finalHistory=history.map(x=>({left:x.left.slice(),right:x.right.slice(),leftUsed:x.leftUsed||0,rightUsed:x.rightUsed||0,res:x.res.slice()}));
+ // En el estado final, conservar la última fila con todos los elementos de entrada tachados.
+ if(finalHistory.length){const last=finalHistory[finalHistory.length-1];last.leftUsed=last.left.length;last.rightUsed=last.right.length;}
+ frames.push({kind:"merged",path:n.path,res:res.slice(),history:finalHistory,title:"Mezcla completada",heading:"Esta secuencia ya está ordenada.",text:"Las dos secuencias ordenadas se han combinado. El resultado queda disponible para la siguiente mezcla."});
+ return res;
+}
+function setup(a){
+ vals=a.slice();treeRoot=makeTree(vals);frames=[{kind:"initial",title:"Secuencia inicial",heading:"Partimos de la secuencia que queremos ordenar.",text:"Cada casilla representa un elemento. Primero dividiremos la secuencia; después, las mezclas ordenarán los elementos."}];
+ const sorted=traceMerges(treeRoot);
+ frames.push({kind:"final",title:"Secuencia completamente ordenada",heading:"¡Ordenación terminada!",text:"Las mezclas parciales se han combinado hasta obtener la secuencia completa ordenada.",sorted:sorted.slice()});
+ // reset tree to unsorted original for rendering historical frames; the trace stores snapshots, and render computes state by replay.
+ idx=0;render();
+}
+function replayState(k){
+ const root=makeTree(vals);
+ function markSorted(n,p){if(!p)return n;return markSorted(p[0]==="L"?n.left:n.right,p.slice(1))}
+ for(let i=1;i<=k;i++){
+  const f=frames[i];if(f.kind==="merged"){const n=markSorted(root,f.path);n.a=f.res.slice();n.sorted=true;}
+  if(f.kind==="final"){root.a=f.sorted.slice();root.sorted=true;}
+ }
+ return root;
+}
+function renderTree(n, f, depth=0, nodesByLevel=[]){
+ if(!nodesByLevel[depth])nodesByLevel[depth]=[];
+ nodesByLevel[depth].push({n,f});if(n.left){renderTree(n.left,f,depth+1,nodesByLevel);renderTree(n.right,f,depth+1,nodesByLevel);}
+ return nodesByLevel;
+}
+function visibleArray(n,f){
+ const path=f.path||"";
+ if(f.kind==="final")return {a:n.a,cls:"done",picked:[]};
+ if(f.kind==="merged"&&n.path===path)return {a:f.res,cls:"done",picked:[]};
+ if(f.kind==="startMerge"||f.kind==="compare"||f.kind==="take"||f.kind==="append"){
+  if(n.path===path+"L")return {a:f.left||[],cls:"merging",picked:(f.kind==="startMerge"||(f.kind==="compare"&&f.side==="left"))?[0]:[]};
+  if(n.path===path+"R")return {a:f.right||[],cls:"merging",picked:(f.kind==="startMerge"||(f.kind==="compare"&&f.side==="right"))?[0]:[]};
+  // The parent array keeps its original slots while its elements are being merged below.
+  if(n.path===path)return {a:[...(f.res||[]),...Array(Math.max(0,n.a.length-(f.res||[]).length)).fill(null)],cls:"",picked:[]};
+ }
+ if(f.kind==="split"&&n.path===path){return {a:n.a,cls:"",picked:[]};}
+ if(f.kind==="initial")return {a:n.a,cls:"",picked:[]};
+ // Earlier merges have finished when their merge-complete frame precedes the current frame.
+ let isDone=false, latest=null;
+ for(let i=0;i<=idx;i++){const x=frames[i];if(x.kind==="merged"&&x.path===n.path){isDone=true;latest=x.res;}if(x.kind==="final")isDone=true;}
+ if(isDone)return {a:latest||n.a,cls:"done",picked:[]};
+ return {a:n.a,cls:"",picked:[]};
+}
+function drawNode(n,f){
+ const d=visibleArray(n,f);
+ // When a sequence has been merged, hide its descendants but preserve their cell slots.
+ const completed=frames.slice(0,idx+1).filter(x=>x.kind==="merged").map(x=>x.path);
+ const hideNode=completed.some(p=>n.path.length>p.length&&n.path.startsWith(p));
+ const cells=d.a.map((v,i)=>`<span class="cell ${hideNode?"hidden-cell":""} ${d.picked.includes(i)?"picked":""}">${v===null?"":v}</span>`).join("");
+ return `<div class="node ${d.cls}"><div class="cells">${cells}</div><div class="node-label">${n.path===""?"secuencia":n.path.replaceAll("L","izq. ").replaceAll("R","der. ")}</div></div>`;
+}
+function miniSeq(a,label,highlight=false,result=false){
+ return `<div class="mini-wrap"><div class="node-label">${label}</div><div class="cells">${a.length?a.map((v,i)=>`<span class="cell ${highlight&&i===0?"picked":""} ${result?"result-cell":""}">${v}</span>`).join(""):'<span class="empty">vacía</span>'}</div></div>`;
+}
+function render(){
+ const f=frames[idx];$("stepTitle").textContent=f.title;$("stepCount").textContent=`Paso ${idx+1} de ${frames.length}`;$("slider").max=frames.length-1;$("slider").value=idx;$("prev").disabled=idx===0;$("next").disabled=idx===frames.length-1;$("sideTitle").textContent=f.heading;$("explanation").innerHTML=`<p>${f.text}</p>`;
+ const root=makeTree(vals);
+ const levels=renderTree(root,f);
+ let html='';
+ // During a merge, display both input sequences and the result together at the active level.
+ if(["startMerge","compare","take","append","merged"].includes(f.kind)){
+   const history=f.history||[{left:f.left||[],right:f.right||[],res:f.res||[]}];
+   html += '<div class="active-merge"><div class="merge-title">Mezcla en curso</div><div class="merge-table-wrap"><table class="merge-table"><thead><tr><th>Izq.</th><th>Der.</th><th>Resultado</th></tr></thead><tbody>';
+   history.forEach(row=>{const fmt=(a,used=0)=>`[${a.map((v,i)=>i<used?`<span class="consumed">${v}</span>`:String(v)).join(", ")}]`;html+=`<tr><td>${fmt(row.left,row.leftUsed||0)}</td><td>${fmt(row.right,row.rightUsed||0)}</td><td>${fmt(row.res)}</td></tr>`;});
+   html += '</tbody></table></div></div>';
+ }
+ html+='<div class="tree">';
+ levels.forEach((level,d)=>{
+   html+='<div class="level">';
+   level.forEach(({n})=>{
+     // Keep every node visible while the active merge panel shows the current operation.
+     html+=drawNode(n,f);
+   });
+   html+='</div>';
+ });
+ html+='</div>';$("treebox").innerHTML=html;
+}
+$("prev").onclick=()=>{if(idx>0){idx--;render()}};$("next").onclick=()=>{if(idx<frames.length-1){idx++;render()}};$("reset").onclick=()=>{idx=0;render()};$("slider").oninput=e=>{idx=Number(e.target.value);render()};
+$("apply").onclick=()=>{const parts=$("values").value.trim().split(/[\s,;]+/).filter(Boolean),a=parts.map(Number);if(parts.length<2||parts.length>8||a.some(n=>!Number.isInteger(n)||n< -999||n>999)){$("error").textContent="Introduce entre 2 y 8 enteros (entre −999 y 999).";return}$("error").textContent="";setup(a)};
+setup(vals);
+</script></body></html>
