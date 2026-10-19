@@ -422,7 +422,6 @@ conquer*). Esta técnica consiste en descomponer un problema en
 otros más pequeños del mismo tipo, resolverlos por separado y
 combinar sus resultados para obtener la solución del problema
 original.
-
 En el caso de la ordenación, la idea es sencilla: si conseguimos
 ordenar dos partes de una secuencia, podemos combinarlas para
 obtener la secuencia completa ordenada.
@@ -520,7 +519,6 @@ En la \@sec-mezcla hemos visto cómo combinar dos secuencias
 ordenadas para obtener una única secuencia ordenada. Ahora
 podemos utilizar esta operación para construir un algoritmo que
 ordene cualquier secuencia.
-
 Para ello, utilizaremos la recursividad: ordenaremos una
 secuencia dividiéndola en dos partes, ordenando cada una de ellas
 mediante el mismo algoritmo y combinando finalmente los
