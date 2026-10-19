@@ -170,48 +170,190 @@ colocarla y desplazan las demás si es necesario.
 El algoritmo comienza considerando que el primer elemento está
 ordenado, ya que una secuencia de un solo elemento siempre está
 ordenada. A continuación, procesa los elementos restantes, de
-izquierda a derecha.
+izquierda a derecha. Por tanto, lo que gráficamente veremos como
+*izquierda, derecha*, en el algoritmo real será *menos, mayor*.
 
 En cada paso:
 
-- Se toma el siguiente elemento de la secuencia. Lo llamaremos
-  elemento que se va a insertar.
-- Se compara con los elementos de la parte ordenada, empezando
-  por el que está inmediatamente a su izquierda.
-- Mientras los elementos de la parte ordenada sean mayores que el
-  elemento que se va a insertar, se desplazan una posición hacia
-  la derecha.
-- Cuando se encuentra un elemento menor o igual que el elemento
-  que se va a insertar, o se alcanza el principio de la
-  secuencia, se coloca el elemento en la posición que ha quedado
-  libre.
+1.  Consideramos el primer elemento no ordenado. Lo llamaremos
+    elemento que se va a insertar.
+
+2.  Comparamos este elemento con el que tiene inmediatamente a su
+    izquierda.
+
+    - Si a la izquierda no hay ningún elemento, hemos acabado: el
+      elemento ya está en la primera posición.
+    - Si el elemento a insertar es mayor que el elemento de su
+      izquierda, hemos acabado: ya está en su posición correcta.
+      Si son iguales, también hemos acabado.
+    - En otro caso, permutamos ambos elementos.
+
+3.  Repetimos el paso 2 las veces necesarias, comparando el
+    elemento a insertar con su nuevo vecino de la izquierda
+    después de cada intercambio.
 
 Al terminar cada paso, la parte ordenada contiene un elemento
 más. El algoritmo finaliza cuando se han procesado todos los
 elementos.
 
 Es importante observar que el algoritmo no busca el mínimo de
-toda la parte no ordenada, sino que toma sus elementos en orden y
-los inserta en la posición adecuada de la parte ya ordenada.
+toda la parte no ordenada, sino que toma el primero de los
+elementos no ordenados y lo inserta en la posición adecuada de la
+parte ya ordenada.
+
+Obsérvese que, cuando el elemento a insertar es igual al que
+tiene a su izquierda, intercambiarlos no cambia el orden de los
+valores. Sin embargo
+
+- Este intercambio es innecesario y supone un pequeño coste
+  adicional.
+- Si se realizan estos intercambios, se puede perder el orden
+  relativo de los elementos iguales. La propiedad de conservar
+  dicho orden se conoce como *estabilidad del algoritmo*.
 
 ### Ejecución paso a paso
-La siguiente animación permite observar paso a paso cómo funciona el algoritmo. En cada paso se compara el elemento que se está insertando con el elemento inmediatamente anterior. Si es menor, ambos intercambian sus posiciones. El proceso continúa hacia la izquierda hasta que el elemento queda situado en su posición correcta.
+
+La siguiente animación permite observar paso a paso cómo funciona
+el algoritmo.
 
 <https://maop72.github.io/rust-apuntes/animaciones/insertion-sort.html>
 
-![Código QR para acceder a la animación de ordenación por inserción](img/qr-insertion-sort.png){width=3cm}
+![Código QR para acceder a la animación de ordenación por
+inserción](img/qr-insertion-sort.png){width=3cm}
+
+
+
 
 ### Implementación en Rust
 
+La siguiente implementación sigue directamente los pasos
+descritos anteriormente:
+
+``` rust
+{{< include c27/insertion/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20insertion_sort%28datos%3A%20%26mut%20%5Bi32%5D%29%20%7B%0A%20%20%20%20for%20i%20in%201..datos.len%28%29%20%7B%0A%20%20%20%20%20%20%20%20let%20mut%20j%20%3D%20i%3B%0A%0A%20%20%20%20%20%20%20%20while%20j%20%3E%200%20%26%26%20datos%5Bj%5D%20%3C%20datos%5Bj%20-%201%5D%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20datos.swap%28j%2C%20j%20-%201%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20j%20-%3D%201%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20numeros%20%3D%20%5B7%2C%203%2C%205%2C%202%2C%208%2C%203%5D%3B%0A%20%20%20%20println%21%28%22Antes%3A%20%20%20%7B%3A%3F%7D%22%2C%20numeros%29%3B%0A%0A%20%20%20%20insertion_sort%28%26mut%20numeros%29%3B%0A%20%20%20%20println%21%28%22Despu%C3%A9s%3A%20%7B%3A%3F%7D%22%2C%20numeros%29%3B%0A%7D%0A)
+
+:::
+
+La función recibe un *slice* mutable de enteros, `&mut [i32]`. De
+este modo, puede ordenar tanto los elementos de un array como los
+de un vector, sin necesidad de definir una función diferente para
+cada caso.
+
+El bucle `for` recorre los elementos a partir del segundo, ya que
+una secuencia de un solo elemento siempre está ordenada.
+
+En cada iteración:
+
+- La variable `j` indica la posición del elemento que se va a
+  insertar.
+- El bucle `while` comprueba si el elemento puede avanzar hacia
+  la izquierda. Para ello, verifica que no haya llegado al
+  principio y que sea menor que su vecino inmediato.
+- Si se cumplen ambas condiciones, se intercambian los dos
+  elementos adyacentes y se decrementa `j` para continuar
+  comparando el elemento con su nuevo vecino de la izquierda.
+
+La condición del bucle es:
+
+``` rust
+while j > 0 && datos[j] < datos[j - 1]
+```
+
+Es importante el orden de las dos comprobaciones. Rust evalúa el
+operador `&&` de izquierda a derecha y utiliza evaluación en
+cortocircuito. Por tanto, si `j` vale cero, no evalúa
+`datos[j - 1]`, evitando un acceso fuera de los límites del
+*slice*.
+
+Obsérvese también que se utiliza el operador `<`, y no `<=`. Así,
+cuando dos elementos son iguales, no se intercambian. Esto evita
+trabajo innecesario y permite conservar el orden relativo de los
+elementos iguales, es decir, la estabilidad del algoritmo.
+
+Esta implementación es especialmente adecuada para introducir el
+algoritmo, porque su ejecución se corresponde directamente con la
+descripción intuitiva anterior.
+
 ### Análisis de complejidad
 
-### Ventajas e inconvenientes
+La complejidad del algoritmo depende del grado de ordenación
+inicial de la secuencia.
+
+- Mejor caso: (O(n)). Se produce cuando los elementos ya están
+  ordenados. En este caso, el bucle `while` termina en la primera
+  comprobación para cada elemento, por lo que el número total de
+  comparaciones es proporcional al número de elementos.
+
+- Peor caso: O(n²). Se produce cuando los elementos están
+  ordenados en sentido inverso. Cada nuevo elemento debe
+  desplazarse hasta el principio de la parte ordenada. El número
+  de comparaciones e intercambios es proporcional a
+
+  $$1+2+\cdots +(n-1)=\frac{n(n-1)}{2}$$
+
+- Caso medio: O(n²). Para una secuencia con los elementos en un
+  orden inicial aleatorio, cada elemento debe avanzar, en
+  promedio, una parte significativa del recorrido posible. Por
+  tanto, el número de operaciones crece cuadráticamente.
+
+En cuanto al consumo de memoria, el algoritmo tiene una
+complejidad espacial de O(1), es decir, constante. Solo necesita
+unas pocas variables auxiliares (i y j), independientemente del
+número de elementos de la secuencia. Aunque la secuencia sea cada
+vez más grande, la cantidad de memoria adicional necesaria para
+estas variables no aumenta.
+
+En resumen, la ordenación por inserción resulta especialmente
+eficiente para secuencias pequeñas o casi ordenadas, pero su
+rendimiento empeora cuando aumenta el número de elementos y estos
+presentan un orden inicial desfavorable.
 
 ## Ordenación por selección (*selection sort*)
 
-### Idea del algoritmo
+En la insertion sort que acabamos de ver, tomábamos el primer
+elemento sin ordenar y lo colocábamos en su sitio dentro del
+tramo de los ya ordenados.
+
+Naturalmente, este elemento puede ser cualquiera. Tal vez sea
+pequeño y haya que colocarlo muy a la izquierda. Tal vez sea
+grande y ya esté en su sitio, o cerca de él.
+
+El algoritmo que estudiaremos a continuación no toma el primer
+elemento sin ordenar que se encuentre, sino que busca, entre los
+elementos sin ordenar, el más pequeño. Ese será el mínimo.
+Después vuelve a buscar el menor de los que queden por ordenar.
+Este será el segundo más pequeño, el siguiente después del
+mínimo. Y así sucesivamente.
+
+En otras palabras:
+
+1.  Buscamos el menor elemento entre los desordenados.
+
+2.  Por ser el menor, lo colocamos el primero entre los
+    desordenados. Para ello, lo permutamos con el que aparece en
+    esa primera posición. De este modo, queda colocado en su
+    posición definitiva. No desplazamos todos los elementos: solo
+    permutamos el primero de los desordenados con el que
+    realmente es el más pequeño.
+
+3.  Repetimos el proceso con los elementos que todavía quedan sin
+    ordenar. Si solo queda uno por ordenar, hemos acabado.
 
 ### Ejecución paso a paso
+
+Esta animación permite observar paso a paso cómo funciona
+el algoritmo.
+
+<https://maop72.github.io/rust-apuntes/animaciones/selection-sort.html>
+
+![Código QR para acceder a la animación de ordenación por
+inserción](img/qr-selection-sort.png){width=3cm}
+
 
 ### Implementación en Rust
 
