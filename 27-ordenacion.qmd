@@ -155,7 +155,6 @@ secuencias que contienen valores repetidos.
 Estas propiedades nos servirán para diseñar pruebas con las que
 verificar las implementaciones que iremos desarrollando.
 
-
 ## Permutación de valores
 
 En los algoritmos de ordenación es frecuente que tengamos que
@@ -164,9 +163,8 @@ operación se denomina *permutación* o *intercambio* (*swap*).
 
 ### Un error frecuente
 
-Un error típico de principiante es intentar intercambiar
-dos valores mediante dos asignaciones consecutivas:
-
+Un error típico de principiante es intentar intercambiar dos
+valores mediante dos asignaciones consecutivas:
 
 ``` rust
 {{< include c27/permuta_mal/src/main.rs >}}
@@ -178,22 +176,20 @@ dos valores mediante dos asignaciones consecutivas:
 
 :::
 
-
 El resultado no es el esperado: ambas variables terminan valiendo
-`20`: 
+`20`:
 
-- La primera asignación copia el valor de `b` en `a`, por lo que se
-  pierde el valor original de `a`. 
+- La primera asignación copia el valor de `b` en `a`, por lo que
+  se pierde el valor original de `a`.
 
-- Cuando ejecutamos la segunda asignación, tanto `a` como `b` valen 
-  ya `20`.
+- Cuando ejecutamos la segunda asignación, tanto `a` como `b`
+  valen ya `20`.
 
 ### Intercambio mediante una variable auxiliar
 
 Para evitar que se pierda uno de los valores, utilizamos una
 variable auxiliar que guarda temporalmente el valor original de
 una de las variables:
-
 
 ``` rust
 {{< include c27/permuta_ok/src/main.rs >}}
@@ -223,7 +219,6 @@ en dos posiciones mediante el método `swap`.
 Por ejemplo, para intercambiar el primer y el último elemento de
 un vector:
 
-
 ``` rust
 {{< include c27/swap/src/main.rs >}}
 ```
@@ -235,10 +230,10 @@ un vector:
 :::
 
 - El método `swap` recibe los índices de las dos posiciones cuyos
-valores queremos intercambiar. 
+  valores queremos intercambiar.
 
 - El vector debe ser mutable, ya que estamos modificando sus
-elementos. 
+  elementos.
 
 ## Ordenación por inserción (*insertion sort*)
 
@@ -481,34 +476,45 @@ Una ventaja frente a la ordenación por inserción es que realiza
 como máximo (n-1) intercambios. Sin embargo, no es estable: puede
 cambiar el orden relativo de elementos iguales.
 
-
 ## Recursividad {#sec-recursividad}
 
-El siguiente algoritmo que estudiaremos, *mergesort*, es un algoritmo *recursivo*. Por motivos didácticos, aparcaremos por un momento los algoritmos de ordenación para centrarnos en la recursividad, con ejemplos básicos.
+El siguiente algoritmo que estudiaremos, *mergesort*, es un
+algoritmo *recursivo*. Por motivos didácticos, aparcaremos por un
+momento los algoritmos de ordenación para centrarnos en la
+recursividad, con ejemplos básicos.
 
-Un algoritmo es recursivo cuando, durante su ejecución, se llama a sí mismo para resolver un problema más pequeño. Para que la recursión termine, necesitamos establecer un *caso base*, que se resuelve directamente sin realizar nuevas llamadas recursivas.
+Un algoritmo es recursivo cuando, durante su ejecución, se llama
+a sí mismo para resolver un problema más pequeño. Para que la
+recursión termine, necesitamos establecer un *caso base*, que se
+resuelve directamente sin realizar nuevas llamadas recursivas.
 
 ### El factorial
 
-El factorial de un número natural n, representado como n!, es el producto de todos los números naturales positivos menores o iguales que n. Por ejemplo:
+El factorial de un número natural n, representado como n!, es el
+producto de todos los números naturales positivos menores o
+iguales que n. Por ejemplo:
 
 **5! = 5 · 4 · 3 · 2 · 1 = 120**
 
 Por convenio, **0! = 1**.
 
-Naturalmente, como esto es muy sencillo, podríamos calcularlo con un procedimiento imperativo, un bucle. 
-Pero es un buen ejemplo para ilustrar las soluciones mediante recursividad, muy convenienes en problemas 
-más complejos donde el bucle no sería una buena solución.
+Naturalmente, como esto es muy sencillo, podríamos calcularlo con
+un procedimiento imperativo, un bucle. Pero es un buen ejemplo
+para ilustrar las soluciones mediante recursividad, muy
+convenienes en problemas más complejos donde el bucle no sería
+una buena solución.
 
-Podemos definir el factorial de forma recursiva mediante dos reglas:
+Podemos definir el factorial de forma recursiva mediante dos
+reglas:
 
 - Si n = 0, entonces n! = 1.
-- Si n > 0, entonces n! = n · (n − 1)!.
+- Si n \> 0, entonces n! = n · (n − 1)!.
 
-La primera regla es el caso base: permite terminar la sucesión de llamadas. La segunda expresa el factorial de un número en función del factorial del número anterior.
+La primera regla es el caso base: permite terminar la sucesión de
+llamadas. La segunda expresa el factorial de un número en función
+del factorial del número anterior.
 
 Esta definición se traduce directamente a Rust:
-
 
 ``` rust
 {{< include c27/factorial/src/main.rs >}}
@@ -520,9 +526,10 @@ Esta definición se traduce directamente a Rust:
 
 :::
 
-La llamada `factorial(5)` provoca una serie de llamadas que van reduciendo el argumento:
+La llamada `factorial(5)` provoca una serie de llamadas que van
+reduciendo el argumento:
 
-```text
+``` text
 factorial(5)
     5 * factorial(4)
         4 * factorial(3)
@@ -532,26 +539,38 @@ factorial(5)
                         1
 ```
 
-Cuando se alcanza `factorial(0)`, se devuelve 1. A partir de ahí, las llamadas anteriores pueden completar sus multiplicaciones: primero 1 · 1, después 2 · 1, luego 3 · 2, y así sucesivamente hasta obtener 120.
+Cuando se alcanza `factorial(0)`, se devuelve 1. A partir de ahí,
+las llamadas anteriores pueden completar sus multiplicaciones:
+primero 1 · 1, después 2 · 1, luego 3 · 2, y así sucesivamente
+hasta obtener 120.
 
-Podemos ver la recursividad como una forma de descomponer un problema en otro del mismo tipo, pero más sencillo. En este caso, calcular el factorial de n requiere calcular el de n − 1.
+Podemos ver la recursividad como una forma de descomponer un
+problema en otro del mismo tipo, pero más sencillo. En este caso,
+calcular el factorial de n requiere calcular el de n − 1.
 
-Es importante que cada llamada avance hacia el caso base. De lo contrario, la recursión no terminaría y el programa acabaría agotando la pila de llamadas. Además, aunque la recursividad permite expresar algunos algoritmos de forma sencilla, cada llamada consume recursos y una profundidad excesiva puede provocar un desbordamiento de pila.
+Es importante que cada llamada avance hacia el caso base. De lo
+contrario, la recursión no terminaría y el programa acabaría
+agotando la pila de llamadas. Además, aunque la recursividad
+permite expresar algunos algoritmos de forma sencilla, cada
+llamada consume recursos y una profundidad excesiva puede
+provocar un desbordamiento de pila.
 
 ### La serie de Fibonacci
 
-Otro ejemplo clásico es la serie de Fibonacci, cuyos primeros términos son:
+Otro ejemplo clásico es la serie de Fibonacci, cuyos primeros
+términos son:
 
-**0, 1, 1, 2, 3, 5, 8, 13, 21, ...**
+**0, 1, 1, 2, 3, 5, 8, 13, 21, \...**
 
-Cada término, a partir de los dos primeros, se obtiene sumando los dos anteriores. Si numeramos los términos desde cero, podemos definirlos mediante estas reglas:
+Cada término, a partir de los dos primeros, se obtiene sumando
+los dos anteriores. Si numeramos los términos desde cero, podemos
+definirlos mediante estas reglas:
 
 - Si n = 0, entonces F(n) = 0.
 - Si n = 1, entonces F(n) = 1.
 - Si n ≥ 2, entonces F(n) = F(n − 1) + F(n − 2).
 
 En Rust, la definición recursiva se traduce de forma directa:
-
 
 ``` rust
 {{< include c27/fibonacci/src/main.rs >}}
@@ -563,13 +582,22 @@ En Rust, la definición recursiva se traduce de forma directa:
 
 :::
 
-A diferencia del factorial, que realiza una llamada recursiva en cada paso, Fibonacci realiza dos para calcular cada término, salvo en los casos base. Por ejemplo, para calcular `fibonacci(5)`, se necesitan los resultados de `fibonacci(4)` y `fibonacci(3)`, y cada uno vuelve a realizar sus propias llamadas.
+A diferencia del factorial, que realiza una llamada recursiva en
+cada paso, Fibonacci realiza dos para calcular cada término,
+salvo en los casos base. Por ejemplo, para calcular
+`fibonacci(5)`, se necesitan los resultados de `fibonacci(4)` y
+`fibonacci(3)`, y cada uno vuelve a realizar sus propias
+llamadas.
 
-Esta implementación resulta sencilla de entender, pero repite muchos cálculos y se vuelve muy lenta para valores grandes de n. Existen otras implementaciones más eficientes, por ejemplo, mediante un bucle que conserva los dos últimos términos calculados.
+Esta implementación resulta sencilla de entender, pero repite
+muchos cálculos y se vuelve muy lenta para valores grandes de n.
+Existen otras implementaciones más eficientes, por ejemplo,
+mediante un bucle que conserva los dos últimos términos
+calculados.
 
-Volveremos a encontrar la recursividad en *mergesort*, donde un problema de ordenación se divide en otros dos más pequeños que se resuelven mediante el mismo algoritmo.
-
-
+Volveremos a encontrar la recursividad en *mergesort*, donde un
+problema de ordenación se divide en otros dos más pequeños que se
+resuelven mediante el mismo algoritmo.
 
 ## Ordenación por mezcla (*mergesort*)
 
@@ -1029,8 +1057,6 @@ secuencia.
 
 ## Comparación de los algoritmos
 
-
-
 ### Inserción
 
 Es un algoritmo sencillo de implementar y comprender. Su
@@ -1091,35 +1117,31 @@ memoria que una variante *in-place*. Por tanto, no debemos
 atribuir a esta implementación todas las ventajas prácticas de
 las versiones optimizadas de *quicksort*.
 
+
 ### Resumen de las comparaciones
 
-Las dos siguiente tablas resume las características de los cuatro
-algoritmos estudiados. Las complejidades indicadas son las
-habituales para las variantes consideradas, aunque algunas
-decisiones de implementación pueden modificarlas.
+Las dos tablas siguientes resumen las características de los algoritmos estudiados. Las complejidades indicadas son las habituales para las variantes consideradas, aunque algunas decisiones de implementación pueden modificarlas.
 
-  Algoritmo                      Mejor caso       Caso medio       Peor caso        Memoria adicional
-  ------------------------------ ---------------- ---------------- ---------------- -------------------------------------------------------------------------
-  Inserción (*insertion sort*)   (O(n))           (O(n²))          (O(n²))          (O(1))
-  Selección (*selection sort*)   (O(n²))          (O(n²))          (O(n²))          (O(1))
-  Mezcla (*mergesort*)           (O(n \\log n))   (O(n \\log n))   (O(n \\log n))   (O(n))
-  Rápida (*quicksort*)           (O(n \\log n))   (O(n \\log n))   (O(n²))          Depende de la variante
-  Rápida, partición *in-place*   (O(n \\log n))   (O(n \\log n))   (O(n²))          (O(\\log n)) en promedio para la pila recursiva; (O(n)) en el peor caso
+| Algoritmo | Mejor caso | Caso medio | Peor caso | Memoria adicional |
+|---|---|---|---|---|
+| Inserción (*insertion sort*) | $O(n)$ | $O(n²)$ | $O(n²)$ | $O(1)$ |
+| Selección (*selection sort*) | $O(n²)$ | $O(n²)$ | $O(n²)$ | $O(1)$ |
+| Mezcla (*mergesort*) | $O(n \log n)$ | $O(n \log n)$ | $O(n \log n)$ | $O(n)$ |
+| Rápida (*quicksort*) | $O(n \log n)$ | $O(n \log n)$ | $O(n²)$ | Depende de la variante |
+| Rápida, partición *in-place* | $O(n \log n)$ | $O(n \log n)$ | $O(n²)$ | $O(\log n)$ en promedio para la pila recursiva; $O(n)$ en el peor caso |
 
-En esta tabla, (n) representa el número de elementos que hay que
-ordenar. La memoria adicional no incluye la memoria que ya ocupa
-la secuencia original.
-
-
+En esta tabla, $n$ representa el número de elementos que hay que ordenar. La memoria adicional no incluye la memoria que ya ocupa la secuencia original.
 
 | Algoritmo | Ventajas | Inconvenientes | Cuándo utilizarlo |
 |---|---|---|---|
 | Inserción | Muy sencillo; eficiente con secuencias pequeñas o casi ordenadas; poca memoria adicional. | Lento con secuencias grandes y desordenadas. | Secuencias pequeñas o casi ordenadas. |
 | Selección | Muy sencillo; poca memoria adicional; pocos intercambios. | Realiza muchas comparaciones incluso si la secuencia ya está ordenada. | Secuencias pequeñas cuando interesa reducir los intercambios. |
-| Mezcla (*mergesort*) | Tiempo \(O(n \log n)\) garantizado; puede ser estable. | Necesita memoria adicional en la variante estudiada. | Cuando interesa un rendimiento predecible o mantener el orden relativo de elementos iguales. |
-| Rápida (*quicksort*) | Muy eficiente en promedio; las variantes *in-place* aprovechan bien la memoria. | Puede alcanzar \(O(n²)\); el rendimiento depende de la partición y del pivote. | Secuencias grandes cuando se utiliza una implementación bien optimizada. |
+| Mezcla (*mergesort*) | Tiempo $O(n \log n)$ garantizado; puede ser estable. | Necesita memoria adicional en la variante estudiada. | Cuando interesa un rendimiento predecible o mantener el orden relativo de elementos iguales. |
+| Rápida (*quicksort*) | Muy eficiente en promedio; las variantes *in-place* aprovechan bien la memoria. | Puede alcanzar $O(n²)$; el rendimiento depende de la partición y del pivote. | Secuencias grandes cuando se utiliza una implementación bien optimizada. |
 
 Las implementaciones estudiadas tienen un propósito didáctico: permiten comprender las ideas fundamentales y analizar su complejidad. En programas reales, normalmente utilizaremos las funciones de ordenación de las bibliotecas estándar, que incorporan optimizaciones y estrategias adicionales.
+
+
 
 
 ### Una advertencia sobre las implementaciones
