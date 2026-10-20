@@ -155,11 +155,90 @@ secuencias que contienen valores repetidos.
 Estas propiedades nos servirán para diseñar pruebas con las que
 verificar las implementaciones que iremos desarrollando.
 
+
 ## Permutación de valores
 
-TO-DO. DESCRIBIR COMO PERMUTAR VALORES. PRIMERO EL CASO BASICO,
-CON ASIGNACIONES Y UNA VARIABLE AUXILIAR. LUEGO, EL SWAP DE LAS
-SECUENCIAS EN RUST.
+En los algoritmos de ordenación es frecuente que tengamos que
+intercambiar los valores de dos posiciones de una secuencia. Esta
+operación se denomina *permutación* o *intercambio* (*swap*).
+
+### Un error frecuente
+
+Un error típico de principiante es intentar intercambiar
+dos valores mediante dos asignaciones consecutivas:
+
+
+``` rust
+{{< include c27/permuta_mal/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20a%20%3D%2010%3B%0A%20%20%20%20let%20mut%20b%20%3D%2020%3B%0A%0A%20%20%20%20a%20%3D%20b%3B%0A%20%20%20%20b%20%3D%20a%3B%20%20//%20%C2%A1Mal%21%0A%0A%20%20%20%20println%21%28%22a%20%3D%20%7B%7D%2C%20b%20%3D%20%7B%7D%22%2C%20a%2C%20b%29%3B%20%0A%7D%0A)
+
+:::
+
+
+El resultado no es el esperado: ambas variables terminan valiendo
+`20`: 
+
+- La primera asignación copia el valor de `b` en `a`, por lo que se
+  pierde el valor original de `a`. 
+
+- Cuando ejecutamos la segunda asignación, tanto `a` como `b` valen 
+  ya `20`.
+
+### Intercambio mediante una variable auxiliar
+
+Para evitar que se pierda uno de los valores, utilizamos una
+variable auxiliar que guarda temporalmente el valor original de
+una de las variables:
+
+
+``` rust
+{{< include c27/permuta_ok/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20a%20%3D%2010%3B%0A%20%20%20%20let%20mut%20b%20%3D%2020%3B%0A%0A%20%20%20%20let%20aux%20%3D%20a%3B%0A%20%20%20%20a%20%3D%20b%3B%0A%20%20%20%20b%20%3D%20aux%3B%0A%0A%20%20%20%20println%21%28%22a%20%3D%20%7B%7D%2C%20b%20%3D%20%7B%7D%22%2C%20a%2C%20b%29%3B%20%0A%7D%0A)
+
+:::
+
+El intercambio se realiza en tres pasos:
+
+1.  Guardamos el valor original de `a` en `aux`.
+2.  Asignamos a `a` el valor de `b`.
+3.  Asignamos a `b` el valor guardado en `aux`.
+
+La variable auxiliar evita que se pierda ninguno de los dos
+valores.
+
+### Intercambio de elementos de una secuencia en Rust
+
+Cuando trabajamos con una secuencia, como un vector (`Vec`) o un
+array, podemos intercambiar directamente los elementos situados
+en dos posiciones mediante el método `swap`.
+
+Por ejemplo, para intercambiar el primer y el último elemento de
+un vector:
+
+
+``` rust
+{{< include c27/swap/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20datos%20%3D%20vec%21%5B10%2C%2020%2C%2030%2C%2040%5D%3B%0A%0A%20%20%20%20datos.swap%280%2C%201%29%3B%0A%20%20%20%20println%21%28%22%7Bdatos%3A%3F%7D%22%29%3B%20%0A%7D%0A)
+
+:::
+
+- El método `swap` recibe los índices de las dos posiciones cuyos
+valores queremos intercambiar. 
+
+- El vector debe ser mutable, ya que estamos modificando sus
+elementos. 
 
 ## Ordenación por inserción (*insertion sort*)
 
@@ -402,12 +481,95 @@ Una ventaja frente a la ordenación por inserción es que realiza
 como máximo (n-1) intercambios. Sin embargo, no es estable: puede
 cambiar el orden relativo de elementos iguales.
 
+
 ## Recursividad {#sec-recursividad}
 
-El siguiente algoritmo que estudiaremos, *mergesort*, es un
-algoritmo *recursivo*. Por motivos didácticos, aparcaremos por un
-momento los algoritmos de ordenación para centrarnos en la
-recursividad, con un ejemplo básico.
+El siguiente algoritmo que estudiaremos, *mergesort*, es un algoritmo *recursivo*. Por motivos didácticos, aparcaremos por un momento los algoritmos de ordenación para centrarnos en la recursividad, con ejemplos básicos.
+
+Un algoritmo es recursivo cuando, durante su ejecución, se llama a sí mismo para resolver un problema más pequeño. Para que la recursión termine, necesitamos establecer un *caso base*, que se resuelve directamente sin realizar nuevas llamadas recursivas.
+
+### El factorial
+
+El factorial de un número natural n, representado como n!, es el producto de todos los números naturales positivos menores o iguales que n. Por ejemplo:
+
+**5! = 5 · 4 · 3 · 2 · 1 = 120**
+
+Por convenio, **0! = 1**.
+
+Naturalmente, como esto es muy sencillo, podríamos calcularlo con un procedimiento imperativo, un bucle. 
+Pero es un buen ejemplo para ilustrar las soluciones mediante recursividad, muy convenienes en problemas 
+más complejos donde el bucle no sería una buena solución.
+
+Podemos definir el factorial de forma recursiva mediante dos reglas:
+
+- Si n = 0, entonces n! = 1.
+- Si n > 0, entonces n! = n · (n − 1)!.
+
+La primera regla es el caso base: permite terminar la sucesión de llamadas. La segunda expresa el factorial de un número en función del factorial del número anterior.
+
+Esta definición se traduce directamente a Rust:
+
+
+``` rust
+{{< include c27/factorial/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20factorial%28n%3A%20u64%29%20-%3E%20u64%20%7B%0A%20%20%20%20if%20n%20%3D%3D%200%20%7B%0A%20%20%20%20%20%20%20%201%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20n%20%2A%20factorial%28n%20-%201%29%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20n%20%3D%205%3B%0A%20%20%20%20println%21%28%22Factorial%20de%20%7B%7D%3A%20%7B%7D%22%2Cn%2C%20factorial%28n%29%29%3B%0A%7D%0A)
+
+:::
+
+La llamada `factorial(5)` provoca una serie de llamadas que van reduciendo el argumento:
+
+```text
+factorial(5)
+    5 * factorial(4)
+        4 * factorial(3)
+            3 * factorial(2)
+                2 * factorial(1)
+                    1 * factorial(0)
+                        1
+```
+
+Cuando se alcanza `factorial(0)`, se devuelve 1. A partir de ahí, las llamadas anteriores pueden completar sus multiplicaciones: primero 1 · 1, después 2 · 1, luego 3 · 2, y así sucesivamente hasta obtener 120.
+
+Podemos ver la recursividad como una forma de descomponer un problema en otro del mismo tipo, pero más sencillo. En este caso, calcular el factorial de n requiere calcular el de n − 1.
+
+Es importante que cada llamada avance hacia el caso base. De lo contrario, la recursión no terminaría y el programa acabaría agotando la pila de llamadas. Además, aunque la recursividad permite expresar algunos algoritmos de forma sencilla, cada llamada consume recursos y una profundidad excesiva puede provocar un desbordamiento de pila.
+
+### La serie de Fibonacci
+
+Otro ejemplo clásico es la serie de Fibonacci, cuyos primeros términos son:
+
+**0, 1, 1, 2, 3, 5, 8, 13, 21, ...**
+
+Cada término, a partir de los dos primeros, se obtiene sumando los dos anteriores. Si numeramos los términos desde cero, podemos definirlos mediante estas reglas:
+
+- Si n = 0, entonces F(n) = 0.
+- Si n = 1, entonces F(n) = 1.
+- Si n ≥ 2, entonces F(n) = F(n − 1) + F(n − 2).
+
+En Rust, la definición recursiva se traduce de forma directa:
+
+
+``` rust
+{{< include c27/fibonacci/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20fibonacci%28n%3A%20u32%29%20-%3E%20u64%20%7B%0A%20%20%20%20if%20n%20%3D%3D%200%20%7B%0A%20%20%20%20%20%20%20%200%0A%20%20%20%20%7D%20else%20if%20n%20%3D%3D%201%20%7B%0A%20%20%20%20%20%20%20%201%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20fibonacci%28n%20-%201%29%20%2B%20fibonacci%28n%20-%202%29%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20n%20%3D%207%3B%0A%20%20%20%20println%21%28%22N%C3%BAmero%20de%20Fibonacci%20de%20%7B%7D%3A%20%7B%7D%22%2C%20n%2C%20fibonacci%28n%29%29%3B%20%0A%7D%0A)
+
+:::
+
+A diferencia del factorial, que realiza una llamada recursiva en cada paso, Fibonacci realiza dos para calcular cada término, salvo en los casos base. Por ejemplo, para calcular `fibonacci(5)`, se necesitan los resultados de `fibonacci(4)` y `fibonacci(3)`, y cada uno vuelve a realizar sus propias llamadas.
+
+Esta implementación resulta sencilla de entender, pero repite muchos cálculos y se vuelve muy lenta para valores grandes de n. Existen otras implementaciones más eficientes, por ejemplo, mediante un bucle que conserva los dos últimos términos calculados.
+
+Volveremos a encontrar la recursividad en *mergesort*, donde un problema de ordenación se divide en otros dos más pequeños que se resuelven mediante el mismo algoritmo.
+
+
 
 ## Ordenación por mezcla (*mergesort*)
 
@@ -572,7 +734,7 @@ La implementación de mergesort se basa en dos funciones:
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20mezclar%28izq%3A%20%26%5Bi32%5D%2C%20der%3A%20%26%5Bi32%5D%29%20-%3E%20Vec%3Ci32%3E%20%7B%0A%20%20%20%20let%20mut%20resultado%20%3D%20Vec%3A%3Anew%28%29%3B%0A%20%20%20%20let%20mut%20i%20%3D%200%3B%0A%20%20%20%20let%20mut%20j%20%3D%200%3B%0A%0A%20%20%20%20while%20i%20%3C%20izq.len%28%29%20%26%26%20j%20%3C%20der.len%28%29%20%7B%0A%20%20%20%20%20%20%20%20if%20izq%5Bi%5D%20%3C%3D%20der%5Bj%5D%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20resultado.push%28izq%5Bi%5D%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20i%20%2B%3D%201%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20resultado.push%28der%5Bj%5D%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20j%20%2B%3D%201%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20//%20A%C3%B1adimos%20los%20elementos%20que%20queden%20en%20la%20secuencia%20izquierda.%0A%20%20%20%20for%20%26x%20in%20%26izq%5Bi..%5D%20%7B%0A%20%20%20%20%20%20%20%20resultado.push%28x%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20//%20A%C3%B1adimos%20los%20elementos%20que%20queden%20en%20la%20secuencia%20derecha.%0A%20%20%20%20for%20%26x%20in%20%26der%5Bj..%5D%20%7B%0A%20%20%20%20%20%20%20%20resultado.push%28x%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20resultado%0A%7D%0A%0Afn%20mergesort%28datos%3A%20%26%5Bi32%5D%29%20-%3E%20Vec%3Ci32%3E%20%7B%0A%20%20%20%20if%20datos.len%28%29%20%3C%3D%201%20%7B%0A%20%20%20%20%20%20%20%20return%20datos.to_vec%28%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20let%20mitad%20%3D%20datos.len%28%29%20/%202%3B%0A%0A%20%20%20%20let%20izq%20%3D%20mergesort%28%26datos%5B..mitad%5D%29%3B%0A%20%20%20%20let%20der%20%3D%20mergesort%28%26datos%5Bmitad..%5D%29%3B%0A%0A%20%20%20%20mezclar%28%26izq%2C%20%26der%29%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20datos%20%3D%20vec%21%5B5%2C%202%2C%208%2C%201%2C%207%2C%203%5D%3B%0A%0A%20%20%20%20println%21%28%22Original%3A%20%7B%3A%3F%7D%22%2C%20datos%29%3B%0A%0A%20%20%20%20let%20ordenados%20%3D%20mergesort%28%26datos%29%3B%0A%0A%20%20%20%20println%21%28%22Ordenados%3A%20%7B%3A%3F%7D%22%2C%20ordenados%29%3B%0A%7D%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20mezclar%28izq%3A%20%26%5Bi32%5D%2C%20der%3A%20%26%5Bi32%5D%29%20-%3E%20Vec%3Ci32%3E%20%7B%0A%20%20%20%20let%20mut%20resultado%20%3D%20Vec%3A%3Anew%28%29%3B%0A%20%20%20%20let%20mut%20i%20%3D%200%3B%0A%20%20%20%20let%20mut%20j%20%3D%200%3B%0A%0A%20%20%20%20while%20i%20%3C%20izq.len%28%29%20%26%26%20j%20%3C%20der.len%28%29%20%7B%0A%20%20%20%20%20%20%20%20if%20izq%5Bi%5D%20%3C%3D%20der%5Bj%5D%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20resultado.push%28izq%5Bi%5D%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20i%20%2B%3D%201%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20resultado.push%28der%5Bj%5D%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20j%20%2B%3D%201%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20//%20A%C3%B1adimos%20los%20elementos%20que%20queden%20en%20la%20secuencia%20izquierda.%0A%20%20%20%20for%20%26x%20in%20%26izq%5Bi..%5D%20%7B%0A%20%20%20%20%20%20%20%20resultado.push%28x%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20//%20A%C3%B1adimos%20los%20elementos%20que%20queden%20en%20la%20secuencia%20derecha.%0A%20%20%20%20for%20%26x%20in%20%26der%5Bj..%5D%20%7B%0A%20%20%20%20%20%20%20%20resultado.push%28x%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20resultado%0A%7D%0A%0Afn%20mergesort%28datos%3A%20%26%5Bi32%5D%29%20-%3E%20Vec%3Ci32%3E%20%7B%0A%20%20%20%20if%20datos.len%28%29%20%3C%3D%201%20%7B%0A%20%20%20%20%20%20%20%20return%20datos.to_vec%28%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20let%20mitad%20%3D%20datos.len%28%29%20/%202%3B%0A%0A%20%20%20%20let%20izq%20%3D%20mergesort%28%26datos%5B..mitad%5D%29%3B%0A%20%20%20%20let%20der%20%3D%20mergesort%28%26datos%5Bmitad..%5D%29%3B%0A%0A%20%20%20%20mezclar%28%26izq%2C%20%26der%29%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20datos%20%3D%20vec%21%5B5%2C%202%2C%208%2C%201%2C%207%2C%203%5D%3B%0A%20%20%20%20println%21%28%22Original%3A%20%7B%3A%3F%7D%22%2C%20datos%29%3B%0A%0A%20%20%20%20let%20ordenados%20%3D%20mergesort%28%26datos%29%3B%0A%20%20%20%20println%21%28%22Ordenados%3A%20%7B%3A%3F%7D%22%2C%20ordenados%29%3B%0A%7D%0A)
 
 :::
 
@@ -727,12 +889,12 @@ la izquierda y 2 a la derecha.
   problema. Podemos construir dos nuevas secuencias con los
   elementos menores y mayores que el pivote, respectivamente.
 
-- Si trabajamos con arrays de tamaño fijo, el algoritmo resulta algo más
-  complicado: en lugar de construir dos nuevas secuencias,
-  debemos reorganizar los elementos dentro del propio array,
-  mediante intercambios y un procedimiento de partición más
-  elaborado. En este ejemplo, el pivote tendría que acabar en una
-  posición distinta de la que ocupaba originalmente.
+- Si trabajamos con arrays de tamaño fijo, el algoritmo resulta
+  algo más complicado: en lugar de construir dos nuevas
+  secuencias, debemos reorganizar los elementos dentro del propio
+  array, mediante intercambios y un procedimiento de partición
+  más elaborado. En este ejemplo, el pivote tendría que acabar en
+  una posición distinta de la que ocupaba originalmente.
 
 Este es otro de los motivos por los que podemos considerar
 *quicksort* una familia de algoritmos: hay muchas variantes
@@ -747,7 +909,6 @@ la variante más eficiente, pero sí la más sencilla de explicar.
 
 ### Ejecución paso a paso
 
-
 La siguiente animación permite observar paso a paso cómo funciona
 el algoritmo.
 
@@ -756,34 +917,275 @@ el algoritmo.
 ![Código QR para acceder a la animación de ordenación por
 inserción](img/qr-quicksort.png){width=3cm}
 
+## Implementación en Rust
 
+Implementaremos una variante de *quicksort* que recibe un slice
+de enteros y devuelve un nuevo vector con los elementos
+ordenados. Para ello, elegiremos como pivote el elemento central
+del slice y construiremos dos vectores: uno con los elementos
+menores que el pivote y otro con los mayores.
 
-### Implementación en Rust
+La función se aplicará recursivamente a ambos vectores.
+Finalmente, construiremos el resultado concatenando los elementos
+de la parte izquierda, el pivote y los elementos de la parte
+derecha.
 
-### Análisis de complejidad
+``` rust
+fn quicksort(datos: &[i32]) -> Vec<i32> {
+    if datos.len() <= 1 {
+        return datos.to_vec();
+    }
 
-### Influencia de la elección del pivote
+    let indice_pivote = datos.len() / 2;
+    let pivote = datos[indice_pivote];
+
+    let mut izquierda = Vec::new();
+    let mut derecha = Vec::new();
+
+    for (i, &x) in datos.iter().enumerate() {
+        if i == indice_pivote {
+            continue;
+        }
+
+        if x < pivote {
+            izquierda.push(x);
+        } else {
+            derecha.push(x);
+        }
+    }
+
+    let izquierda = quicksort(&izquierda);
+    let derecha = quicksort(&derecha);
+
+    let mut resultado = izquierda;
+    resultado.push(pivote);
+    resultado.extend(derecha);
+
+    resultado
+}
+
+fn main() {
+    let datos = [5, 2, 9, 7, 1, 8, 3];
+
+    let ordenados = quicksort(&datos);
+
+    println!("{:?}", ordenados);
+}
+```
+
+La salida del programa es:
+
+``` text
+[1, 2, 3, 5, 7, 8, 9]
+```
+
+### Funcionamiento
+
+Veamos los aspectos más importantes de la implementación:
+
+- Si el slice contiene cero o un elemento, ya está ordenado.
+  Devolvemos una copia mediante `to_vec()`.
+- Elegimos el pivote utilizando el índice `datos.len() / 2`. La
+  división entera hace que, si la longitud es par, se elija el
+  elemento central de los dos posibles.
+- Recorremos el slice con `iter().enumerate()`. Necesitamos
+  conocer tanto el índice como el valor para no volver a
+  introducir el pivote en ninguna de las dos partes.
+- Construimos los vectores `izquierda` y `derecha`, y los
+  ordenamos mediante llamadas recursivas a `quicksort`.
+- Por último, concatenamos las partes ordenadas y el pivote. El
+  método `extend()` añade al vector todos los elementos de la
+  secuencia indicada.
+
+En este ejemplo suponemos que todos los elementos son distintos.
+Por eso, los que no son menores que el pivote son necesariamente
+mayores. Si admitiéramos valores repetidos, tendríamos que
+decidir cómo tratar los iguales al pivote.
+
+### Complejidad
+
+En cada llamada recorremos los elementos para construir las dos
+partes, lo que requiere un tiempo proporcional al número de
+elementos. El coste total depende de cómo se distribuyan estos
+elementos.
+
+Si las particiones son aproximadamente equilibradas, la
+complejidad temporal es:
+
+``` text
+O(n log n)
+```
+
+Sin embargo, si las particiones son muy desequilibradas, la
+complejidad puede llegar a ser:
+
+``` text
+O(n²)
+```
+
+Elegir el elemento central por su posición no garantiza que las
+particiones estén equilibradas: depende de los valores de la
+secuencia.
 
 ## Comparación de los algoritmos
 
-### Complejidad temporal
 
-### Memoria adicional
 
-### Comparación de sus características
+### Inserción
 
-### Elección del algoritmo según el problema
+Es un algoritmo sencillo de implementar y comprender. Su
+principal ventaja es que funciona muy bien con secuencias
+pequeñas o que ya están ordenadas, o casi ordenadas. Además,
+puede ordenar directamente la secuencia original sin necesitar
+memoria adicional proporcional a su tamaño.
 
-## Ejercicios
+Su coste cuadrático lo hace poco apropiado para ordenar
+secuencias grandes y desordenadas. Sin embargo, por su sencillez
+y buen comportamiento con pocos elementos, también se utiliza
+como parte de implementaciones más sofisticadas.
 
-### Seguimiento de algoritmos
+### Selección
 
-### Implementación y pruebas
+Realiza un número cuadrático de comparaciones incluso cuando la
+secuencia ya está ordenada. A cambio, su funcionamiento es
+sencillo y necesita muy poca memoria adicional. Además, realiza
+como máximo (n-1) intercambios si se implementa seleccionando el
+mínimo de la parte no ordenada en cada iteración.
 
-### Detección y corrección de errores
+Puede resultar interesante cuando interesa minimizar los
+intercambios y el número de elementos es pequeño, pero
+normalmente no es la mejor opción si el objetivo es ordenar
+grandes secuencias con rapidez.
 
-### Comparación de algoritmos
+### Mezcla (*mergesort*)
 
-### Análisis de complejidad
+Su principal ventaja es que garantiza un coste temporal (O(n
+\\log n)), con independencia de cómo estén distribuidos
+inicialmente los elementos. También puede implementarse de manera
+estable: los elementos iguales conservan su orden relativo.
+
+El inconveniente de la variante estudiada es que necesita memoria
+adicional para construir las partes y mezclarlas. Es una buena
+elección cuando se necesita un tiempo de ejecución predecible,
+cuando importa la estabilidad o cuando se trabaja con estructuras
+de datos para las que la mezcla resulta especialmente adecuada.
+
+### Rápida (*quicksort*)
+
+En promedio, *quicksort* tiene un coste temporal (O(n \\log n)) y
+puede funcionar muy bien con secuencias grandes. Las
+implementaciones habituales que reorganizan los elementos dentro
+de la propia estructura suelen aprovechar bien la memoria y
+ofrecer un rendimiento excelente.
+
+Su principal inconveniente es que el peor caso tiene coste
+(O(n\^2)). Una elección inadecuada del pivote puede producir
+particiones muy desequilibradas. Por ejemplo, en la variante
+estudiada, si todos los elementos son iguales, cada partición
+deja un solo elemento fuera y envía el resto a una única llamada
+recursiva.
+
+Nuestra implementación utiliza dos vectores nuevos en cada
+partición. Esto facilita la comprensión, pero requiere más
+memoria que una variante *in-place*. Por tanto, no debemos
+atribuir a esta implementación todas las ventajas prácticas de
+las versiones optimizadas de *quicksort*.
+
+### Resumen de las comparaciones
+
+Las dos siguiente tablas resume las características de los cuatro
+algoritmos estudiados. Las complejidades indicadas son las
+habituales para las variantes consideradas, aunque algunas
+decisiones de implementación pueden modificarlas.
+
+  Algoritmo                      Mejor caso       Caso medio       Peor caso        Memoria adicional
+  ------------------------------ ---------------- ---------------- ---------------- -------------------------------------------------------------------------
+  Inserción (*insertion sort*)   (O(n))           (O(n²))          (O(n²))          (O(1))
+  Selección (*selection sort*)   (O(n²))          (O(n²))          (O(n²))          (O(1))
+  Mezcla (*mergesort*)           (O(n \\log n))   (O(n \\log n))   (O(n \\log n))   (O(n))
+  Rápida (*quicksort*)           (O(n \\log n))   (O(n \\log n))   (O(n²))          Depende de la variante
+  Rápida, partición *in-place*   (O(n \\log n))   (O(n \\log n))   (O(n²))          (O(\\log n)) en promedio para la pila recursiva; (O(n)) en el peor caso
+
+En esta tabla, (n) representa el número de elementos que hay que
+ordenar. La memoria adicional no incluye la memoria que ya ocupa
+la secuencia original.
+
+
+
+| Algoritmo | Ventajas | Inconvenientes | Cuándo utilizarlo |
+|---|---|---|---|
+| Inserción | Muy sencillo; eficiente con secuencias pequeñas o casi ordenadas; poca memoria adicional. | Lento con secuencias grandes y desordenadas. | Secuencias pequeñas o casi ordenadas. |
+| Selección | Muy sencillo; poca memoria adicional; pocos intercambios. | Realiza muchas comparaciones incluso si la secuencia ya está ordenada. | Secuencias pequeñas cuando interesa reducir los intercambios. |
+| Mezcla (*mergesort*) | Tiempo \(O(n \log n)\) garantizado; puede ser estable. | Necesita memoria adicional en la variante estudiada. | Cuando interesa un rendimiento predecible o mantener el orden relativo de elementos iguales. |
+| Rápida (*quicksort*) | Muy eficiente en promedio; las variantes *in-place* aprovechan bien la memoria. | Puede alcanzar \(O(n²)\); el rendimiento depende de la partición y del pivote. | Secuencias grandes cuando se utiliza una implementación bien optimizada. |
+
+Las implementaciones estudiadas tienen un propósito didáctico: permiten comprender las ideas fundamentales y analizar su complejidad. En programas reales, normalmente utilizaremos las funciones de ordenación de las bibliotecas estándar, que incorporan optimizaciones y estrategias adicionales.
+
+
+### Una advertencia sobre las implementaciones
+
+En estos apuntes hemos construido versiones sencillas para
+comprender los algoritmos, practicar la recursividad y analizar
+la complejidad. No hemos intentado obtener la máxima eficiencia
+posible.
+
+En la práctica, lo habitual es utilizar las funciones de
+ordenación que proporcionan las bibliotecas estándar de cada
+lenguaje. Estas implementaciones suelen incorporar optimizaciones
+que van más allá del algoritmo básico, y sus detalles pueden
+variar entre lenguajes y versiones.
+
+Por ejemplo, pueden combinar varios algoritmos, utilizar
+estrategias diferentes según el tamaño de la secuencia o adoptar
+mecanismos para evitar los peores casos. Por ello, al elegir una
+función de ordenación en un programa real, conviene consultar su
+documentación y sus garantías, en lugar de decidir únicamente a
+partir del nombre del algoritmo.
 
 ## Resumen
+
+Los algoritmos de ordenación permiten reorganizar los elementos
+de una secuencia según un criterio determinado. Hemos estudiado
+cuatro algoritmos que ilustran distintas estrategias para
+resolver este problema.
+
+- Inserción (*insertion sort*). Construye progresivamente una
+  secuencia ordenada, insertando cada elemento en su posición
+  correspondiente. Es sencillo y eficiente para secuencias
+  pequeñas o casi ordenadas, pero su coste puede alcanzar
+  (O(n²)).
+
+- Selección (*selection sort*). Busca repetidamente el menor
+  elemento de la parte todavía no ordenada y lo coloca en su
+  posición definitiva. Es sencillo y necesita poca memoria
+  adicional, pero realiza (O(n²)) comparaciones incluso cuando la
+  secuencia ya está ordenada.
+
+- Mezcla (*mergesort*). Divide recursivamente la secuencia en dos
+  partes, las ordena y después mezcla los resultados. Su coste
+  temporal es (O(n \\log n)) en todos los casos, aunque la
+  variante estudiada necesita memoria adicional.
+
+- Rápida (*quicksort*). Elige un pivote, distribuye los elementos
+  a ambos lados y ordena recursivamente las dos partes. Su coste
+  medio es (O(n \\log n)), pero puede alcanzar (O(n²)) si las
+  particiones son muy desequilibradas.
+
+La técnica de *divide y vencerás* aparece en *mergesort* y
+*quicksort*, aunque ambos la aplican de forma diferente: el
+primero divide la secuencia antes de ordenar y después mezcla las
+partes; el segundo distribuye los elementos alrededor de un
+pivote y no necesita una fase posterior de mezcla.
+
+La complejidad temporal permite comparar el crecimiento del coste
+de los algoritmos cuando aumenta el número de elementos. Sin
+embargo, no basta con conocer esa complejidad para elegir una
+implementación: también importan el tamaño y las características
+de los datos, la memoria disponible y los detalles del
+procedimiento utilizado.
+
+Por último, las implementaciones que hemos desarrollado tienen
+una finalidad didáctica. En programas reales, normalmente
+utilizaremos las funciones de ordenación de las bibliotecas
+estándar, que incorporan optimizaciones y estrategias
+adicionales.
