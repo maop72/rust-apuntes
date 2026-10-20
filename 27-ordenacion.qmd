@@ -421,10 +421,9 @@ más general, conocida como *divide y vencerás* (*divide and
 conquer*). Esta técnica consiste en descomponer un problema en
 otros más pequeños del mismo tipo, resolverlos por separado y
 combinar sus resultados para obtener la solución del problema
-original.
-En el caso de la ordenación, la idea es sencilla: si conseguimos
-ordenar dos partes de una secuencia, podemos combinarlas para
-obtener la secuencia completa ordenada.
+original. En el caso de la ordenación, la idea es sencilla: si
+conseguimos ordenar dos partes de una secuencia, podemos
+combinarlas para obtener la secuencia completa ordenada.
 
 El algoritmo *mergesort* aplica esta estrategia siguiendo tres
 pasos:
@@ -518,11 +517,10 @@ ordenadas en una sola, recorriendo sus elementos una única vez.
 En la \@sec-mezcla hemos visto cómo combinar dos secuencias
 ordenadas para obtener una única secuencia ordenada. Ahora
 podemos utilizar esta operación para construir un algoritmo que
-ordene cualquier secuencia.
-Para ello, utilizaremos la recursividad: ordenaremos una
-secuencia dividiéndola en dos partes, ordenando cada una de ellas
-mediante el mismo algoritmo y combinando finalmente los
-resultados.
+ordene cualquier secuencia. Para ello, utilizaremos la
+recursividad: ordenaremos una secuencia dividiéndola en dos
+partes, ordenando cada una de ellas mediante el mismo algoritmo y
+combinando finalmente los resultados.
 
 El procedimiento es el siguiente:
 
@@ -550,6 +548,7 @@ mediante la operación de mezcla hasta obtener la secuencia
 completa ordenada.
 
 ### Ejecución paso a paso
+
 La siguiente animación permite observar paso a paso cómo funciona
 el algoritmo.
 
@@ -558,20 +557,206 @@ el algoritmo.
 ![Código QR para acceder a la animación de ordenación por
 inserción](img/qr-mergesort.png){width=3cm}
 
-
 ### Implementación en Rust
 
-### Análisis de complejidad
+La implementación de mergesort se basa en dos funciones:
 
-### Memoria adicional
+- `mergesort` divide la secuencia en dos partes, las ordena
+  recursivamente y mezcla los resultados.
+- `mezclar` combina dos secuencias ya ordenadas en una nueva
+  secuencia también ordenada.
+
+``` rust
+{{< include c27/mergesort/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20mezclar%28izq%3A%20%26%5Bi32%5D%2C%20der%3A%20%26%5Bi32%5D%29%20-%3E%20Vec%3Ci32%3E%20%7B%0A%20%20%20%20let%20mut%20resultado%20%3D%20Vec%3A%3Anew%28%29%3B%0A%20%20%20%20let%20mut%20i%20%3D%200%3B%0A%20%20%20%20let%20mut%20j%20%3D%200%3B%0A%0A%20%20%20%20while%20i%20%3C%20izq.len%28%29%20%26%26%20j%20%3C%20der.len%28%29%20%7B%0A%20%20%20%20%20%20%20%20if%20izq%5Bi%5D%20%3C%3D%20der%5Bj%5D%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20resultado.push%28izq%5Bi%5D%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20i%20%2B%3D%201%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20resultado.push%28der%5Bj%5D%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20j%20%2B%3D%201%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20//%20A%C3%B1adimos%20los%20elementos%20que%20queden%20en%20la%20secuencia%20izquierda.%0A%20%20%20%20for%20%26x%20in%20%26izq%5Bi..%5D%20%7B%0A%20%20%20%20%20%20%20%20resultado.push%28x%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20//%20A%C3%B1adimos%20los%20elementos%20que%20queden%20en%20la%20secuencia%20derecha.%0A%20%20%20%20for%20%26x%20in%20%26der%5Bj..%5D%20%7B%0A%20%20%20%20%20%20%20%20resultado.push%28x%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20resultado%0A%7D%0A%0Afn%20mergesort%28datos%3A%20%26%5Bi32%5D%29%20-%3E%20Vec%3Ci32%3E%20%7B%0A%20%20%20%20if%20datos.len%28%29%20%3C%3D%201%20%7B%0A%20%20%20%20%20%20%20%20return%20datos.to_vec%28%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20let%20mitad%20%3D%20datos.len%28%29%20/%202%3B%0A%0A%20%20%20%20let%20izq%20%3D%20mergesort%28%26datos%5B..mitad%5D%29%3B%0A%20%20%20%20let%20der%20%3D%20mergesort%28%26datos%5Bmitad..%5D%29%3B%0A%0A%20%20%20%20mezclar%28%26izq%2C%20%26der%29%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20datos%20%3D%20vec%21%5B5%2C%202%2C%208%2C%201%2C%207%2C%203%5D%3B%0A%0A%20%20%20%20println%21%28%22Original%3A%20%7B%3A%3F%7D%22%2C%20datos%29%3B%0A%0A%20%20%20%20let%20ordenados%20%3D%20mergesort%28%26datos%29%3B%0A%0A%20%20%20%20println%21%28%22Ordenados%3A%20%7B%3A%3F%7D%22%2C%20ordenados%29%3B%0A%7D%0A)
+
+:::
+
+La función `mergesort` recibe una referencia a una secuencia y
+devuelve un nuevo vector ordenado, sin modificar la secuencia
+original.
+
+- Si la secuencia contiene cero o un elemento, ya está ordenada y
+  constituye el caso base de la recursividad.
+
+- En caso contrario, calculamos el punto medio y llamamos
+  recursivamente a `mergesort` para ordenar las dos mitades.
+
+- Finalmente, `mezclar` combina ambas secuencias ordenadas.
+
+La función `mezclar` utiliza dos índices, `i` y `j`, para
+recorrer las secuencias de entrada. Mientras queden elementos en
+ambas, compara sus primeros elementos pendientes y añade el menor
+al resultado. Cuando una de ellas se agota, ya no es necesario
+comparar: podemos añadir directamente los elementos restantes de
+la otra secuencia.
+
+Para ello, utilizamos dos bucles `for` que recorren los *slices*
+`&izq[i..]` y `&der[j..]`. Recordemos que la expresión `[i..]`
+selecciona los elementos desde la posición `i` hasta el final de
+la secuencia. Por tanto, `&izq[i..]` representa los elementos que
+todavía quedan por incorporar de la secuencia izquierda, y
+`&der[j..]` hace lo mismo con la derecha.
+
+En cada iteración, `for &x in ...` obtiene el valor de un
+elemento del *slice*, que copiamos al final del resultado
+mediante `push(x)`.
+
+### Complejidad temporal
+
+Mezclar dos secuencias ordenadas de longitud total `n` requiere
+un tiempo proporcional a `n`. En el peor caso, hay que recorrer
+todos sus elementos para construir el resultado.
+
+``` text
+T(n) = 2 T(n/2) + O(n)
+```
+
+Los dos términos `T(n/2)` corresponden a la ordenación recursiva
+de las dos mitades, mientras que `O(n)` representa el tiempo
+necesario para mezclarlas.
+
+Para entender cómo se obtiene la complejidad final, observemos
+que cada división reduce a la mitad el tamaño de las secuencias.
+Por tanto, se necesitan aproximadamente `log n` niveles de
+división hasta llegar a secuencias de un solo elemento.
+
+En cada nivel, el trabajo total necesario para mezclar las
+secuencias es proporcional a `n`: aunque hay más secuencias que
+mezclar, cada una es más pequeña y, en conjunto, se procesan los
+mismos `n` elementos.
+
+Así pues, tenemos aproximadamente `log n` niveles, con un trabajo
+proporcional a `n` en cada uno. El coste total es, por tanto,
+proporcional a `n log n`:
+
+``` text
+T(n) = O(n log n)
+```
+
+### Complejidad espacial
+
+La implementación utilizada crea nuevos vectores para almacenar
+las secuencias ordenadas y el resultado de cada mezcla. Por ello,
+necesita memoria adicional proporcional al número de elementos:
+
+``` text
+O(n)
+```
+
+Además, las llamadas recursivas mantienen una pila de profundidad
+`O(log n)`. Esta memoria adicional es inferior a la necesaria
+para almacenar los vectores.
+
+En resumen, `mergesort` ofrece un tiempo de ejecución
+`O(n log n)` garantizado, a cambio de utilizar memoria adicional
+`O(n)`, si bien existen variantes del algoritmo que permiten
+reducir este consumo de memoria.
 
 ## Ordenación rápida (*quicksort*)
 
-### Idea del algoritmo
+*Quicksort* es una familia de algoritmos recursivos de ordenación
+basados en la técnica de *divide y vencerás*. Todos se basan en:
+
+1.  Elegir un elemento de la secuencia como pivote.
+2.  Reorganizar los elementos para que los menores o iguales que
+    el pivote queden a su *izquierda* y los mayores queden a su
+    *derecha*.
+3.  Aplicar recursivamente el mismo procedimiento a las dos
+    partes, sin incluir el pivote.
+4.  Cuando alguna parte tiene cero o un elemento, ya está
+    ordenada y no es necesario hacer nada más.
+
+Como es habitual, cuando informalmente decimos *a su izquierda*
+queremos decir *en posiciones inferiores de la estructura* y
+cuando decimos *a su derecha*, queremos decir *en posiciones
+superiores*.
+
+A diferencia de *mergesort*, que divide la secuencia en dos
+mitades y después las mezcla, *quicksort* reorganiza los
+elementos alrededor del pivote y no necesita una fase posterior
+de mezcla.
 
 ### Elección del pivote y partición
 
-### Llamadas recursivas
+Existen distintas estrategias para elegir el pivote: podríamos
+tomar el primer elemento. O uno aleatorio. En estos apuntes
+utilizaremos el elemento central de la secuencia, es decir, el
+que ocupa la posición central por índice.
+
+Esta elección tiene una ventaja respecto a utilizar siempre el
+primer elemento: si la secuencia ya está ordenada o casi
+ordenada, el pivote no será necesariamente uno de sus extremos.
+Sin embargo, no garantiza que las dos partes resultantes tengan
+tamaños parecidos.
+
+La *partición* consiste en reorganizar la secuencia para que los
+elementos menores que el pivote queden a su izquierda y los
+mayores queden a su derecha. No es necesario ordenar los
+elementos de cada parte: basta con que cumplan esta condición.
+
+Por ejemplo, si partimos de la siguiente secuencia:
+
+``` text
+[5, 2, 9, 7, 1, 8, 3]
+```
+
+El elemento central es `7`, que elegimos como pivote. Una posible
+partición es:
+
+``` text
+[5, 2, 1, 3]  7  [ 8, 9]
+```
+
+Los elementos de la izquierda son menores que el pivote y los de
+la derecha son mayores. El orden dentro de cada parte no importa
+y puede variar según el procedimiento de partición utilizado.
+
+Observemos algo muy relevante de este ejemplo: en la secuencia
+desordenada, había 3 elementos a la izquierda del pivote y otros
+tantos a la derecha. Después de la partición, hay 4 elementos a
+la izquierda y 2 a la derecha.
+
+- Si estamos trabajando sobre vectores de Rust, listas de Python,
+  listas encadenadas de C o Pascal, o estructuras similares cuyo
+  tamaño puede cambiar dinámicamente, esto no supone ningún
+  problema. Podemos construir dos nuevas secuencias con los
+  elementos menores y mayores que el pivote, respectivamente.
+
+- Si trabajamos con arrays de tamaño fijo, el algoritmo resulta algo más
+  complicado: en lugar de construir dos nuevas secuencias,
+  debemos reorganizar los elementos dentro del propio array,
+  mediante intercambios y un procedimiento de partición más
+  elaborado. En este ejemplo, el pivote tendría que acabar en una
+  posición distinta de la que ocupaba originalmente.
+
+Este es otro de los motivos por los que podemos considerar
+*quicksort* una familia de algoritmos: hay muchas variantes
+dependiendo, entre otros factores, de la elección del pivote y de
+la estructura de datos subyacente.
+
+En estos apuntes trabajaremos con unos presupuestos que facilitan
+la operativa: tomaremos como pivote el elemento central y
+utilizaremos una estructura de datos dinámica, construyendo dos
+nuevas secuencias a partir de la partición. No es necesariamente
+la variante más eficiente, pero sí la más sencilla de explicar.
+
+### Ejecución paso a paso
+
+
+La siguiente animación permite observar paso a paso cómo funciona
+el algoritmo.
+
+<https://maop72.github.io/rust-apuntes/animaciones/quicksort.html>
+
+![Código QR para acceder a la animación de ordenación por
+inserción](img/qr-quicksort.png){width=3cm}
+
+
 
 ### Implementación en Rust
 

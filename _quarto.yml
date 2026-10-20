@@ -4,6 +4,7 @@ project:
     - animaciones/insertion-sort.html
     - animaciones/selection-sort.html
     - animaciones/mergesort.html
+    - animaciones/quicksort.html
 
 book:
   title: "Apuntes de programación en Rust"
