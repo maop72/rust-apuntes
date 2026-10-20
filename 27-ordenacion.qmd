@@ -294,7 +294,7 @@ valores. Sin embargo
 ### Ejecución paso a paso
 
 La siguiente animación permite observar paso a paso cómo funciona
-el algoritmo.
+el algoritmo de ordenación por inserción.
 
 <https://maop72.github.io/rust-apuntes/animaciones/insertion-sort.html>
 
@@ -424,7 +424,7 @@ En otras palabras:
 ### Ejecución paso a paso
 
 Esta animación permite observar paso a paso cómo funciona el
-algoritmo.
+algoritmo de ordenación por selección.
 
 <https://maop72.github.io/rust-apuntes/animaciones/selection-sort.html>
 
@@ -740,7 +740,7 @@ completa ordenada.
 ### Ejecución paso a paso
 
 La siguiente animación permite observar paso a paso cómo funciona
-el algoritmo.
+el algoritmo *mergesort*.
 
 <https://maop72.github.io/rust-apuntes/animaciones/mergesort.html>
 
@@ -938,7 +938,7 @@ la variante más eficiente, pero sí la más sencilla de explicar.
 ### Ejecución paso a paso
 
 La siguiente animación permite observar paso a paso cómo funciona
-el algoritmo.
+el algoritmo *quicksort*.
 
 <https://maop72.github.io/rust-apuntes/animaciones/quicksort.html>
 
@@ -958,54 +958,16 @@ Finalmente, construiremos el resultado concatenando los elementos
 de la parte izquierda, el pivote y los elementos de la parte
 derecha.
 
+
 ``` rust
-fn quicksort(datos: &[i32]) -> Vec<i32> {
-    if datos.len() <= 1 {
-        return datos.to_vec();
-    }
-
-    let indice_pivote = datos.len() / 2;
-    let pivote = datos[indice_pivote];
-
-    let mut izquierda = Vec::new();
-    let mut derecha = Vec::new();
-
-    for (i, &x) in datos.iter().enumerate() {
-        if i == indice_pivote {
-            continue;
-        }
-
-        if x < pivote {
-            izquierda.push(x);
-        } else {
-            derecha.push(x);
-        }
-    }
-
-    let izquierda = quicksort(&izquierda);
-    let derecha = quicksort(&derecha);
-
-    let mut resultado = izquierda;
-    resultado.push(pivote);
-    resultado.extend(derecha);
-
-    resultado
-}
-
-fn main() {
-    let datos = [5, 2, 9, 7, 1, 8, 3];
-
-    let ordenados = quicksort(&datos);
-
-    println!("{:?}", ordenados);
-}
+{{< include c27/quicksort/src/main.rs >}}
 ```
 
-La salida del programa es:
+::: {.text-end .small}
 
-``` text
-[1, 2, 3, 5, 7, 8, 9]
-```
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20quicksort%28datos%3A%20%26%5Bi32%5D%29%20-%3E%20Vec%3Ci32%3E%20%7B%0A%20%20%20%20if%20datos.len%28%29%20%3C%3D%201%20%7B%0A%20%20%20%20%20%20%20%20return%20datos.to_vec%28%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20let%20indice_pivote%20%3D%20datos.len%28%29%20/%202%3B%0A%20%20%20%20let%20pivote%20%3D%20datos%5Bindice_pivote%5D%3B%0A%0A%20%20%20%20let%20mut%20izquierda%20%3D%20Vec%3A%3Anew%28%29%3B%0A%20%20%20%20let%20mut%20derecha%20%3D%20Vec%3A%3Anew%28%29%3B%0A%0A%20%20%20%20for%20%28i%2C%20%26x%29%20in%20datos.iter%28%29.enumerate%28%29%20%7B%0A%20%20%20%20%20%20%20%20if%20i%20%3D%3D%20indice_pivote%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20continue%3B%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20if%20x%20%3C%20pivote%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20izquierda.push%28x%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20derecha.push%28x%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20let%20izquierda%20%3D%20quicksort%28%26izquierda%29%3B%0A%20%20%20%20let%20derecha%20%3D%20quicksort%28%26derecha%29%3B%0A%0A%20%20%20%20let%20mut%20resultado%20%3D%20izquierda%3B%0A%20%20%20%20resultado.push%28pivote%29%3B%0A%20%20%20%20resultado.extend%28derecha%29%3B%0A%0A%20%20%20%20resultado%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20datos%20%3D%20%5B5%2C%202%2C%209%2C%207%2C%201%2C%208%2C%203%5D%3B%0A%0A%20%20%20%20let%20ordenados%20%3D%20quicksort%28%26datos%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2C%20ordenados%29%3B%0A%7D%0A)
+
+:::
 
 ### Funcionamiento
 
