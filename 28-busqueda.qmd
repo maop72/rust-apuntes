@@ -1,0 +1,250 @@
+# Algoritmos y estructuras de datos de búsqueda
+
+En muchas aplicaciones necesitamos almacenar información y
+recuperarla posteriormente a partir de algún dato que la
+identifica. Por ejemplo, podemos guardar los datos de los alumnos
+de una universidad y buscar a un alumno concreto a partir de su
+número de matrícula.
+
+Una solución sencilla consiste en almacenar los datos en un
+vector y recorrerlo hasta encontrar el elemento buscado. Sin
+embargo, cuando el número de elementos es grande, este
+procedimiento puede resultar lento.
+
+Existen estructuras de datos que permiten realizar búsquedas de
+forma más eficiente. En este tema estudiaremos tres alternativas:
+
+- *Tablas de símbolos:* almacenan pares de clave y valor,
+  permitiendo recuperar un valor a partir de su clave.
+- *Árboles binarios de búsqueda:* organizan los elementos en
+  forma de árbol, de manera que las comparaciones permiten
+  decidir por dónde continuar la búsqueda.
+- *Tablas hash:* utilizan una función para calcular la posición
+  en la que se encuentra un elemento a partir de su clave.
+
+Cada estructura tiene sus propias ventajas y limitaciones. El
+objetivo es comprender cómo funcionan sus operaciones básicas y
+conocer las diferencias entre ellas.
+
+## Tablas de símbolos
+
+En muchas aplicaciones necesitamos almacenar información y
+recuperarla a partir de una clave. Por ejemplo, un programa de
+administración de una red puede mantener una tabla con las
+direcciones IP de los equipos y sus nombres.
+
+<table>
+  <thead>
+    <tr>
+      <th>Dirección IP (Clave)    </th>
+      <th>Nombre del equipo (Valor)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>192.168.1.10    </td><td>pc1</td></tr>
+    <tr><td>192.168.1.20    </td><td>pc2</td></tr>
+    <tr><td>192.168.1.30    </td><td>servidor</td></tr>
+    <tr><td>192.168.1.40    </td><td>router</td></tr>
+  </tbody>
+</table>
+
+Una tabla de símbolos permite recuperar la información asociada a
+una clave sin necesidad de conocer previamente dónde está
+almacenada. Almacena pares de clave y valor. Cada clave
+identifica un elemento y permite acceder a la información
+asociada.
+
+Las operaciones básicas son:
+
+- Buscar: obtener el valor asociado a una clave.
+- Insertar: añadir una nueva pareja de clave y valor.
+- Eliminar: quitar la pareja asociada a una clave.
+
+Por ejemplo, podemos consultar qué equipo tiene asignada la
+dirección IP `192.168.1.30`.
+
+### Implementación mediante un vector
+
+La implementación más sencilla consiste en almacenar las parejas
+de clave y valor en un vector.
+
+- Para buscar una clave, recorremos sus elementos hasta
+  encontrarla o llegar al final.
+- Si el vector contiene (n) elementos, una búsqueda puede
+  requerir examinar los (n) elementos. Por tanto, el tiempo de
+  búsqueda crece proporcionalmente al tamaño del vector.
+
+Esta solución es sencilla, pero puede resultar poco eficiente
+cuando la tabla contiene muchos elementos. En los siguientes
+apartados estudiaremos otras estructuras de datos que permiten
+realizar búsquedas más rápidas.
+
+## Árboles binarios de búsqueda
+
+Un árbol binario de búsqueda es una estructura de datos que
+permite almacenar elementos ordenados por sus claves y buscarlos
+de forma eficiente.
+
+Cada nodo contiene una clave y tiene, como máximo, dos hijos:
+izquierdo y derecho. Se cumple la siguiente propiedad:
+
+- Las claves del subárbol izquierdo son menores que la clave del
+  nodo.
+- Las claves del subárbol derecho son mayores que la clave del
+  nodo.
+
+Para simplificar, supondremos que no hay claves repetidas.
+
+### Búsqueda
+
+Para buscar una clave, comenzamos por la raíz y comparamos su
+valor con la clave buscada:
+
+- Si coinciden, hemos encontrado el elemento.
+- Si la clave buscada es menor, continuamos por el subárbol
+  izquierdo.
+- Si es mayor, continuamos por el subárbol derecho.
+
+Si llegamos a un subárbol vacío sin encontrar la clave, el
+elemento no está en el árbol.
+
+### Inserción
+
+Para insertar una clave, seguimos el mismo procedimiento que en
+una búsqueda. Cuando llegamos a una posición vacía, creamos allí
+un nuevo nodo.
+
+### Ejemplo
+
+Supongamos que insertamos, en este orden, las claves
+`50, 30, 70, 20, 40, 60, 80`.
+
+El árbol resultante es:
+
+``` text
+        50
+       /  \
+     30    70
+    / \    / \
+   20  40  60  80
+```
+
+Para buscar la clave `40`, comenzamos en `50`. Como `40` es
+menor, pasamos a la izquierda, al nodo `30`. Como `40` es mayor,
+pasamos a la derecha y encontramos la clave.
+
+Si buscamos `65`, pasamos de `50` a `70`, después a `60` y
+finalmente al hijo derecho de `60`, que está vacío. La clave no
+se encuentra en el árbol.
+
+### Eficiencia
+
+La eficiencia de la búsqueda depende de la forma del árbol. Si
+está razonablemente equilibrado, la búsqueda puede ser mucho más
+rápida que en un vector sin ordenar. Sin embargo, si las claves
+se insertan en un orden desfavorable, el árbol puede degenerar y
+comportarse como una lista.
+
+## Tablas hash
+
+Si implementamos una tabla de símbolos mediante un vector,
+podemos buscar una clave recorriendo sus elementos. Sin embargo,
+esta búsqueda puede resultar lenta cuando hay muchos datos.
+
+Las tablas hash permiten acelerar las búsquedas calculando la
+posición de cada elemento a partir de su clave mediante una
+función hash. De este modo, en lugar de recorrer todo el vector,
+podemos acceder directamente a la posición correspondiente.
+
+Por ejemplo, si utilizamos una tabla de 10 posiciones y la
+función hash
+
+$$
+h(k) = k \bmod 10
+$$
+
+la clave `42` corresponde a la posición `2`, porque el resto de
+dividir 42 entre 10 es 2.
+
+El principal inconveniente es que dos claves diferentes pueden
+corresponder a la misma posición. Esta situación se denomina
+colisión y requiere un mecanismo para almacenar y recuperar
+correctamente los elementos afectados.
+
+### Inserción y búsqueda
+
+Para insertar un elemento, calculamos su posición mediante la
+función hash y lo almacenamos allí. Para buscarlo, calculamos de
+nuevo esa posición y consultamos el elemento correspondiente.
+
+Este procedimiento permite realizar búsquedas muy rápidas,
+siempre que la función hash distribuya adecuadamente las claves y
+no se produzcan demasiadas colisiones.
+
+### Colisiones
+
+Se produce una colisión cuando dos claves distintas corresponden
+a la misma posición de la tabla. Por ejemplo, con la función
+anterior, las claves `12` y `42` corresponden a la posición `2`.
+
+Una forma sencilla de resolver las colisiones consiste en
+utilizar una lista de elementos en cada posición de la tabla.
+Esta técnica se denomina encadenamiento.
+
+### Ejemplo práctico
+
+Insertamos las claves `12, 25, 32, 18, 42` en una tabla de 10
+posiciones, utilizando la función hash anterior.
+
+Calculamos las posiciones:
+
+- `12` corresponde a la posición `2`.
+- `25` corresponde a la posición `5`.
+- `32` corresponde a la posición `2`.
+- `18` corresponde a la posición `8`.
+- `42` corresponde a la posición `2`.
+
+Las claves `12`, `32` y `42` colisionan en la posición `2`.
+Utilizando encadenamiento, las tres se almacenan en la lista
+asociada a esa posición.
+
+Para buscar la clave `32`, calculamos su posición, que es `2`, y
+buscamos dentro de la lista correspondiente.
+
+### Eficiencia
+
+En condiciones favorables, las tablas hash permiten realizar
+búsquedas en tiempo constante, independientemente del número de
+elementos almacenados. Sin embargo, las colisiones pueden
+aumentar el tiempo de búsqueda.
+
+Por tanto, su eficiencia depende de la función hash, del número
+de posiciones disponibles y de cómo se resuelvan las colisiones.
+
+### Uso de `HashMap` en Rust
+
+Rust proporciona el tipo `HashMap` en su biblioteca estándar, que
+permite utilizar tablas hash sin necesidad de implementar sus
+algoritmos internamente. Lo tratamos en el @sec-hashmap.
+
+## Comparación y cierre
+
+Las tres estructuras estudiadas permiten almacenar información y
+buscar elementos, pero utilizan métodos diferentes.
+
+- Un vector sin ordenar requiere, en general, recorrer sus
+  elementos hasta encontrar la clave buscada.
+- Un árbol binario de búsqueda utiliza el orden de las claves
+  para descartar parte de los elementos en cada paso. Su
+  eficiencia depende de la forma del árbol.
+- Una tabla hash calcula una posición a partir de la clave y
+  permite acceder directamente a ella, aunque pueden producirse
+  colisiones.
+
+En términos generales, sus características son las siguientes:
+
+| Estructura | Búsqueda | Principal limitación |
+|----|----|----|
+| Vector sin ordenar | Recorrido secuencial | Puede ser lenta con muchos elementos |
+| Árbol binario de búsqueda | Comparaciones sucesivas | Depende de la forma del árbol |
+| Tabla hash | Cálculo de una posición | Hay que resolver las colisiones |

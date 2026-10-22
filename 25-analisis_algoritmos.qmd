@@ -222,12 +222,6 @@ sistema operativo, del compilador y de otros factores. Nos
 interesa saber cómo crece el coste del algoritmo cuando aumenta
 el tamaño de los datos.
 
-Por ejemplo, si tenemos que buscar repetidamente entre millones
-de elementos, la diferencia entre una búsqueda `O(n)` y una
-búsqueda `O(log n)` puede ser decisiva. En este caso, el análisis
-de complejidad nos permite identificar una diferencia importante
-entre las dos soluciones.
-
 Por tanto, el análisis de complejidad y la medición del
 rendimiento cumplen funciones diferentes. La complejidad nos
 permite estudiar cómo se comporta un algoritmo al aumentar el

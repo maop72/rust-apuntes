@@ -39,6 +39,7 @@ book:
     - 25-analisis_algoritmos.qmd
     - 26-colas_prioridad.qmd
     - 27-ordenacion.qmd
+    - 28-busqueda.qmd
 
 
 lang: es-ES
