@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animación de Dijkstra — 5 nodos</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#182230;background:#f5f8fc}
+*{box-sizing:border-box}body{margin:0;padding:18px}h1{font-size:clamp(1.5rem,3vw,2.2rem);margin:0 0 4px}h2{font-size:1.15rem;margin:0 0 12px}
+.subtitle{color:#526174;margin:0 0 16px}.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+button,select{font:inherit;border:1px solid #bdc9d8;border-radius:8px;padding:9px 12px;background:white;cursor:pointer}
+button.primary{background:#1769d2;color:white;border-color:#1769d2}button.green{background:#18864b;color:white;border-color:#18864b}button:disabled{opacity:.45;cursor:not-allowed}
+.layout{display:grid;grid-template-columns:minmax(330px,1.25fr) minmax(310px,1fr) minmax(230px,.62fr);gap:14px;align-items:stretch}
+.panel{background:white;border:1px solid #d7e1ec;border-radius:12px;padding:14px;min-width:0;box-shadow:0 1px 2px #152b4610}
+#graph{width:100%;height:auto;min-height:340px;display:block}.node{stroke:#253448;stroke-width:2.5;fill:#e6ebf1}.node.current{fill:#ffe46a}.node.visited{fill:#8ce0a0}.node.origin{stroke:#18864b;stroke-width:3}.node text{font-size:16px;font-weight:700;fill:#16202c;text-anchor:middle;dominant-baseline:middle}
+.edge{stroke:#7b8795;stroke-width:2.4}.edge.examined{stroke:#f28c28;stroke-width:4}.edge.path{stroke:#1769d2;stroke-width:5}.weightbox{fill:#fff;stroke:#b7c4d2;stroke-width:1.2;rx:4}.weight{font-size:14px;font-weight:650;fill:#1c2938;text-anchor:middle;dominant-baseline:middle}
+.explain{background:#eaf5ff;border-radius:8px;padding:12px;margin-bottom:12px}.explain h2{margin-bottom:6px}.explain p{margin:4px 0;line-height:1.45}.small{font-size:.9rem;color:#526174}
+table{width:100%;border-collapse:collapse;font-size:.92rem}th,td{border:1px solid #d1dae5;padding:7px 6px;text-align:center}th{background:#edf2f7}tr.active{background:#fff1a8}tr.done{background:#e2f8e8}.status{line-height:1.6}.side{display:flex;flex-direction:column;gap:14px}.legend-row{display:flex;align-items:center;gap:10px;margin:9px 0}.dot{width:24px;height:24px;border:2px solid #263442;border-radius:50%;display:inline-block;flex:none}.dot.gray{background:#e6ebf1}.dot.yellow{background:#ffe46a}.dot.green{background:#8ce0a0}.line{width:32px;height:0;border-top:5px solid #f28c28;border-radius:3px;flex:none}.line.blue{border-color:#1769d2}.editor{background:#fff9e8;border-color:#f3df9d}.editor button{width:100%;margin:4px 0}.editor textarea{width:100%;height:172px;resize:vertical;font: .88rem ui-monospace,monospace;padding:8px;border:1px solid #bdc9d8;border-radius:7px}.fields{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}.fields select{min-width:80px}.bottom{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-top:14px}.pathbox{background:#eef8ff}.notice{margin-top:8px;font-size:.9rem;line-height:1.4}.error{color:#b42318;font-weight:600}.success{color:#187044;font-weight:600}
+@media(max-width:1050px){.layout{grid-template-columns:1fr 1fr}.side{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}.bottom{grid-template-columns:1fr}}
+@media(max-width:650px){body{padding:10px}.layout,.side,.bottom{grid-template-columns:1fr}.side{grid-column:auto}#graph{min-height:280px}}
+</style>
+</head>
+<body>
+<h1>Algoritmo de Dijkstra</h1>
+<p class="subtitle">Animación paso a paso para grafos no dirigidos de 5 nodos, conexos y con pesos positivos.</p>
+<div class="toolbar">
+<button id="prev">← Paso anterior</button><button id="next" class="primary">Siguiente paso →</button>
+<button id="play" class="green">▶ Ejecutar</button><button id="reset">Reiniciar</button>
+</div>
+<div class="layout">
+<section class="panel"><h2>Grafo</h2><svg id="graph" viewBox="0 0 560 505" role="img" aria-label="Grafo ponderado de cinco nodos"></svg>
+<div class="small">Los pesos aparecen junto a las aristas. El grafo se puede cambiar desde el panel de la derecha.</div></section>
+<section class="panel">
+<div class="explain"><h2 id="stepTitle">Paso 0. Inicialización</h2><p id="stepText">Se asigna distancia 0 al origen e infinito al resto de los nodos.</p></div>
+<h2>Distancias conocidas</h2>
+<table><thead><tr><th>Nodo</th><th>Distancia</th><th>Predecesor</th><th>Visitado</th></tr></thead><tbody id="distances"></tbody></table>
+</section>
+<aside class="side">
+<section class="panel editor"><h2>Grafo de entrada</h2>
+<div class="fields"><label for="origin">Nodo origen</label><select id="origin"></select></div>
+<div class="fields"><label for="destination">Nodo destino</label><select id="destination"></select></div>
+<hr style="border:0;border-top:1px solid #eadba9;margin:14px 0">
+<button id="random" class="primary">Variar los pesos del grafo</button>
+<label for="matrix">O introduce tu propia matriz de adyacencia 5 × 5:</label>
+<textarea id="matrix" spellcheck="false" aria-label="Matriz de adyacencia"></textarea>
+<div class="small">Usa espacios o comas entre números. 0 = sin arista; los demás valores deben ser enteros positivos. La matriz debe ser simétrica y el grafo conexo.</div>
+<button id="load">Cargar grafo</button><div id="message" class="notice" aria-live="polite"></div>
+</section>
+<section class="panel"><h2>Leyenda</h2>
+<div class="legend-row"><span class="dot green"></span><span>Nodo visitado: distancia definitiva</span></div>
+<div class="legend-row"><span class="dot yellow"></span><span>Nodo seleccionado en este paso</span></div>
+<div class="legend-row"><span class="dot gray"></span><span>Nodo pendiente</span></div>
+<div class="legend-row"><span class="line"></span><span>Arista examinada</span></div>
+<div class="legend-row"><span class="line blue"></span><span>Camino mínimo final</span></div>
+</section>
+</aside>
+</div>
+<div class="bottom">
+<section class="panel"><h2>Estado del algoritmo</h2><div id="status" class="status"></div></section>
+<section class="panel pathbox"><h2>Camino mínimo</h2><div id="pathResult">Ejecuta el algoritmo para encontrar el camino mínimo desde el origen al destino.</div></section>
+</div>
+<script>
+"use strict";
+const N=5, names="ABCDE".split("");
+// Cuatro nodos forman un cuadrado girado 45 grados; E queda en el centro.
+const positions=[[280,55],[465,235],[280,415],[95,235],[280,235]];
+let graph=[], trace=[], index=0, timer=null, finalPath=[];
+const $=id=>document.getElementById(id);
+function setMessage(text,kind=""){ $("message").className="notice "+kind; $("message").textContent=text; }
+function stop(){if(timer){clearInterval(timer);timer=null;} $("play").textContent="▶ Ejecutar";}
+function connected(g){let seen=new Set([0]),q=[0];while(q.length){let u=q.shift();for(let v=0;v<N;v++)if(g[u][v]>0&&!seen.has(v)){seen.add(v);q.push(v);}}return seen.size===N;}
+function randomGraph(){
+ // Estructura visual fija: cuadrado girado 45 grados y E en el centro.
+ // El ciclo exterior y las conexiones con el centro garantizan conectividad.
+ const edges = [
+  [0,1],[1,2],[2,3],[3,0],
+  [0,4],[1,4],[2,4],[3,4]
+ ];
+ let g=Array.from({length:N},()=>Array(N).fill(0));
+ for(const [u,v] of edges){
+  const w=1+Math.floor(Math.random()*4);
+  g[u][v]=g[v][u]=w;
+ }
+ return g;
+}
+function matrixText(g){return g.map(row=>row.join(" ")).join("\n");}
+function parseMatrix(){
+ const lines=$("matrix").value.trim().split(/\n/).filter(x=>x.trim());
+ if(lines.length!==N)throw Error("La matriz debe tener exactamente 5 filas.");
+ let g=lines.map((line,i)=>line.trim().split(/[,\s;]+/).filter(Boolean).map(Number));
+ if(g.some(row=>row.length!==N))throw Error("Cada fila debe contener exactamente 5 números.");
+ for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+  let x=g[i][j];if(!Number.isInteger(x)||x<0)throw Error("Usa enteros no negativos; 0 significa que no hay arista.");
+  if(i===j&&x!==0)throw Error("La diagonal debe ser 0: no se permiten bucles.");
+  if(g[i][j]!==g[j][i])throw Error("La matriz debe ser simétrica: el grafo no es dirigido.");
+ }
+ if(!connected(g))throw Error("El grafo no es conexo. Añade aristas hasta conectar todos los nodos.");
+ return g;
+}
+function buildTrace(){
+ trace=[];let dist=Array(N).fill(Infinity),prev=Array(N).fill(null),visited=Array(N).fill(false);
+ const add=(title,text,current=null,edge=null)=>trace.push({title,text,current,edge,dist:dist.slice(),prev:prev.slice(),visited:visited.slice()});
+ let s=+$("origin").value,t=+$("destination").value;dist[s]=0;
+ add("Paso 0. Inicialización",`Se asigna distancia 0 al origen ${names[s]} e infinito (∞) al resto. Todos los nodos están pendientes.`);
+ while(true){
+  let u=-1,best=Infinity;
+  for(let i=0;i<N;i++)if(!visited[i]&&dist[i]<best){best=dist[i];u=i;}
+  if(u<0)break;
+  visited[u]=true;
+  add(`Seleccionar ${names[u]}`,`Entre los nodos pendientes, ${names[u]} tiene la menor distancia conocida (${dist[u]}). Su distancia ya queda fijada.`,u);
+  for(let v=0;v<N;v++)if(graph[u][v]>0&&!visited[v]){
+   let alt=dist[u]+graph[u][v], old=dist[v], changed=alt<old;
+   if(changed){dist[v]=alt;prev[v]=u;}
+   let txt=changed
+    ?`Se examina ${names[u]}–${names[v]} (peso ${graph[u][v]}): ${dist[u]} + ${graph[u][v]} = ${alt}, menor que ${old===Infinity?"∞":old}. Se actualiza la distancia de ${names[v]} y su predecesor pasa a ser ${names[u]}.`
+    :`Se examina ${names[u]}–${names[v]} (peso ${graph[u][v]}): ${dist[u]} + ${graph[u][v]} = ${alt}. No mejora la distancia conocida de ${names[v]} (${old===Infinity?"∞":old}).`;
+   add(`Examinar arista ${names[u]}–${names[v]}`,txt,u,[u,v]);
+  }
+  add(`Terminar con ${names[u]}`,`Se han examinado los vecinos de ${names[u]}. Se continúa con el nodo pendiente de menor distancia conocida.`,u);
+ }
+ // Final state and path
+ let path=[],cur=t; if(dist[t]!==Infinity){while(cur!==null){path.unshift(cur);if(cur===s)break;cur=prev[cur];}if(path[0]!==s)path=[];}
+ finalPath=path;
+ add("Algoritmo terminado",path.length
+ ?`La distancia mínima de ${names[s]} a ${names[t]} es ${dist[t]}. Camino: ${path.map(i=>names[i]).join(" → ")}.`
+ :`No existe camino entre ${names[s]} y ${names[t]}.`,null);
+ index=0;render();
+}
+function edgeKey(a,b){return a<b?`${a}-${b}`:`${b}-${a}`;}
+function renderGraph(st){
+ const svg=$("graph");svg.innerHTML="";
+ let pathEdges=new Set();if(st.title==="Algoritmo terminado"&&finalPath.length>1)for(let i=0;i<finalPath.length-1;i++)pathEdges.add(edgeKey(finalPath[i],finalPath[i+1]));
+ // Keep final path visible when at final step.
+ for(let u=0;u<N;u++)for(let v=u+1;v<N;v++)if(graph[u][v]>0){
+  let p=positions[u],q=positions[v],isPath=pathEdges.has(edgeKey(u,v)),isExam=st.edge&&edgeKey(...st.edge)===edgeKey(u,v);
+  let line=document.createElementNS("http://www.w3.org/2000/svg","line");line.setAttribute("x1",p[0]);line.setAttribute("y1",p[1]);line.setAttribute("x2",q[0]);line.setAttribute("y2",q[1]);line.setAttribute("class","edge"+(isPath?" path":isExam?" examined":""));svg.appendChild(line);
+  let mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2;
+  // Offset label slightly perpendicular to edge.
+  let dx=q[0]-p[0],dy=q[1]-p[1],len=Math.hypot(dx,dy)||1;mx+=(-dy/len)*10;my+=(dx/len)*10;
+  let box=document.createElementNS("http://www.w3.org/2000/svg","rect");box.setAttribute("x",mx-11);box.setAttribute("y",my-11);box.setAttribute("width",22);box.setAttribute("height",22);box.setAttribute("class","weightbox");svg.appendChild(box);
+  let label=document.createElementNS("http://www.w3.org/2000/svg","text");label.setAttribute("x",mx);label.setAttribute("y",my+1);label.setAttribute("class","weight");label.textContent=graph[u][v];svg.appendChild(label);
+ }
+ for(let i=0;i<N;i++){
+  let p=positions[i],g=document.createElementNS("http://www.w3.org/2000/svg","g");
+  let cls="node";if(st.visited[i])cls+=" visited";if(st.current===i)cls+=" current";if(i===+$("origin").value)cls+=" origin";
+  let c=document.createElementNS("http://www.w3.org/2000/svg","circle");c.setAttribute("cx",p[0]);c.setAttribute("cy",p[1]);c.setAttribute("r",23);c.setAttribute("class",cls);g.appendChild(c);
+  let tx=document.createElementNS("http://www.w3.org/2000/svg","text");tx.setAttribute("x",p[0]);tx.setAttribute("y",p[1]+1);tx.textContent=names[i];g.appendChild(tx);
+  let d=document.createElementNS("http://www.w3.org/2000/svg","text");d.setAttribute("x",p[0]);d.setAttribute("y",p[1]+39);d.setAttribute("font-size","12");d.setAttribute("text-anchor","middle");d.setAttribute("fill","#455468");d.textContent=st.dist[i]===Infinity?"∞":st.dist[i];g.appendChild(d);
+  svg.appendChild(g);
+ }
+}
+function render(){
+ let st=trace[index];if(!st)return;
+ $("stepTitle").textContent=st.title;$("stepText").textContent=st.text;
+ $("distances").innerHTML=names.map((n,i)=>`<tr class="${i===st.current?"active":st.visited[i]?"done":""}"><th>${n}</th><td>${st.dist[i]===Infinity?"∞":st.dist[i]}</td><td>${st.prev[i]===null?"—":names[st.prev[i]]}</td><td>${st.visited[i]?"Sí":"No"}</td></tr>`).join("");
+ $("status").innerHTML=`<div><strong>Paso:</strong> ${index} de ${trace.length-1}</div><div><strong>Nodo seleccionado:</strong> ${st.current===null?"—":names[st.current]}</div><div><strong>Operación:</strong> ${st.title}</div><div><strong>Descripción:</strong> ${st.text}</div>`;
+ if(index===trace.length-1&&finalPath.length){let total=st.dist[+$("destination").value];$("pathResult").innerHTML=`<div class="success">Camino mínimo: ${finalPath.map(i=>names[i]).join(" → ")}</div><p>Distancia total: <strong>${total}</strong></p>`;}
+ else $("pathResult").textContent="El camino mínimo se mostrará al terminar el algoritmo.";
+ renderGraph(st);$("prev").disabled=index===0;$("next").disabled=index===trace.length-1;
+}
+function resetAlgorithm(){stop();buildTrace();}
+$("prev").addEventListener("click",()=>{stop();if(index>0){index--;render();}});
+$("next").addEventListener("click",()=>{stop();if(index<trace.length-1){index++;render();}});
+$("reset").addEventListener("click",resetAlgorithm);
+$("play").addEventListener("click",()=>{if(timer){stop();return;}if(index>=trace.length-1)index=0;$("play").textContent="Ⅱ Pausar";timer=setInterval(()=>{if(index<trace.length-1){index++;render();}else stop();},950);render();});
+$("random").addEventListener("click",()=>{stop();graph=randomGraph();$("matrix").value=matrixText(graph);setMessage("Se ha conservado la estructura visual y se han generado nuevos pesos aleatorios.","success");resetAlgorithm();});
+$("load").addEventListener("click",()=>{try{let g=parseMatrix();stop();graph=g;setMessage("Grafo cargado correctamente.","success");resetAlgorithm();}catch(e){setMessage(e.message,"error");}});
+$("origin").addEventListener("change",resetAlgorithm);$("destination").addEventListener("change",resetAlgorithm);
+for(let i=0;i<N;i++){for(let id of ["origin","destination"]){let op=document.createElement("option");op.value=i;op.textContent=names[i];$(id).appendChild(op);}}
+$("origin").value="0";$("destination").value="2";
+graph=[
+[0,2,0,4,1],
+[2,0,3,0,2],
+[0,3,0,4,1],
+[4,0,4,0,3],
+[1,2,1,3,0]
+]
+$("matrix").value=matrixText(graph);buildTrace();
+</script>
+</body>
+</html>

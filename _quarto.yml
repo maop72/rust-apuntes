@@ -5,6 +5,7 @@ project:
     - animaciones/selection-sort.html
     - animaciones/mergesort.html
     - animaciones/quicksort.html
+    - animaciones/dijkstra_5.html
 
 book:
   title: "Apuntes de programación en Rust"
@@ -40,6 +41,7 @@ book:
     - 26-colas_prioridad.qmd
     - 27-ordenacion.qmd
     - 28-busqueda.qmd
+    - 29-grafos.qmd
 
 
 lang: es-ES
