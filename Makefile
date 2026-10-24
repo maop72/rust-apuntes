@@ -6,13 +6,13 @@ links:
 	$(CODE2URL)
 
 # Generación de los grafos a partir de fuentes Graphviz
-grafos:
-	@for f in grafos/*.dot; do \
-		[ -f "$$f" ] || continue; \
-		dot -Tsvg "$$f" -o "$${f%.dot}.svg"; \
-	done
+#grafos:
+#	@for f in grafos/*.dot; do \
+#		[ -f "$$f" ] || continue; \
+#		dot -Tsvg "$$f" -o "$${f%.dot}.svg"; \
+#	done
 
-common: links grafos
+common: links #grafos
 
 html: common
 	quarto render --to html
@@ -25,7 +25,7 @@ all: common
 
 clean:
 	rm -rf _book .quarto
-	rm -f grafos/*.svg
+#	rm -f grafos/*.svg
 
-preview: links grafos
+preview: links #grafos
 	quarto preview &>/dev/null
