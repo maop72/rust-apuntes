@@ -622,19 +622,15 @@ el nodo actual.
 El siguiente programa calcula las distancias mínimas desde el
 nodo `A` hasta los demás nodos del grafo:
 
-
 ``` rust
 {{< include c29/dijkstra/src/main.rs >}}
 ```
-
 
 ::: {.text-end .small}
 
 [Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20dijkstra%28%0A%20%20%20%20grafo%3A%20%26%5BVec%3C%28usize%2C%20u32%29%3E%5D%2C%0A%20%20%20%20inicio%3A%20usize%2C%0A%29%20-%3E%20Vec%3Cu32%3E%20%7B%0A%20%20%20%20let%20n%20%3D%20grafo.len%28%29%3B%0A%20%20%20%20let%20infinito%20%3D%20u32%3A%3AMAX%3B%0A%0A%20%20%20%20let%20mut%20distancias%20%3D%20vec%21%5Binfinito%3B%20n%5D%3B%0A%20%20%20%20let%20mut%20procesado%20%3D%20vec%21%5Bfalse%3B%20n%5D%3B%0A%0A%20%20%20%20distancias%5Binicio%5D%20%3D%200%3B%0A%0A%20%20%20%20for%20_%20in%200..n%20%7B%0A%20%20%20%20%20%20%20%20//%20Buscar%20el%20nodo%20no%20procesado%20con%20menor%20distancia.%0A%20%20%20%20%20%20%20%20let%20mut%20actual%20%3D%20None%3B%0A%0A%20%20%20%20%20%20%20%20for%20i%20in%200..n%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20if%20%21procesado%5Bi%5D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%26%26%20distancias%5Bi%5D%20%21%3D%20infinito%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%26%26%20actual.is_none_or%28%7Cj%7C%20distancias%5Bi%5D%20%3C%20distancias%5Bj%5D%29%0A%20%20%20%20%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20actual%20%3D%20Some%28i%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20//%20Si%20no%20quedan%20nodos%20alcanzables%2C%20terminamos.%0A%20%20%20%20%20%20%20%20let%20Some%28u%29%20%3D%20actual%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20break%3B%0A%20%20%20%20%20%20%20%20%7D%3B%0A%0A%20%20%20%20%20%20%20%20procesado%5Bu%5D%20%3D%20true%3B%0A%0A%20%20%20%20%20%20%20%20//%20Actualizar%20las%20distancias%20de%20los%20vecinos.%0A%20%20%20%20%20%20%20%20for%20%26%28v%2C%20peso%29%20in%20%26grafo%5Bu%5D%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20let%20nueva_distancia%20%3D%20distancias%5Bu%5D%20%2B%20peso%3B%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20if%20nueva_distancia%20%3C%20distancias%5Bv%5D%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20distancias%5Bv%5D%20%3D%20nueva_distancia%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20distancias%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20//%20A%20%3D%200%2C%20B%20%3D%201%2C%20...%2C%20H%20%3D%207%0A%20%20%20%20let%20grafo%20%3D%20vec%21%5B%0A%20%20%20%20%20%20%20%20vec%21%5B%281%2C%204%29%2C%20%282%2C%202%29%5D%2C%20%20%20%20%20%20%20%20%20%20%20%20%20//%20A%0A%20%20%20%20%20%20%20%20vec%21%5B%280%2C%204%29%2C%20%283%2C%205%29%2C%20%284%2C%202%29%5D%2C%20%20%20%20//%20B%0A%20%20%20%20%20%20%20%20vec%21%5B%280%2C%202%29%2C%20%285%2C%203%29%2C%20%286%2C%208%29%5D%2C%20%20%20%20//%20C%0A%20%20%20%20%20%20%20%20vec%21%5B%281%2C%205%29%2C%20%287%2C%203%29%5D%2C%20%20%20%20%20%20%20%20%20%20%20%20%20//%20D%0A%20%20%20%20%20%20%20%20vec%21%5B%281%2C%202%29%2C%20%287%2C%204%29%5D%2C%20%20%20%20%20%20%20%20%20%20%20%20%20//%20E%0A%20%20%20%20%20%20%20%20vec%21%5B%282%2C%203%29%2C%20%287%2C%202%29%5D%2C%20%20%20%20%20%20%20%20%20%20%20%20%20//%20F%0A%20%20%20%20%20%20%20%20vec%21%5B%282%2C%208%29%5D%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20//%20G%0A%20%20%20%20%20%20%20%20vec%21%5B%283%2C%203%29%2C%20%284%2C%204%29%2C%20%285%2C%202%29%5D%2C%20%20%20%20//%20H%0A%20%20%20%20%5D%3B%0A%0A%20%20%20%20let%20distancias%20%3D%20dijkstra%28%26grafo%2C%200%29%3B%0A%0A%20%20%20%20for%20%28i%2C%20distancia%29%20in%20distancias.iter%28%29.enumerate%28%29%20%7B%0A%20%20%20%20%20%20%20%20let%20nodo%20%3D%20%28b%27A%27%20%2B%20i%20as%20u8%29%20as%20char%3B%0A%0A%20%20%20%20%20%20%20%20if%20%2Adistancia%20%3D%3D%20u32%3A%3AMAX%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22%7Bnodo%7D%3A%20inalcanzable%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22%7Bnodo%7D%3A%20%7Bdistancia%7D%22%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A)
 
 :::
-
-
 
 ### Cómo funciona
 
@@ -669,3 +665,41 @@ Esta implementación presupone que los pesos son no negativos y
 que la suma de las distancias no desborda el tipo `u32`. Para
 mantener el ejemplo sencillo no se han añadido comprobaciones de
 desbordamiento.
+
+## Resumen
+
+Un grafo es una estructura formada por nodos y aristas que
+permite representar relaciones entre objetos. Los grafos pueden
+ser dirigidos o no dirigidos, y ponderados o no ponderados.
+También podemos clasificarlos según su conectividad.
+
+Existen distintas formas de representar un grafo en Rust. Una de
+las más sencillas es la lista de adyacencia, que podemos
+implementar mediante un `Vec<Vec<usize>>`. Cada posición del
+vector representa un nodo y contiene los índices de sus vecinos.
+
+Los recorridos permiten visitar los nodos de un grafo siguiendo
+una estrategia determinada:
+
+- La búsqueda en anchura (BFS) recorre los nodos por niveles y
+  utiliza una cola FIFO. En grafos no ponderados, permite
+  encontrar caminos con el menor número de aristas.
+- La búsqueda en profundidad (DFS) avanza por un camino mientras
+  sea posible y retrocede cuando no quedan vecinos sin visitar.
+  Puede implementarse mediante recursividad o utilizando una
+  pila.
+
+A partir de un recorrido podemos obtener un árbol de expansión,
+formado por todos los nodos alcanzados y las aristas utilizadas
+para descubrirlos por primera vez. En un grafo conexo con (V)
+nodos, un árbol de expansión contiene exactamente (V-1) aristas.
+
+Otro problema habitual es encontrar caminos mínimos, es decir,
+caminos cuyo coste total sea el menor posible. En grafos
+ponderados con pesos no negativos, el algoritmo de Dijkstra
+permite calcular las distancias mínimas desde un nodo inicial
+hasta los demás nodos alcanzables.
+
+Estos algoritmos constituyen herramientas fundamentales para
+resolver problemas de conectividad, exploración de redes y
+búsqueda de caminos en distintas aplicaciones.
