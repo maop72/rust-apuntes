@@ -60,7 +60,7 @@ cada nodo la lista de nodos con los que está conectado.
 Por ejemplo, consideremos este grafo no dirigido con cuatro
 nodos.
 
-![grafo01](grafos/grafo01.png)
+![grafo01](grafos/grafo01.png){width=20%}
 
 Sus aristas son:
 
