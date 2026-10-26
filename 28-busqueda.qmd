@@ -189,7 +189,9 @@ En cada paso, divide por la mitad el intervalo de valores posibles,
 hasta encontrar el número o detectar respuestas inconsistentes.
 
 
-En el peor caso necesita 7 preguntas, pues $\lceil \log_2(100) \rceil = 7$. La función $\lceil x \rceil$, denominada *techo*, redondea un número al entero superior o lo deja igual si ya es entero.
+En el peor caso necesita 7 preguntas, pues $\lceil \log_2(100) \rceil = 7$. 
+La función $\lceil x \rceil$, denominada *techo* (*ceil*), redondea un número 
+al entero superior o lo deja igual si ya es entero.
 
 O dicho de otro modo: en el peor caso necesita 7 preguntas, pues \(2^6 = 64 < 100 < 128 = 2^7\)
 

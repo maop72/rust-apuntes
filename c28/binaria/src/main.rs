@@ -20,12 +20,12 @@ fn main() {
             break;
         }
 
-        let numero = (minimo + maximo) / 2;
+        let tentativo = (minimo + maximo) / 2;
         intentos += 1;
 
         println!(
             "Sé que el número está entre {} y {}. ¿{}?",
-            minimo, maximo, numero
+            minimo, maximo, tentativo
         );
         println!("1 - Sí, ese es.");
         println!("2 - No, es menor.");
@@ -50,8 +50,8 @@ fn main() {
                 println!("¡Lo he encontrado en {} intentos!", intentos);
                 break;
             }
-            2 => maximo = numero - 1,
-            3 => minimo = numero + 1,
+            2 => maximo = tentativo - 1,
+            3 => minimo = tentativo + 1,
             _ => unreachable!(),
         }
     }
