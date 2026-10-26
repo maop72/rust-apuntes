@@ -145,6 +145,96 @@ rápida que en un vector sin ordenar. Sin embargo, si las claves
 se insertan en un orden desfavorable, el árbol puede degenerar y
 comportarse como una lista.
 
+
+## Búsqueda binaria
+
+Cuando los elementos de un vector están ordenados, podemos
+utilizar un algoritmo de búsqueda más eficiente que la búsqueda
+lineal: la búsqueda binaria.
+
+La idea consiste en comparar el elemento buscado con el elemento
+situado en el centro del intervalo de búsqueda. Si ambos
+coinciden, hemos terminado. Si no, podemos descartar la mitad del
+intervalo:
+
+- Si el elemento buscado es menor que el elemento central,
+  continuamos por la mitad izquierda.
+- Si es mayor, continuamos por la mitad derecha.
+
+Repetimos el proceso hasta encontrar el elemento o agotar el
+intervalo de búsqueda.
+
+### Ejemplo
+
+Consideremos el siguiente vector ordenado:
+
+``` text
+[10, 20, 30, 40, 50, 60, 70, 80, 90]
+```
+
+Queremos buscar el valor `70`.
+
+1.  Comparamos con el elemento central, `50`. Como `70 > 50`,
+    descartamos la mitad izquierda.
+2.  Buscamos en la mitad derecha: `[60, 70, 80, 90]`. El elemento
+    central de este intervalo es `70`.
+3.  Hemos encontrado el elemento.
+
+En solo dos comparaciones hemos encontrado el valor buscado.
+
+### Implementación en Rust
+Este programa pide al usuario que piense un número entre 1 y 100 e 
+intenta adivinarlo mediante preguntas sucesivas por búsqueda binaria. 
+En cada paso, divide por la mitad el intervalo de valores posibles, 
+hasta encontrar el número o detectar respuestas inconsistentes.
+
+
+En el peor caso necesita 7 preguntas, pues $\lceil \log_2(100) \rceil = 7$. La función $\lceil x \rceil$, denominada *techo*, redondea un número al entero superior o lo deja igual si ya es entero.
+
+O dicho de otro modo: en el peor caso necesita 7 preguntas, pues \(2^6 = 64 < 100 < 128 = 2^7\)
+
+``` rust
+{{< include c28/binaria/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Aio%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20println%21%28%22Piensa%20un%20n%C3%BAmero%20del%201%20al%20100.%22%29%3B%0A%20%20%20%20println%21%28%22Ap%C3%BAntalo%20pero%20no%20me%20lo%20digas.%5Cn%22%29%3B%0A%0A%20%20%20%20let%20mut%20minimo%20%3D%201%3B%0A%20%20%20%20let%20mut%20maximo%20%3D%20100%3B%0A%20%20%20%20let%20mut%20intentos%20%3D%200%3B%0A%0A%20%20%20%20loop%20%7B%0A%20%20%20%20%20%20%20%20if%20minimo%20%3E%20maximo%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22Te%20has%20equivocado%20en%20alguna%20respuesta.%22%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20break%3B%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20if%20minimo%20%3D%3D%20maximo%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22%C2%A1Tu%20n%C3%BAmero%20es%20%7B%7D%21%22%2C%20minimo%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22Lo%20he%20encontrado%20en%20%7B%7D%20intentos.%22%2C%20intentos%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20break%3B%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20let%20numero%20%3D%20%28minimo%20%2B%20maximo%29%20/%202%3B%0A%20%20%20%20%20%20%20%20intentos%20%2B%3D%201%3B%0A%0A%20%20%20%20%20%20%20%20println%21%28%0A%20%20%20%20%20%20%20%20%20%20%20%20%22S%C3%A9%20que%20el%20n%C3%BAmero%20est%C3%A1%20entre%20%7B%7D%20y%20%7B%7D.%20%C2%BF%7B%7D%3F%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20minimo%2C%20maximo%2C%20numero%0A%20%20%20%20%20%20%20%20%29%3B%0A%20%20%20%20%20%20%20%20println%21%28%221%20-%20S%C3%AD%2C%20ese%20es.%22%29%3B%0A%20%20%20%20%20%20%20%20println%21%28%222%20-%20No%2C%20es%20menor.%22%29%3B%0A%20%20%20%20%20%20%20%20println%21%28%223%20-%20No%2C%20es%20mayor.%22%29%3B%0A%0A%20%20%20%20%20%20%20%20let%20mut%20respuesta%20%3D%20String%3A%3Anew%28%29%3B%0A%20%20%20%20%20%20%20%20io%3A%3Astdin%28%29%0A%20%20%20%20%20%20%20%20%20%20%20%20.read_line%28%26mut%20respuesta%29%0A%20%20%20%20%20%20%20%20%20%20%20%20.expect%28%22Error%20al%20leer%20la%20respuesta%22%29%3B%0A%0A%20%20%20%20%20%20%20%20let%20respuesta%3A%20u32%20%3D%20match%20respuesta.trim%28%29.parse%28%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20Ok%28n%29%20if%20%281..%3D3%29.contains%28%26n%29%20%3D%3E%20n%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20_%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22Respuesta%20no%20v%C3%A1lida.%22%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20intentos%20-%3D%201%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20continue%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%3B%0A%0A%20%20%20%20%20%20%20%20match%20respuesta%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%201%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22%C2%A1Lo%20he%20encontrado%20en%20%7B%7D%20intentos%21%22%2C%20intentos%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20break%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%202%20%3D%3E%20maximo%20%3D%20numero%20-%201%2C%0A%20%20%20%20%20%20%20%20%20%20%20%203%20%3D%3E%20minimo%20%3D%20numero%20%2B%201%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20_%20%3D%3E%20unreachable%21%28%29%2C%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+
+
+El programa mantiene los límites inferior y superior del intervalo de búsqueda, que inicialmente son 1 y 100. En cada iteración calcula el punto medio y actualiza uno de los límites según la respuesta del usuario.
+
+Si el intervalo queda vacío, el programa detecta que alguna respuesta ha sido inconsistente. Si ambos límites coinciden, el número buscado ya está determinado y no es necesario formular otra pregunta.
+
+La variable intentos cuenta las preguntas realizadas. Las respuestas se leen como cadenas de texto y se convierten a enteros mediante parse(), comprobando que estén comprendidas entre 1 y 3.
+
+
+
+
+### Complejidad
+
+En la búsqueda lineal, en el peor caso tenemos que examinar todos
+los elementos. Si el vector contiene (n) elementos, el número de
+comparaciones crece proporcionalmente a (n).
+
+En la búsqueda binaria, cada comparación reduce aproximadamente a
+la mitad el número de elementos que quedan por examinar. Por
+tanto, el número de comparaciones crece mucho más lentamente: es
+proporcional a ($\log_2 n$).
+
+Por ejemplo, para buscar en un millón de elementos, la búsqueda
+lineal puede necesitar un millón de comparaciones, mientras que
+la búsqueda binaria necesita como máximo unas veinte.
+
+La condición fundamental es que los elementos estén ordenados. Si
+modificamos el vector y dejamos de mantener ese orden, ya no
+podemos utilizar este algoritmo correctamente.
+
+
+
 ## Tablas hash
 
 Si implementamos una tabla de símbolos mediante un vector,
