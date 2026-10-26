@@ -237,16 +237,14 @@ podemos utilizar este algoritmo correctamente.
 
 ### Otro ejemplo: Akinator
 
-
-Un ejemplo de programa que recuerda a este tipo de búsqueda es
-[Akinator](https://es.akinator.com/game) , que intenta adivinar
+Un ejemplo de aplicación que usa un algoritmo similar es
+[Akinator](https://es.akinator.com/game), que adivina
 el personaje en el que estamos pensando mediante preguntas
 sucesivas. Aunque su funcionamiento es más complejo que una
 búsqueda binaria estricta, la idea de reducir progresivamente las
 posibilidades es similar. Hoy, en tiempos de la inteligencia
 artificial, puede que no nos parezca especialmente sorprendente,
-pero cuando apareció, en 2007, resultaba espectacular comprobar
-cómo podía acertar personajes en los que apenas habíamos pensado.
+pero cuando apareció, en 2007, resultaba espectacular.
 
 ## Tablas hash
 
