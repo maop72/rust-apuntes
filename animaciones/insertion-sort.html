@@ -7,7 +7,53 @@
 <style>
 :root{color-scheme:light dark;--bg:#fff;--panel:#f5f7fa;--text:#172033;--muted:#586579;--border:#d8dee8;--accent:#2458c6;--sorted:#dff4e7;--sorted-text:#14532d;--key:#ffe7a8;--key-text:#6b4200}
 @media(prefers-color-scheme:dark){:root{--bg:#111722;--panel:#1b2432;--text:#edf2fb;--muted:#b0bdd0;--border:#344154;--accent:#9bbaff;--sorted:#183c2a;--sorted-text:#a8edbf;--key:#4b3917;--key-text:#ffdf8b}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}main{max-width:800px;margin:auto;padding:clamp(16px,4vw,30px)}h1{font-size:clamp(1.5rem,4vw,2rem);margin:0 0 8px;line-height:1.2}.intro{color:var(--muted);margin:0 0 22px}.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:clamp(14px,3vw,22px);margin:16px 0}label{display:block;font-weight:650;margin-bottom:6px}.input-row,.controls{display:flex;gap:8px;flex-wrap:wrap}input{flex:1 1 240px;min-width:0;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}button{padding:9px 13px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font:inherit;font-weight:600;cursor:pointer}button.primary{background:var(--accent);color:white;border-color:var(--accent)}@media(prefers-color-scheme:dark){button.primary{color:#111722}}button:disabled{opacity:.4;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}.hint,.error{font-size:.9rem;color:var(--muted);margin:7px 0 0}.error{color:#c62828;min-height:1.3em}.status{font-weight:700;margin:0 0 16px}.array{display:flex;align-items:center;justify-content:center;gap:clamp(5px,1.5vw,12px);flex-wrap:wrap;min-height:76px}.cell{width:clamp(42px,8vw,62px);height:62px;border:2px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:1.4rem;font-weight:750}.cell.sorted{background:var(--sorted);color:var(--sorted-text);border-color:var(--sorted-text)}.cell.new{background:var(--key);color:var(--key-text);border-color:var(--key-text);transform:translateY(-3px)}.cell.empty{border:2px dashed var(--accent);background:transparent}.explanation{min-height:3em;margin:18px 0 0;font-size:1.05rem}.step-count{color:var(--muted);font-size:.9rem;margin-top:12px}.controls{margin-top:16px}.progress{height:6px;background:var(--border);border-radius:20px;overflow:hidden;margin-top:18px}.progress div{height:100%;background:var(--accent);width:0}.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:.9rem;margin-top:12px}.swatch{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;border:1px solid var(--border)}.swatch.sorted{background:var(--sorted);border-color:var(--sorted-text)}.swatch.new{background:var(--key);border-color:var(--key-text)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1250px;margin:auto;padding:clamp(16px,3vw,30px)}
+h1{font-size:clamp(1.5rem,4vw,2rem);margin:0 0 8px;line-height:1.2}
+.intro{color:var(--muted);margin:0 0 22px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:clamp(14px,2vw,22px);margin:16px 0}
+label{display:block;font-weight:650;margin-bottom:6px}
+.input-row,.controls{display:flex;gap:8px;flex-wrap:wrap}
+input{flex:1 1 240px;min-width:0;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
+button{padding:9px 13px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font:inherit;font-weight:600;cursor:pointer}
+button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+@media(prefers-color-scheme:dark){button.primary{color:#111722}}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.hint,.error{font-size:.9rem;color:var(--muted);margin:7px 0 0}
+.error{color:#c62828;min-height:1.3em}
+.status{font-weight:700;margin:0 0 16px}
+.workspace{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:16px;align-items:stretch}
+.workspace>.panel{margin:0;min-width:0}
+.array{display:flex;align-items:center;justify-content:center;gap:clamp(5px,1.2vw,12px);flex-wrap:wrap;min-height:76px}
+.cell{width:clamp(38px,5vw,62px);height:62px;border:2px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:1.4rem;font-weight:750}
+.cell.sorted{background:var(--sorted);color:var(--sorted-text);border-color:var(--sorted-text)}
+.cell.new{background:var(--key);color:var(--key-text);border-color:var(--key-text);transform:translateY(-3px)}
+.explanation{min-height:3em;margin:18px 0 0;font-size:1.05rem}
+.step-count{color:var(--muted);font-size:.9rem;margin-top:12px}
+.controls{margin-top:16px}
+.progress{height:6px;background:var(--border);border-radius:20px;overflow:hidden;margin-top:18px}
+.progress div{height:100%;background:var(--accent);width:0}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:.9rem;margin-top:12px}
+.swatch{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;border:1px solid var(--border)}
+.swatch.sorted{background:var(--sorted);border-color:var(--sorted-text)}
+.swatch.new{background:var(--key);border-color:var(--key-text)}
+.history-panel{display:flex;flex-direction:column;max-height:690px}
+.history-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}
+.history-heading h2{font-size:1.15rem;margin:0}
+.history-count{font-size:.85rem;color:var(--muted);white-space:nowrap}
+.history{margin:0;padding:0 0 0 2rem;overflow:auto;flex:1;min-height:220px;max-height:590px}
+.history li{padding:7px 8px 7px 3px;border-bottom:1px solid var(--border);overflow-wrap:anywhere}
+.history li::marker{color:var(--muted);font-variant-numeric:tabular-nums}
+.history li:last-child{border-bottom:0}
+.history .empty{list-style:none;margin-left:-2rem;color:var(--muted);padding:12px 0}
+.history .history-state{padding-top:9px;padding-bottom:9px}
+.mini-array{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.mini-cell{width:clamp(25px,3vw,36px);height:32px;border:1.5px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:.92rem;font-weight:750;line-height:1}
+.mini-cell.sorted{background:var(--sorted);color:var(--sorted-text);border-color:var(--sorted-text)}
+.mini-cell.new{background:var(--key);color:var(--key-text);border-color:var(--key-text)}
+@media(max-width:800px){.workspace{grid-template-columns:1fr}.history-panel{max-height:380px}.history{max-height:280px;min-height:100px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -20,6 +66,7 @@
 <div class="input-row"><input id="values" value="7, 3, 8, 2, 6, 4, 5" aria-describedby="hint error"><button id="apply" class="primary">Aplicar</button></div>
 <p id="hint" class="hint">Introduce entre 2 y 12 enteros separados por comas o espacios.</p><p id="error" class="error" role="alert"></p>
 </section>
+<div class="workspace">
 <section class="panel">
 <p id="status" class="status" aria-live="polite">Secuencia inicial</p>
 <div id="array" class="array" aria-label="Secuencia de valores"></div>
@@ -29,41 +76,87 @@
 <div class="progress"><div id="bar"></div></div>
 <div class="controls"><button id="first">⏮ Inicio</button><button id="prev">← Anterior</button><button id="play" class="primary">▶ Reproducir</button><button id="next">Siguiente →</button><button id="reset">↺ Reiniciar</button></div>
 </section>
+<aside class="panel history-panel" aria-label="Historial de movimientos">
+<div class="history-heading"><h2>Historial de movimientos</h2><span id="historyCount" class="history-count">0 movimientos</span></div>
+<ol id="history" class="history" aria-live="polite"><li class="empty">Los movimientos aparecerán aquí al avanzar.</li></ol>
+</aside>
+</div>
 </main>
 <script>
 (()=>{
-const $=id=>document.getElementById(id);let original=[7,3,8,2,6,4,5],steps=[],index=0,timer=null;
+const $=id=>document.getElementById(id);
+let original=[7,3,8,2,6,4,5],steps=[],index=0,timer=null,maxSeen=0;
 function makeSteps(values){
  const a=values.slice();
- const out=[{a:a.slice(),sorted:1,active:[],text:'Al principio, el primer elemento forma por sí solo un tramo ordenado.'}];
+ const out=[{a:a.slice(),sorted:1,active:[],text:'Al principio, el primer elemento forma por sí solo un tramo ordenado.',log:null}];
  for(let i=1;i<a.length;i++){
   let j=i;
-  out.push({a:a.slice(),sorted:i,active:[j],text:`Tomamos el elemento ${a[j]} y lo comparamos con el último elemento del tramo ordenado.`});
+  out.push({a:a.slice(),sorted:i,active:[j],text:`Tomamos el elemento ${a[j]} y lo comparamos con el último elemento del tramo ordenado.`,log:`Tomamos ${a[j]} (posición ${j}) para insertarlo en el tramo ordenado.`});
   while(j>0){
    const left=a[j-1],current=a[j];
    if(current<left){
     [a[j-1],a[j]]=[a[j],a[j-1]];
+    out.push({a:a.slice(),sorted:i,active:[j-1,j],text:`${current} es menor que ${left}: los permutamos. Volvemos a comparar ${current} con el elemento que queda a su izquierda.`,log:`Intercambio: ${current} y ${left}. Resultado: [${a.join(', ')}].`});
     j--;
-    out.push({a:a.slice(),sorted:i,active:[j,j+1],text:`${current} es menor que ${left}: los permutamos. Volvemos a comparar ${current} con el elemento que queda a su izquierda.`});
    }else{
-    out.push({a:a.slice(),sorted:i,active:[j-1,j],text:`${current} no es menor que ${left}: no hace falta permutarlos. ${current} ya está en su posición.`});
+    out.push({a:a.slice(),sorted:i,active:[j-1,j],text:`${current} no es menor que ${left}: no hace falta permutarlos. ${current} ya está en su posición.`,log:`Comparación: ${current} no es menor que ${left}; no se intercambian.`});
     break;
    }
   }
-  if(j===0){out.push({a:a.slice(),sorted:i+1,active:[0],text:`Hemos llegado al principio: ${a[0]} queda en su posición. El tramo ordenado ya contiene ${i+1} elementos.`});}
-  else {out.push({a:a.slice(),sorted:i+1,active:[],text:`El elemento ha encontrado su posición. El tramo ordenado ya contiene ${i+1} elementos.`});}
+  if(j===0){out.push({a:a.slice(),sorted:i+1,active:[0],text:`Hemos llegado al principio: ${a[0]} queda en su posición. El tramo ordenado ya contiene ${i+1} elementos.`,log:`${a[0]} queda colocado al principio. Tramo ordenado: ${a.slice(0,i+1).join(', ')}.`});}
+  else {out.push({a:a.slice(),sorted:i+1,active:[],text:`El elemento ha encontrado su posición. El tramo ordenado ya contiene ${i+1} elementos.`,log:`Elemento colocado. Tramo ordenado: ${a.slice(0,i+1).join(', ')}.`});}
  }
- out.push({a:a.slice(),sorted:a.length,active:[],text:'La secuencia está ordenada de menor a mayor.'});
+ out.push({a:a.slice(),sorted:a.length,active:[],text:'La secuencia está ordenada de menor a mayor.',log:'Fin: la secuencia está ordenada.'});
  return out;
 }
 function stop(){if(timer){clearInterval(timer);timer=null;}}
-function render(){const s=steps[index],array=$('array');array.replaceChildren();s.a.forEach((v,i)=>{const el=document.createElement('div');el.className='cell';if(i<s.sorted)el.classList.add('sorted');if(s.active.includes(i)){el.classList.remove('sorted');el.classList.add('new');}el.textContent=v;array.append(el);});
+function addHistoryThrough(n){
+ const history=$('history');
+ for(let k=maxSeen+1;k<=n;k++){
+  const state=steps[k];
+  if(state){
+   const empty=history.querySelector('.empty');if(empty)empty.remove();
+   const li=document.createElement('li');
+   li.className='history-state';
+   const row=document.createElement('div');row.className='mini-array';
+   state.a.forEach((value,i)=>{
+    const cell=document.createElement('span');cell.className='mini-cell';
+    if(i<state.sorted)cell.classList.add('sorted');
+    if(state.active.includes(i)){cell.classList.remove('sorted');cell.classList.add('new');}
+    cell.textContent=value;row.append(cell);
+   });
+   row.setAttribute('aria-label','Secuencia: '+state.a.join(', '));
+   li.append(row);history.append(li);
+  }
+ }
+ maxSeen=Math.max(maxSeen,n);
+ $('historyCount').textContent=`${history.querySelectorAll('li:not(.empty)').length} ${history.querySelectorAll('li:not(.empty)').length===1?'movimiento':'movimientos'}`;
+ if(n>0)history.scrollTop=history.scrollHeight;
+}
+function clearHistory(){
+ $('history').replaceChildren();
+ const li=document.createElement('li');li.className='empty';li.textContent='Los movimientos aparecerán aquí al avanzar.';
+ $('history').append(li);$('historyCount').textContent='0 movimientos';maxSeen=0;
+}
+function render(){
+ const s=steps[index],array=$('array');array.replaceChildren();
+ s.a.forEach((v,i)=>{const el=document.createElement('div');el.className='cell';if(i<s.sorted)el.classList.add('sorted');if(s.active.includes(i)){el.classList.remove('sorted');el.classList.add('new');}el.textContent=v;array.append(el);});
  $('status').textContent=index===steps.length-1?'Secuencia ordenada':index===0?'Secuencia inicial':`Paso ${index} de ${steps.length-1}`;
- $('explanation').textContent=s.text;$('count').textContent=`Paso ${index+1} de ${steps.length}`;$('bar').style.width=(steps.length>1?index/(steps.length-1)*100:100)+'%';$('first').disabled=$('prev').disabled=index===0;$('next').disabled=index===steps.length-1;$('play').textContent=timer?'Ⅱ Pausar':'▶ Reproducir';array.setAttribute('aria-label','Secuencia: '+s.a.join(', '));}
-function go(n){stop();index=Math.max(0,Math.min(steps.length-1,n));render();}
-function start(values){stop();original=values.slice();steps=makeSteps(original);index=0;render();}
+ $('explanation').textContent=s.text;$('count').textContent=`Paso ${index+1} de ${steps.length}`;$('bar').style.width=(steps.length>1?index/(steps.length-1)*100:100)+'%';$('first').disabled=$('prev').disabled=index===0;$('next').disabled=index===steps.length-1;$('play').textContent=timer?'Ⅱ Pausar':'▶ Reproducir';array.setAttribute('aria-label','Secuencia: '+s.a.join(', '));
+}
+function go(n){
+ stop();const next=Math.max(0,Math.min(steps.length-1,n));
+ if(next>maxSeen)addHistoryThrough(next);
+ index=next;render();
+}
+function start(values){
+ stop();original=values.slice();steps=makeSteps(original);index=0;clearHistory();render();
+}
 $('apply').addEventListener('click',()=>{try{const tokens=$('values').value.trim().split(/[\s,;]+/).filter(Boolean);if(tokens.length<2||tokens.length>12)throw Error('Introduce entre 2 y 12 enteros.');const values=tokens.map(t=>{if(!/^[+-]?\d+$/.test(t)||!Number.isSafeInteger(Number(t)))throw Error(`«${t}» no es un entero válido.`);return Number(t);});$('error').textContent='';start(values);}catch(e){$('error').textContent=e.message;}});
-$('first').addEventListener('click',()=>go(0));$('prev').addEventListener('click',()=>go(index-1));$('next').addEventListener('click',()=>go(index+1));$('reset').addEventListener('click',()=>start(original));$('play').addEventListener('click',()=>{if(timer){stop();render();return;}if(index===steps.length-1)index=0;timer=setInterval(()=>{if(index>=steps.length-1){stop();render();return;}index++;render();},1200);render();});$('values').addEventListener('keydown',e=>{if(e.key==='Enter')$('apply').click();});start(original);
+$('first').addEventListener('click',()=>go(0));$('prev').addEventListener('click',()=>go(index-1));$('next').addEventListener('click',()=>go(index+1));$('reset').addEventListener('click',()=>start(original));
+$('play').addEventListener('click',()=>{if(timer){stop();render();return;}if(index===steps.length-1){index=0;}timer=setInterval(()=>{if(index>=steps.length-1){stop();render();return;}index++;addHistoryThrough(index);render();if(index>=steps.length-1){stop();render();}},1200);render();});
+$('values').addEventListener('keydown',e=>{if(e.key==='Enter')$('apply').click();});
+start(original);
 })();
 </script>
 </body>

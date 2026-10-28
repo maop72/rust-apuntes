@@ -237,7 +237,7 @@ podemos utilizar este algoritmo correctamente.
 
 ### Otro ejemplo: Akinator
 
-Un ejemplo de aplicación que usa un algoritmo similar es
+Un ejemplo de aplicación que usa un algoritmo parecido es
 [Akinator](https://es.akinator.com/game), que adivina
 el personaje en el que estamos pensando mediante preguntas
 sucesivas. Aunque su funcionamiento es más complejo que una
