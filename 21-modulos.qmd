@@ -182,10 +182,11 @@ proyectos existentes, actualmente se recomienda utilizar un
 fichero con el mismo nombre que el módulo, como en los ejemplos
 anteriores.
 
-El funcionamiento de `mod` es diferente, por ejemplo, que la
-directiva *#include* del lenguaje C. En C, el preprocesador
-inserta textualmente el contenido del fichero incluido, por lo
-que un mismo fichero de cabecera puede incluirse desde distintos
+La declaración de módulos mediante `mod` funciona de manera
+diferente a la inclusión de ficheros mediante la directiva
+*#include* del lenguaje C. En C, el preprocesador inserta
+textualmente el contenido del fichero incluido, por lo que un
+mismo fichero de cabecera puede incluirse desde distintos
 archivos fuente. Para evitar definiciones duplicadas cuando un
 fichero se incluye varias veces dentro de una misma unidad de
 compilación, se utilizan habitualmente las denominadas *include
