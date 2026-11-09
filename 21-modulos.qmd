@@ -182,6 +182,32 @@ proyectos existentes, actualmente se recomienda utilizar un
 fichero con el mismo nombre que el módulo, como en los ejemplos
 anteriores.
 
+El funcionamiento de `mod` es diferente, por ejemplo, que la
+directiva *#include* del lenguaje C. En C, el preprocesador
+inserta textualmente el contenido del fichero incluido, por lo
+que un mismo fichero de cabecera puede incluirse desde distintos
+archivos fuente. Para evitar definiciones duplicadas cuando un
+fichero se incluye varias veces dentro de una misma unidad de
+compilación, se utilizan habitualmente las denominadas *include
+guards*, de esta forma:
+
+``` C
+#ifndef FRAME_H
+#define FRAME_H
+
+typedef struct {
+    uint8_t data[MAX_FRAME_SIZE];
+    size_t len;
+} Frame;
+
+#endif
+```
+
+En Rust, por el contrario, cada módulo se declara una sola vez
+mediante mod, normalmente en el fichero principal (main.rs o
+lib.rs), y puede utilizarse desde otros módulos mediante sus
+correspondientes rutas.
+
 Respecto al *Rust Playground*, el servicio en línea que
 utilizamos para ejecutar programas en Rust sin necesidad de
 instalarlo en nuestro ordenador, debemos tener en cuenta que solo
