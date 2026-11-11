@@ -145,7 +145,6 @@ rápida que en un vector sin ordenar. Sin embargo, si las claves
 se insertan en un orden desfavorable, el árbol puede degenerar y
 comportarse como una lista.
 
-
 ## Búsqueda binaria
 
 Cuando los elementos de un vector están ordenados, podemos
@@ -183,17 +182,20 @@ Queremos buscar el valor `70`.
 En solo dos comparaciones hemos encontrado el valor buscado.
 
 ### Implementación en Rust
-Este programa pide al usuario que piense un número entre 1 y 100 e 
-intenta adivinarlo mediante preguntas sucesivas por búsqueda binaria. 
-En cada paso, divide por la mitad el intervalo de valores posibles, 
-hasta encontrar el número o detectar respuestas inconsistentes.
 
+Este programa pide al usuario que piense un número entre 1 y 100
+e intenta adivinarlo mediante preguntas sucesivas por búsqueda
+binaria. En cada paso, divide por la mitad el intervalo de
+valores posibles, hasta encontrar el número o detectar respuestas
+inconsistentes.
 
-En el peor caso necesita 7 preguntas, pues $\lceil \log_2(100) \rceil = 7$. 
-La función $\lceil x \rceil$, denominada *techo* (*ceil*), redondea un número 
-al entero superior o lo deja igual si ya es entero.
+En el peor caso necesita 7 preguntas, pues
+$`\lceil \log_2(100) \rceil = 7`$. La función
+$`\lceil x \rceil`$, denominada *techo* (*ceil*), redondea un
+número al entero superior o lo deja igual si ya es entero.
 
-O dicho de otro modo: en el peor caso necesita 7 preguntas, pues \(2^6 = 64 < 100 < 128 = 2^7\)
+O dicho de otro modo: en el peor caso necesita 7 preguntas, pues
+(2^6 = 64 \< 100 \< 128 = 2^7)
 
 ``` rust
 {{< include c28/binaria/src/main.rs >}}
@@ -205,16 +207,20 @@ O dicho de otro modo: en el peor caso necesita 7 preguntas, pues \(2^6 = 64 < 10
 
 :::
 
+El programa mantiene los límites inferior y superior del
+intervalo de búsqueda, que inicialmente son 1 y 100. En cada
+iteración calcula el punto medio y actualiza uno de los límites
+según la respuesta del usuario.
 
+Si el intervalo queda vacío, el programa detecta que alguna
+respuesta ha sido inconsistente. Si ambos límites coinciden, el
+número buscado ya está determinado y no es necesario formular
+otra pregunta.
 
-El programa mantiene los límites inferior y superior del intervalo de búsqueda, que inicialmente son 1 y 100. En cada iteración calcula el punto medio y actualiza uno de los límites según la respuesta del usuario.
-
-Si el intervalo queda vacío, el programa detecta que alguna respuesta ha sido inconsistente. Si ambos límites coinciden, el número buscado ya está determinado y no es necesario formular otra pregunta.
-
-La variable intentos cuenta las preguntas realizadas. Las respuestas se leen como cadenas de texto y se convierten a enteros mediante parse(), comprobando que estén comprendidas entre 1 y 3.
-
-
-
+La variable intentos cuenta las preguntas realizadas. Las
+respuestas se leen como cadenas de texto y se convierten a
+enteros mediante parse(), comprobando que estén comprendidas
+entre 1 y 3.
 
 ### Complejidad
 
@@ -225,7 +231,7 @@ comparaciones crece proporcionalmente a (n).
 En la búsqueda binaria, cada comparación reduce aproximadamente a
 la mitad el número de elementos que quedan por examinar. Por
 tanto, el número de comparaciones crece mucho más lentamente: es
-proporcional a ($\log_2 n$).
+proporcional a ($`\log_2 n`$).
 
 Por ejemplo, para buscar en un millón de elementos, la búsqueda
 lineal puede necesitar un millón de comparaciones, mientras que
@@ -238,8 +244,8 @@ podemos utilizar este algoritmo correctamente.
 ### Otro ejemplo: Akinator
 
 Un ejemplo de aplicación que usa un algoritmo parecido es
-[Akinator](https://es.akinator.com/game), que adivina
-el personaje en el que estamos pensando mediante preguntas
+[Akinator](https://es.akinator.com/game), que adivina el
+personaje en el que estamos pensando mediante preguntas
 sucesivas. Aunque su funcionamiento es más complejo que una
 búsqueda binaria estricta, la idea de reducir progresivamente las
 posibilidades es similar. Hoy, en tiempos de la inteligencia
@@ -260,9 +266,9 @@ podemos acceder directamente a la posición correspondiente.
 Por ejemplo, si utilizamos una tabla de 10 posiciones y la
 función hash
 
-$$
+``` math
 h(k) = k \bmod 10
-$$
+```
 
 la clave `42` corresponde a la posición `2`, porque el resto de
 dividir 42 entre 10 es 2.

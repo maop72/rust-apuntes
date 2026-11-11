@@ -75,10 +75,8 @@ representar las secuencias que vamos a ordenar.
 Un slice permite acceder a una parte de una secuencia mediante
 índices, sin necesidad de conocer el tipo de contenedor que
 almacena los datos. En nuestro caso, podremos trabajar tanto con
-arrays como con vectores.
-
-Por ejemplo, la siguiente función recibe un slice mutable de
-enteros y modifica sus elementos:
+arrays como con vectores. Por ejemplo, la siguiente función
+recibe un slice mutable de enteros y modifica sus elementos:
 
 ``` rust
 {{< include c27/intro/src/main.rs >}}
@@ -135,21 +133,16 @@ Por ejemplo, si la secuencia inicial es:
 [4, 2, 4, 1, 2]
 ```
 
-Una ordenación correcta producirá:
+La ordenación correcta producirá:
 
 ``` text
 [1, 2, 2, 4, 4]
 ```
 
-No sería correcto obtener `[1, 2, 4, 4]`, porque se habría
-perdido un elemento, ni `[1, 2, 2, 4, 5]`, porque se habría
-alterado uno de los valores originales.
-
-También comprobaremos que los algoritmos funcionan correctamente
-con secuencias vacías, secuencias de un solo elemento y
-secuencias que contienen valores repetidos.
-
-Estas propiedades nos servirán para diseñar pruebas con las que
+Además de tratar correctamente los elementos repetidos, tenemos
+que asegurar que el algoritmo funciona correctamente con
+secuencias vacías y con secuencias de un solo elemento. Estas
+propiedades nos servirán para diseñar pruebas con las que
 verificar las implementaciones que iremos desarrollando.
 
 ## Permutación de valores
@@ -248,7 +241,7 @@ El algoritmo comienza considerando que el primer elemento está
 ordenado, ya que una secuencia de un solo elemento siempre está
 ordenada. A continuación, procesa los elementos restantes, de
 izquierda a derecha. Por tanto, lo que gráficamente veremos como
-*izquierda, derecha*, en el algoritmo real será *menos, mayor*.
+*izquierda, derecha*, en el algoritmo real será *menor, mayor*.
 
 En cada paso:
 
@@ -369,6 +362,7 @@ inicial de la secuencia.
   de comparaciones e intercambios es proporcional a
 
   $$1+2+\cdots +(n-1)=\frac{n(n-1)}{2}$$
+
 
 - Caso medio: O(n²). Para una secuencia con los elementos en un
   orden inicial aleatorio, cada elemento debe avanzar, en
@@ -586,11 +580,10 @@ salvo en los casos base. Por ejemplo, para calcular
 `fibonacci(3)`, y cada uno vuelve a realizar sus propias
 llamadas.
 
-Esta implementación resulta sencilla de entender, pero repite
-muchos cálculos y se vuelve muy lenta para valores grandes de n.
-Existen otras implementaciones más eficientes, por ejemplo,
-mediante un bucle que conserva los dos últimos términos
-calculados.
+Esta implementación es fácil de entender e ilustra bien los
+algoritmos recursivos. Aunque hay soluciones, no recursivas, más
+eficientes. Por ejemplo basadas en un bucle que conserva los dos
+últimos términos calculados.
 
 Volveremos a encontrar la recursividad en *mergesort*, donde un
 problema de ordenación se divide en otros dos más pequeños que se
@@ -1043,7 +1036,7 @@ grandes secuencias con rapidez.
 
 ### Mezcla (*mergesort*)
 
-Su principal ventaja es que garantiza un coste temporal  (O(n log
+Su principal ventaja es que garantiza un coste temporal (O(n log
 n) ), con independencia de cómo estén distribuidos inicialmente
 los elementos. También puede implementarse de manera estable: los
 elementos iguales conservan su orden relativo.
@@ -1063,7 +1056,7 @@ de la propia estructura suelen aprovechar bien la memoria y
 ofrecer un rendimiento excelente.
 
 Su principal inconveniente es que el peor caso tiene coste
-(O(n^2)). Una elección inadecuada del pivote puede producir
+O(n²). Una elección inadecuada del pivote puede producir
 particiones muy desequilibradas. Por ejemplo, en la variante
 estudiada, si todos los elementos son iguales, cada partición
 deja un solo elemento fuera y envía el resto a una única llamada
@@ -1075,37 +1068,30 @@ memoria que una variante *in-place*. Por tanto, no debemos
 atribuir a esta implementación todas las ventajas prácticas de
 las versiones optimizadas de *quicksort*.
 
+
 ### Resumen de las comparaciones
 
-Las dos tablas siguientes resumen las características de los
-algoritmos estudiados. Las complejidades indicadas son las
-habituales para las variantes consideradas, aunque algunas
-decisiones de implementación pueden modificarlas.
+Las dos tablas siguientes resumen las características de los algoritmos estudiados. Las complejidades indicadas son las habituales para las variantes consideradas, aunque algunas decisiones de implementación pueden modificarlas.
 
-| Algoritmo                    | Mejor caso    | Caso medio    | Peor caso     | Memoria adicional                                                      |
-|------------------------------|---------------|---------------|---------------|------------------------------------------------------------------------|
-| Inserción (*insertion sort*) | $O(n)$        | $O(n²)$       | $O(n²)$       | $O(1)$                                                                 |
-| Selección (*selection sort*) | $O(n²)$       | $O(n²)$       | $O(n²)$       | $O(1)$                                                                 |
-| Mezcla (*mergesort*)         | $O(n \log n)$ | $O(n \log n)$ | $O(n \log n)$ | $O(n)$                                                                 |
-| Rápida (*quicksort*)         | $O(n \log n)$ | $O(n \log n)$ | $O(n²)$       | Depende de la variante                                                 |
-| Rápida, partición *in-place* | $O(n \log n)$ | $O(n \log n)$ | $O(n²)$       | $O(\log n)$ en promedio para la pila recursiva; $O(n)$ en el peor caso |
+| Algoritmo | Mejor caso | Caso medio | Peor caso | Memoria adicional |
+|---|---|---|---|---|
+| Inserción (*insertion sort*) | $O(n)$ | $O(n²)$ | $O(n²)$ | $O(1)$ |
+| Selección (*selection sort*) | $O(n²)$ | $O(n²)$ | $O(n²)$ | $O(1)$ |
+| Mezcla (*mergesort*) | $O(n \log n)$ | $O(n \log n)$ | $O(n \log n)$ | $O(n)$ |
+| Rápida (*quicksort*) | $O(n \log n)$ | $O(n \log n)$ | $O(n²)$ | Depende de la variante |
+| Rápida, partición *in-place* | $O(n \log n)$ | $O(n \log n)$ | $O(n²)$ | $O(\log n)$ en promedio para la pila recursiva; $O(n)$ en el peor caso |
 
-En esta tabla, $n$ representa el número de elementos que hay que
-ordenar. La memoria adicional no incluye la memoria que ya ocupa
-la secuencia original.
+En esta tabla, $n$ representa el número de elementos que hay que ordenar. La memoria adicional no incluye la memoria que ya ocupa la secuencia original.
 
-| Algoritmo            | Ventajas                                                                                  | Inconvenientes                                                               | Cuándo utilizarlo                                                                            |
-|----------------------|-------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
-| Inserción            | Muy sencillo; eficiente con secuencias pequeñas o casi ordenadas; poca memoria adicional. | Lento con secuencias grandes y desordenadas.                                 | Secuencias pequeñas o casi ordenadas.                                                        |
-| Selección            | Muy sencillo; poca memoria adicional; pocos intercambios.                                 | Realiza muchas comparaciones incluso si la secuencia ya está ordenada.       | Secuencias pequeñas cuando interesa reducir los intercambios.                                |
-| Mezcla (*mergesort*) | Tiempo $O(n \log n)$ garantizado; puede ser estable.                                      | Necesita memoria adicional en la variante estudiada.                         | Cuando interesa un rendimiento predecible o mantener el orden relativo de elementos iguales. |
-| Rápida (*quicksort*) | Muy eficiente en promedio; las variantes *in-place* aprovechan bien la memoria.           | Puede alcanzar $O(n²)$; el rendimiento depende de la partición y del pivote. | Secuencias grandes cuando se utiliza una implementación bien optimizada.                     |
+| Algoritmo | Ventajas | Inconvenientes | Cuándo utilizarlo |
+|---|---|---|---|
+| Inserción | Muy sencillo; eficiente con secuencias pequeñas o casi ordenadas; poca memoria adicional. | Lento con secuencias grandes y desordenadas. | Secuencias pequeñas o casi ordenadas. |
+| Selección | Muy sencillo; poca memoria adicional; pocos intercambios. | Realiza muchas comparaciones incluso si la secuencia ya está ordenada. | Secuencias pequeñas cuando interesa reducir los intercambios. |
+| Mezcla (*mergesort*) | Tiempo $O(n \log n)$ garantizado; puede ser estable. | Necesita memoria adicional en la variante estudiada. | Cuando interesa un rendimiento predecible o mantener el orden relativo de elementos iguales. |
+| Rápida (*quicksort*) | Muy eficiente en promedio; las variantes *in-place* aprovechan bien la memoria. | Puede alcanzar $O(n²)$; el rendimiento depende de la partición y del pivote. | Secuencias grandes cuando se utiliza una implementación bien optimizada. |
 
-Las implementaciones estudiadas tienen un propósito didáctico:
-permiten comprender las ideas fundamentales y analizar su
-complejidad. En programas reales, normalmente utilizaremos las
-funciones de ordenación de las bibliotecas estándar, que
-incorporan optimizaciones y estrategias adicionales.
+Las implementaciones estudiadas tienen un propósito didáctico: permiten comprender las ideas fundamentales y analizar su complejidad. En programas reales, normalmente utilizaremos las funciones de ordenación de las bibliotecas estándar, que incorporan optimizaciones y estrategias adicionales.
+
 
 ### Una advertencia sobre las implementaciones
 
@@ -1148,8 +1134,8 @@ resolver este problema.
 
 - Mezcla (*mergesort*). Divide recursivamente la secuencia en dos
   partes, las ordena y después mezcla los resultados. Su coste
-  temporal es (O(n log n)) en todos los casos, aunque la
-  variante estudiada necesita memoria adicional.
+  temporal es (O(n log n)) en todos los casos, aunque la variante
+  estudiada necesita memoria adicional.
 
 - Rápida (*quicksort*). Elige un pivote, distribuye los elementos
   a ambos lados y ordena recursivamente las dos partes. Su coste
