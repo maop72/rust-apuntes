@@ -1,4 +1,4 @@
-# Manejo de errores {#sec-errores}
+# Manejo de errores: `Result` {#sec-errores}
 
 Dedicamos el @sec-enum a los tipos enumerados, estudiaremos ahora
 uno de los más importantes de la biblioteca estándar:

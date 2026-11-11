@@ -42,6 +42,7 @@ book:
     - 27-ordenacion.qmd
     - 28-busqueda.qmd
     - 29-grafos.qmd
+    - 30-serializacion.qmd
 
 
 lang: es-ES

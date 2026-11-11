@@ -1,0 +1,767 @@
+# Serialización
+
+Los programas informáticos manejan información mediante
+estructuras de datos que se almacenan temporalmente en memoria.
+Sin embargo, en muchas ocasiones necesitamos conservar esa
+información para utilizarla posteriormente, o transmitirla a
+otros programas que pueden estar ejecutándose en el mismo
+ordenador o en sistemas diferentes.
+
+Para ello necesitamos alguna forma de representar las estructuras
+de datos mediante una secuencia de bytes que pueda almacenarse en
+un fichero o transmitirse a través de una red. Este proceso
+recibe el nombre de *serialización* (*serialization*). El proceso
+inverso, consistente en reconstruir las estructuras de datos
+originales a partir de esa representación, se denomina
+*deserialización* (*deserialization*).
+
+La serialización permite separar la representación interna de los
+datos, que depende del lenguaje de programación y de las
+decisiones de diseño de cada aplicación, de su representación
+externa, que puede ser interpretada por otros programas. De esta
+manera, dos aplicaciones desarrolladas con lenguajes de
+programación diferentes pueden intercambiar información sin
+necesidad de conocer los detalles internos de implementación de
+la otra.
+
+Un objetivo habitual de los formatos de serialización es que la
+representación resultante sea independiente del lenguaje de
+programación y de la plataforma utilizada. Esto permite
+intercambiar información entre sistemas heterogéneos. Aunque esta
+independencia no siempre está garantizada: algunas
+representaciones dependen del lenguaje, la arquitectura o la
+implementación utilizada.
+
+Existen numerosos formatos de serialización. Algunos utilizan
+representaciones binarias compactas, mientras que otros emplean
+texto legible por personas. Entre estos últimos destacan XML,
+JSON, YAML y TOML, que permiten representar tanto valores simples
+como estructuras de datos jerárquicas.
+
+En este tema estudiaremos la evolución de estos formatos y sus
+principales características. A continuación, veremos cómo
+realizar operaciones de serialización y deserialización en Rust
+utilizando la biblioteca Serde, que proporciona una interfaz
+común para trabajar con distintos formatos.
+
+## Antecedentes: formatos de intercambio de información
+
+Mucho antes de la aparición de los formatos modernos de
+serialización, los programas ya necesitaban intercambiar
+información mediante ficheros. Para ello se utilizaban
+representaciones de texto relativamente sencillas, basadas en
+convenciones que debían conocer tanto el programa que generaba
+los datos como el que los procesaba.
+
+### Ficheros de ancho fijo
+
+Una de las soluciones más sencillas consiste en asignar a cada
+campo una posición y una longitud determinadas dentro de cada
+registro. Este sistema, utilizado desde los primeros tiempos del
+procesamiento electrónico de datos (años 1950 y 1960), permitía
+organizar información en registros de estructura conocida.
+
+Por ejemplo, un fichero podría almacenar información sobre rutas
+de red utilizando registros de longitud fija:
+
+``` text
+192.168.1.0   255.255.255.0 192.168.1.1   eth0
+10.0.0.0      255.0.0.0     10.0.0.1      eth1
+```
+
+El programa que lee el fichero debe conocer exactamente dónde
+empieza y termina cada campo. Aunque este sistema es sencillo y
+eficiente, resulta poco flexible: cualquier modificación en la
+estructura de los registros obliga a modificar también los
+programas que los procesan.
+
+Estos formatos no son únicamente una reliquia histórica. Algunos
+siguen utilizándose en aplicaciones actuales, especialmente en
+sectores con sistemas informáticos antiguos y complejos, como el
+bancario. Por ejemplo, el formato tradicional de la Norma 19 de
+la Asociación Española de Banca estuvo vigente hasta 2016.
+
+### Ficheros delimitados
+
+Otra posibilidad consiste en separar los campos mediante un
+carácter especial, como una coma, un punto y coma o un tabulador.
+Estos formatos se popularizaron durante las décadas de 1960 y
+1970, especialmente con la expansión de los sistemas informáticos
+de gestión.
+
+Por ejemplo:
+
+``` text
+192.168.1.0,255.255.255.0,192.168.1.1,eth0
+10.0.0.0,255.0.0.0,10.0.0.1,eth1
+```
+
+Este sistema evita tener que reservar una longitud fija para cada
+campo. Sin embargo, plantea problemas cuando el propio separador
+aparece dentro de los datos, por lo que es necesario establecer
+reglas adicionales para delimitar o escapar esos caracteres.
+
+### CSV
+
+Uno de los formatos más conocidos de este tipo es CSV
+(*Comma-Separated Values*). Su uso se extendió especialmente
+durante las décadas de 1970 y 1980, con la popularización de las
+hojas de cálculo y las aplicaciones de gestión de datos. Permite
+representar información tabular mediante registros separados por
+saltos de línea y campos separados por comas.
+
+CSV incorpora convenciones para representar campos que contienen
+comas, comillas o saltos de línea. También permite incluir una
+primera fila con los nombres de las columnas.
+
+Por ejemplo:
+
+``` csv
+destino,mascara,siguiente_salto,interfaz
+192.168.1.0,255.255.255.0,192.168.1.1,eth0
+10.0.0.0,255.0.0.0,10.0.0.1,eth1
+```
+
+Es un formato que todavía hoy se utiliza para intercambiar
+información entre aplicaciones, especialmente hojas de cálculo y
+bases de datos.
+
+### Limitaciones
+
+Estos formatos son adecuados para representar tablas de registros
+relativamente homogéneos, pero tienen dificultades para
+representar estructuras de datos más complejas.
+
+Por ejemplo, no disponen de mecanismos naturales para expresar
+objetos que contienen otros objetos, listas de longitud variable
+o asociaciones entre elementos. Tampoco proporcionan una
+representación uniforme de los distintos tipos de datos.
+
+Estas limitaciones motivaron la aparición de formatos más
+generales, capaces de representar estructuras jerárquicas y tipos
+de datos diversos, cuyo desarrollo y popularización se produciría
+especialmente a partir de la década de 1990.
+
+## Formatos modernos de serialización
+
+A partir de la década de 1990 comenzaron a popularizarse formatos
+de serialización más generales, capaces de representar
+estructuras de datos complejas y jerárquicas, y no solamente
+tablas de registros.
+
+Estos formatos permiten describir objetos, colecciones y
+relaciones entre datos mediante representaciones independientes
+de la implementación interna de los programas. Además, suelen
+utilizar texto legible por personas, lo que facilita su
+inspección, depuración e intercambio entre aplicaciones.
+
+Entre los formatos más conocidos se encuentran XML, JSON, YAML y
+TOML. Aunque comparten objetivos y permiten representar
+estructuras similares, presentan diferencias importantes en
+cuanto a sintaxis, expresividad y ámbitos de utilización.
+
+### XML
+
+XML (*eXtensible Markup Language*) es un lenguaje de marcado
+desarrollado por el W3C (World Wide Web Consortium) y publicado
+como recomendación en 1998. Su objetivo es permitir representar
+información estructurada mediante documentos de texto, utilizando
+etiquetas que identifican los distintos elementos.
+
+Un documento XML tiene una estructura jerárquica, organizada en
+forma de árbol. Cada elemento se delimita mediante una etiqueta
+de apertura y otra de cierre, y puede contener texto, atributos u
+otros elementos. Por ejemplo, podríamos representar una tabla de
+rutas de red de la siguiente manera:
+
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<rutas>
+    <ruta>
+        <destino>192.168.1.0</destino>
+        <mascara>255.255.255.0</mascara>
+        <siguiente_salto>192.168.1.1</siguiente_salto>
+        <interfaz>eth0</interfaz>
+    </ruta>
+    <ruta>
+        <destino>10.0.0.0</destino>
+        <mascara>255.0.0.0</mascara>
+        <siguiente_salto>10.0.0.1</siguiente_salto>
+        <interfaz>eth1</interfaz>
+    </ruta>
+</rutas>
+```
+
+Las etiquetas permiten identificar explícitamente el significado
+de cada dato. Además, pueden utilizarse atributos para incluir
+información asociada a un elemento:
+
+``` xml
+<ruta tipo="estatica">
+    <destino>192.168.1.0</destino>
+    ...
+</ruta>
+```
+
+XML es un formato muy flexible y extensible, utilizado durante
+años en multitud de ámbitos, como los servicios web, los
+documentos ofimáticos y los ficheros de configuración. Sin
+embargo, para el intercambio habitual de estructuras de datos
+entre aplicaciones, XML puede resultar excesivamente complejo. Su
+sintaxis es verbosa y su especificación contempla numerosas
+posibilidades, como espacios de nombres, gramáticas y mecanismos
+de validación mediante DTD o XML Schema, que raramente son
+necesarias en las aplicaciones más sencillas.
+
+En muchos casos, utilizar XML para intercambiar unos cuantos
+objetos y colecciones supone emplear una herramienta mucho más
+compleja de lo necesario. Esta circunstancia favoreció la
+popularización de alternativas más ligeras, como JSON.
+
+### JSON
+
+JSON (*JavaScript Object Notation*) es un formato de intercambio
+de datos basado en texto, cuyo origen está relacionado con el
+lenguaje JavaScript. Se popularizó durante la década de 2000,
+especialmente con el desarrollo de aplicaciones web y servicios
+que necesitaban intercambiar información entre el navegador y los
+servidores.
+
+A diferencia de XML, JSON utiliza una sintaxis mucho más
+compacta. Se basa en dos estructuras fundamentales: objetos, que
+agrupan valores asociados a nombres, y arrays, que permiten
+almacenar secuencias de valores.
+
+Los valores pueden ser cadenas de texto, números, valores
+booleanos, valores nulos u otras estructuras anidadas. Esto
+permite representar directamente estructuras de datos habituales
+en los programas, como registros, listas y objetos compuestos.
+Por ejemplo, la misma tabla de rutas de red utilizada
+anteriormente podría representarse así:
+
+``` json
+{
+    "rutas": [
+        {
+            "destino": "192.168.1.0",
+            "mascara": "255.255.255.0",
+            "siguiente_salto": "192.168.1.1",
+            "interfaz": "eth0"
+        },
+        {
+            "destino": "10.0.0.0",
+            "mascara": "255.0.0.0",
+            "siguiente_salto": "10.0.0.1",
+            "interfaz": "eth1"
+        }
+    ]
+}
+```
+
+JSON es independiente del lenguaje de programación y dispone de
+implementaciones para prácticamente todos los lenguajes y
+plataformas habituales. Su sencillez y facilidad de procesamiento
+lo han convertido en uno de los formatos más utilizados para el
+intercambio de información entre aplicaciones, especialmente en
+servicios web y APIs.
+
+Su principal limitación es que dispone de un conjunto reducido de
+tipos de datos y no incorpora mecanismos para definir esquemas,
+comentarios o referencias entre elementos. No obstante, esta
+simplicidad es también una de sus principales ventajas.
+
+### YAML
+
+YAML (*YAML Ain't Markup Language*) es un formato de
+serialización de datos diseñado para representar estructuras
+jerárquicas mediante una sintaxis sencilla y legible. Su primera
+versión apareció en 2001. Fue concebido especialmente para que
+las personas pudieran leer y escribir documentos estructurados
+con comodidad, sin necesidad de manejar una sintaxis demasiado
+rígida o verbosa.
+
+Al igual que JSON, permite representar valores simples, listas y
+asociaciones entre claves y valores. Su principal diferencia es
+sintáctica: utiliza la indentación para expresar las relaciones
+jerárquicas, evitando gran parte de los delimitadores y las
+comillas que aparecen en JSON.
+
+Por ejemplo, la misma tabla de rutas de red podría representarse
+así:
+
+``` yaml
+rutas:
+  - destino: 192.168.1.0
+    mascara: 255.255.255.0
+    siguiente_salto: 192.168.1.1
+    interfaz: eth0
+  - destino: 10.0.0.0
+    mascara: 255.0.0.0
+    siguiente_salto: 10.0.0.1
+    interfaz: eth1
+```
+
+YAML permite además incluir comentarios, definir referencias a
+estructuras mediante *anchors* y *aliases*, y utilizar etiquetas
+para identificar tipos de datos. Es especialmente popular en
+ficheros de configuración y en herramientas de administración y
+despliegue de sistemas, como Docker Compose o Kubernetes.
+
+Su mayor virtud es la legibilidad, aunque su flexibilidad también
+tiene inconvenientes: la interpretación de algunos valores puede
+depender del procesador utilizado y los errores de indentación
+pueden alterar la estructura del documento.
+
+### TOML
+
+TOML (*Tom's Obvious, Minimal Language*) es un formato de
+serialización diseñado principalmente para representar
+información de configuración. Su primera versión apareció en
+2013, con el objetivo de ofrecer una sintaxis sencilla, legible y
+poco ambigua.
+
+A diferencia de JSON y YAML, TOML no está pensado tanto para
+representar estructuras arbitrariamente complejas como para
+organizar parámetros de configuración en secciones o tablas.
+Utiliza pares clave-valor y permite agruparlos mediante
+encabezados entre corchetes.
+
+Por ejemplo, la misma información sobre rutas de red podría
+representarse así:
+
+``` toml
+[[rutas]]
+destino = "192.168.1.0"
+mascara = "255.255.255.0"
+siguiente_salto = "192.168.1.1"
+interfaz = "eth0"
+
+[[rutas]]
+destino = "10.0.0.0"
+mascara = "255.0.0.0"
+siguiente_salto = "10.0.0.1"
+interfaz = "eth1"
+```
+
+TOML admite cadenas, números, valores booleanos, arrays y tablas
+anidadas. También dispone de tipos específicos para fechas y
+horas, y permite incluir comentarios.
+
+Se utiliza especialmente en ficheros de configuración de
+aplicaciones y herramientas de desarrollo. Un ejemplo conocido es
+`Cargo.toml`, el fichero que utiliza Cargo para describir los
+paquetes Rust, sus dependencias y sus opciones de configuración.
+
+Una de sus limitaciones es que no dispone de un valor nulo y que
+su sintaxis resulta menos adecuada para representar estructuras
+muy profundas o complejas. A cambio, ofrece una representación
+clara y relativamente fácil de editar manualmente.
+
+### Comparación de los formatos
+
+XML, JSON, YAML y TOML permiten representar información
+estructurada, pero tienen distintos objetivos y características.
+
+| Característica | XML | JSON | YAML | TOML |
+|:---|:--:|:--:|:--:|:--:|
+| Estructuras jerárquicas | Sí | Sí | Sí | Sí |
+| Listas | Elementos repetidos | Sí | Sí | Sí |
+| Comentarios | No | No | Sí | Sí |
+| Atributos | Sí | No | No | No |
+| Valor nulo | No nativo | Sí | Sí | No |
+| Fechas y horas tipadas | No | No | Según esquema | Sí |
+| Referencias entre elementos | No nativas | No | Sí | No |
+| Gramáticas y validación | Sí | Mediante esquemas externos | Sí | Sí, con limitaciones |
+
+Los cuatro formatos tienen ámbitos de utilización diferentes:
+
+- XML ofrece una gran capacidad de representación y validación,
+  pero su sintaxis y sus mecanismos adicionales pueden resultar
+  excesivamente complejos para el intercambio habitual de datos.
+- JSON destaca por su sencillez, su reducido conjunto de tipos y
+  su amplia disponibilidad de bibliotecas. Es especialmente
+  habitual en servicios web y APIs.
+- YAML prioriza la legibilidad y la facilidad de edición manual.
+  Es frecuente encontrarlo en ficheros de configuración y
+  herramientas de administración de sistemas.
+- TOML está especialmente orientado a la configuración de
+  aplicaciones. Su sintaxis es sencilla y relativamente poco
+  ambigua.
+
+Aunque estos formatos pueden representar muchas estructuras de
+datos comunes, no son completamente equivalentes. Cada uno
+dispone de características que no tienen correspondencia directa
+en los demás. Por tanto, convertir un documento de un formato a
+otro puede exigir transformaciones o provocar pérdidas de
+información.
+
+## JSON
+
+Entre los formatos que hemos presentado, aquí nos centraremos en
+JSON. Aunque XML, YAML y TOML tienen aplicaciones interesantes,
+JSON ofrece un buen equilibrio entre sencillez, expresividad y
+facilidad de procesamiento.
+
+Su conjunto reducido de tipos de datos permite representar la
+mayoría de las estructuras habituales en los programas, sin
+introducir demasiadas particularidades sintácticas. Además, es
+independiente del lenguaje de programación y cuenta con
+bibliotecas de soporte para prácticamente todos los lenguajes y
+plataformas.
+
+Por otra parte, JSON es especialmente habitual en el intercambio
+de información entre aplicaciones, en particular mediante
+servicios web y APIs. Por tanto, conocerlo resulta útil tanto
+para desarrollar programas como para integrarlos con sistemas
+existentes.
+
+En las siguientes secciones estudiaremos sus elementos y reglas
+sintácticas. Más adelante veremos cómo utilizar bibliotecas de
+Rust para generar documentos JSON y recuperar estructuras de
+datos a partir de ellos.
+
+### Valores y tipos de datos
+
+JSON permite representar seis tipos de valores:
+
+- Cadenas de caracteres.
+- Números.
+- Valores booleanos (`true` y `false`).
+- Valor nulo (`null`).
+- Objetos.
+- Arrays.
+
+Los cuatro primeros son valores simples. Los objetos y arrays
+permiten agrupar otros valores, incluso de forma anidada.
+
+### Cadenas y números
+
+Las cadenas de caracteres se delimitan mediante comillas dobles.
+Pueden contener letras, números y otros caracteres. Algunos
+caracteres especiales, como las comillas dobles o los saltos de
+línea, deben representarse mediante secuencias de escape.
+
+Los números pueden ser enteros o reales, y utilizar notación
+exponencial.
+
+Por ejemplo:
+
+``` json
+{
+    "interfaz": "eth0",
+    "mtu": 1500,
+    "coste": 1.5,
+    "distancia": 2.5e3
+}
+```
+
+### Valores booleanos y nulos
+
+Los valores booleanos se representan mediante las palabras
+reservadas `true` y `false`. El valor `null` representa la
+ausencia de un valor.
+
+``` json
+{
+    "activa": true,
+    "configurada": false,
+    "direccion_ipv6": null
+}
+```
+
+### Objetos
+
+Un objeto es una colección de pares formados por un nombre y un
+valor. Los nombres, también denominados claves, son cadenas de
+caracteres y se separan de sus valores mediante dos puntos.
+
+Los pares se separan entre sí mediante comas y el objeto completo
+se delimita mediante llaves.
+
+``` json
+{
+    "nombre": "eth0",
+    "mtu": 1500,
+    "activa": true
+}
+```
+
+En este ejemplo, `nombre`, `mtu` y `activa` son las claves del
+objeto.
+
+En JSON, los espacios en blanco y los saltos de línea pueden
+utilizarse libremente para facilitar la lectura del documento. No
+afectan a su interpretación, por lo que las siguientes
+representaciones son equivalentes:
+
+``` json
+{"nombre":"apache2","puerto":443,"activo":true}
+```
+
+``` json
+{
+    "nombre": "apache2",
+    "puerto": 443,
+    "activo": true
+}
+```
+
+Por este motivo, JSON puede representarse de forma compacta, sin
+espacios ni saltos de línea, o con una presentación más legible
+para las personas.
+
+### Arrays
+
+Un array es una secuencia ordenada de valores, que pueden ser de
+cualquier tipo. Sus elementos se separan mediante comas y el
+conjunto se delimita mediante corchetes.
+
+Por ejemplo:
+
+``` json
+{
+    "servidores": [
+        "192.168.1.10",
+        "192.168.1.11",
+        "192.168.1.12"
+    ]
+}
+```
+
+Los elementos de un array no necesitan ser del mismo tipo, aunque
+habitualmente se utilizan colecciones homogéneas.
+
+### Anidamiento de estructuras
+
+Los objetos y arrays pueden contener otros objetos y arrays, lo
+que permite representar estructuras de datos complejas y
+jerárquicas.
+
+Por ejemplo, podemos representar una colección de interfaces de
+red, cada una con sus propias propiedades:
+
+``` json
+{
+    "interfaces": [
+        {
+            "nombre": "eth0",
+            "mtu": 1500,
+            "direcciones": [
+                "192.168.1.10",
+                "2001:db8::10"
+            ]
+        },
+        {
+            "nombre": "eth1",
+            "mtu": 9000,
+            "direcciones": [
+                "10.0.0.1"
+            ]
+        }
+    ]
+}
+```
+
+Esta capacidad de combinar objetos y arrays permite representar
+estructuras de datos de profundidad arbitraria.
+
+### Sintaxis y errores habituales
+
+JSON tiene una sintaxis sencilla, pero sus reglas deben
+respetarse estrictamente:
+
+- Las cadenas y los nombres de las propiedades deben utilizar
+  comillas dobles, no simples.
+- Los pares de un objeto se separan mediante comas.
+- Los elementos de un array también se separan mediante comas.
+- No se permiten comas al final de una lista de elementos o
+  propiedades.
+- Los nombres de las propiedades deben ir seguidos de dos puntos.
+- Los valores booleanos y nulos se escriben en minúsculas:
+  `true`, `false` y `null`.
+- No se permiten comentarios.
+
+Por ejemplo, el siguiente documento está lleno de errores
+sintácticos
+
+``` text
+{                            // Todos estos comentarios son erróneos
+    1 : eth0,                // La clave debería ser una cadena
+    'servicio': 'apache2',   // Las comillas deberían ser dobles 
+    "activa" true,           // Falta el separador :
+    "configurada": True,     // Debería ser 'true' 
+    "ipv6": None,            // Debería ser 'null'
+    "mtu": 1500,             // Sobra la coma final
+}
+```
+
+Es importante recordar que JSON es un formato de intercambio de
+datos, no un lenguaje de programación: no permite incluir
+instrucciones, expresiones o comentarios.
+
+## Serialización en Rust: Serde
+
+Para trabajar con formatos de serialización en Rust utilizaremos
+[Serde](https://serde.rs), una biblioteca que proporciona una
+infraestructura común para convertir estructuras de datos de Rust
+a distintos formatos y realizar la operación inversa.
+
+Serde no implementa directamente todos los formatos de
+serialización. En su lugar, define una interfaz común que
+utilizan otras bibliotecas para implementar el soporte de cada
+formato. Por ejemplo, `serde_json` permite trabajar con JSON,
+`toml` con TOML y `quick-xml` con XML.
+
+Esta separación tiene una ventaja importante: las estructuras de
+datos de nuestro programa no dependen del formato utilizado. Una
+misma estructura Rust puede serializarse en JSON, TOML u otro
+formato compatible sin necesidad de modificar su definición.
+
+Para ello, Serde proporciona dos traits fundamentales:
+
+- `Serialize`: permite convertir una estructura de datos de Rust
+  en una representación serializada.
+- `Deserialize`: permite reconstruir una estructura de datos de
+  Rust a partir de una representación serializada.
+
+En las siguientes secciones veremos cómo utilizar estos
+mecanismos para leer y escribir documentos JSON y,
+posteriormente, cómo trabajar con otros formatos.
+
+### Preparación del proyecto
+
+Para utilizar Serde necesitamos incorporar las bibliotecas
+correspondientes a nuestro proyecto. Serde proporciona los
+mecanismos generales de serialización y deserialización, mientras
+que `serde_json` implementa esos mecanismos para el formato JSON.
+
+Podemos añadir las dependencias de dos maneras. Una posibilidad
+es ejecutar el `cargo add` en el directorio del proyecto:
+
+``` bash
+cargo add serde --features derive
+cargo add serde_json
+```
+
+También podemos editar directamente el fichero `Cargo.toml`,
+añadiendo las siguientes líneas en la sección `[dependencies]`:
+
+``` toml
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+```
+
+La opción `derive` habilita la generación automática de las
+implementaciones de los traits `Serialize` y `Deserialize` a
+partir de las definiciones de nuestras estructuras de datos.
+
+A continuación, importaremos los traits que vamos a utilizar:
+
+``` rust
+use serde::{Serialize, Deserialize};
+```
+
+Para que una estructura pueda serializarse y deserializarse,
+basta con indicarlo mediante `derive`:
+
+``` rust
+#[derive(Serialize, Deserialize)]
+struct Interfaz {
+    nombre: String,
+    mtu: u32,
+    activa: bool,
+}
+```
+
+De esta forma, el compilador genera automáticamente las
+implementaciones necesarias. No tenemos que escribir manualmente
+el código que convierte cada campo al formato externo o que
+reconstruye la estructura a partir de él.
+
+### Serialización
+
+Una vez que nuestras estructuras implementan el trait
+`Serialize`, podemos convertir sus valores a una representación
+JSON.
+
+La biblioteca `serde_json` proporciona varias funciones para
+ello. La más sencilla es `to_string`, que recibe una referencia a
+un valor y devuelve una cadena con su representación JSON.
+
+Por ejemplo:
+
+``` rust
+use serde::Serialize;
+
+#[derive(Serialize)]
+struct Interfaz {
+    nombre: String,
+    mtu: u32,
+    activa: bool,
+}
+
+fn main() {
+    let interfaz = Interfaz {
+        nombre: String::from("eth0"),
+        mtu: 1500,
+        activa: true,
+    };
+
+    match serde_json::to_string(&interfaz) {
+        Ok(json) => println!("{}", json),
+        Err(error) => println!("Error al serializar: {}", error),
+    }
+}
+```
+
+La salida será:
+
+``` json
+{"nombre":"eth0","mtu":1500,"activa":true}
+```
+
+Observamos que los campos de la estructura Rust se convierten en
+propiedades de un objeto JSON, conservando sus nombres y valores.
+
+Si queremos obtener una representación más legible, con espacios
+y saltos de línea, podemos utilizar `to_string_pretty` en lugar
+de `to_string`:
+
+``` rust
+match serde_json::to_string_pretty(&interfaz) {
+    Ok(json) => println!("{}", json),
+    Err(error) => println!("Error al serializar: {}", error),
+}
+```
+
+Ambas funciones devuelven un valor de tipo
+`Result<String, serde_json::Error>`. Si la operación tiene éxito,
+obtenemos la cadena JSON en la variante `Ok`. Si se produce un
+error, recibimos información sobre él en la variante `Err`.
+
+También podemos serializar colecciones y estructuras anidadas.
+Por ejemplo, un `Vec<Interfaz>` se convierte en un array JSON
+cuyos elementos son objetos.
+
+### Deserialización
+
+### Lectura y escritura de ficheros
+
+### Otros formatos
+
+## Consideraciones y limitaciones
+
+### Correspondencia entre los tipos de Rust y los formatos externos
+
+### Campos opcionales y valores nulos
+
+### Campos desconocidos y campos ausentes
+
+### Diferencias entre formatos
+
+### Información que puede perderse durante una conversión
+
+### Compatibilidad entre versiones de las estructuras de datos
+
+## Resumen

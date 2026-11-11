@@ -43,8 +43,8 @@ siguientes criterios:
   un comportamiento muy diferente según la distribución de los
   elementos.
 
-En el análisis de la complejidad temporal distinguiremos entre el
-mejor caso, el caso medio y el peor caso cuando resulte
+En el análisis de la complejidad temporal hay que distinguir
+entre el mejor caso, el caso medio y el peor caso cuando resulte
 relevante.
 
 Estudiaremos cuatro algoritmos de ordenación:
@@ -59,16 +59,13 @@ Los otros dos utilizan la técnica de divide y vencerás, que
 consiste en descomponer un problema en otros más pequeños,
 resolverlos y combinar sus resultados cuando sea necesario.
 
-El objetivo no es únicamente aprender a implementar estos
-algoritmos, sino también comprender sus diferencias y ser capaces
-de razonar sobre su eficiencia.
-
 ## Convenciones de implementación en Rust
 
 Para implementar los algoritmos de ordenación utilizaremos slices
-mutables de enteros. Todos los algoritmos seguirán unas
-convenciones comunes, lo que facilitará su comparación y
-permitirá centrarnos en las diferencias entre sus estrategias.
+mutables de enteros, que tratamos en la @sec-slices. Todos los
+algoritmos seguirán unas convenciones comunes, lo que facilitará
+su comparación y permitirá centrarnos en las diferencias entre
+sus estrategias.
 
 ### Representación de los datos
 
@@ -468,7 +465,7 @@ En cada pasada se examinan los elementos que quedan por ordenar.
 Aunque los datos ya estén ordenados, el algoritmo sigue
 realizando las comparaciones.
 
-- Mejor caso, caso medio y peor caso: (O(n\^2)).
+- Mejor caso, caso medio y peor caso: (O(n^2)).
 - Espacio adicional: (O(1)), porque solo necesitamos unas pocas
   variables auxiliares.
 
@@ -560,7 +557,7 @@ provocar un desbordamiento de pila.
 Otro ejemplo clásico es la serie de Fibonacci, cuyos primeros
 términos son:
 
-**0, 1, 1, 2, 3, 5, 8, 13, 21, \...**
+**0, 1, 1, 2, 3, 5, 8, 13, 21, ...**
 
 Cada término, a partir de los dos primeros, se obtiene sumando
 los dos anteriores. Si numeramos los términos desde cero, podemos
@@ -704,7 +701,7 @@ ordenadas en una sola, recorriendo sus elementos una única vez.
 
 ### Ordenación recursiva
 
-En la \@sec-mezcla hemos visto cómo combinar dos secuencias
+En la @sec-mezcla hemos visto cómo combinar dos secuencias
 ordenadas para obtener una única secuencia ordenada. Ahora
 podemos utilizar esta operación para construir un algoritmo que
 ordene cualquier secuencia. Para ello, utilizaremos la
@@ -958,7 +955,6 @@ Finalmente, construiremos el resultado concatenando los elementos
 de la parte izquierda, el pivote y los elementos de la parte
 derecha.
 
-
 ``` rust
 {{< include c27/quicksort/src/main.rs >}}
 ```
@@ -1047,10 +1043,10 @@ grandes secuencias con rapidez.
 
 ### Mezcla (*mergesort*)
 
-Su principal ventaja es que garantiza un coste temporal (O(n
-\\log n)), con independencia de cómo estén distribuidos
-inicialmente los elementos. También puede implementarse de manera
-estable: los elementos iguales conservan su orden relativo.
+Su principal ventaja es que garantiza un coste temporal (O(n \log
+n)), con independencia de cómo estén distribuidos inicialmente
+los elementos. También puede implementarse de manera estable: los
+elementos iguales conservan su orden relativo.
 
 El inconveniente de la variante estudiada es que necesita memoria
 adicional para construir las partes y mezclarlas. Es una buena
@@ -1060,14 +1056,14 @@ de datos para las que la mezcla resulta especialmente adecuada.
 
 ### Rápida (*quicksort*)
 
-En promedio, *quicksort* tiene un coste temporal (O(n \\log n)) y
+En promedio, *quicksort* tiene un coste temporal (O(n \log n)) y
 puede funcionar muy bien con secuencias grandes. Las
 implementaciones habituales que reorganizan los elementos dentro
 de la propia estructura suelen aprovechar bien la memoria y
 ofrecer un rendimiento excelente.
 
 Su principal inconveniente es que el peor caso tiene coste
-(O(n\^2)). Una elección inadecuada del pivote puede producir
+(O(n^2)). Una elección inadecuada del pivote puede producir
 particiones muy desequilibradas. Por ejemplo, en la variante
 estudiada, si todos los elementos son iguales, cada partición
 deja un solo elemento fuera y envía el resto a una única llamada
@@ -1079,32 +1075,37 @@ memoria que una variante *in-place*. Por tanto, no debemos
 atribuir a esta implementación todas las ventajas prácticas de
 las versiones optimizadas de *quicksort*.
 
-
 ### Resumen de las comparaciones
 
-Las dos tablas siguientes resumen las características de los algoritmos estudiados. Las complejidades indicadas son las habituales para las variantes consideradas, aunque algunas decisiones de implementación pueden modificarlas.
+Las dos tablas siguientes resumen las características de los
+algoritmos estudiados. Las complejidades indicadas son las
+habituales para las variantes consideradas, aunque algunas
+decisiones de implementación pueden modificarlas.
 
-| Algoritmo | Mejor caso | Caso medio | Peor caso | Memoria adicional |
-|---|---|---|---|---|
-| Inserción (*insertion sort*) | $O(n)$ | $O(n²)$ | $O(n²)$ | $O(1)$ |
-| Selección (*selection sort*) | $O(n²)$ | $O(n²)$ | $O(n²)$ | $O(1)$ |
-| Mezcla (*mergesort*) | $O(n \log n)$ | $O(n \log n)$ | $O(n \log n)$ | $O(n)$ |
-| Rápida (*quicksort*) | $O(n \log n)$ | $O(n \log n)$ | $O(n²)$ | Depende de la variante |
-| Rápida, partición *in-place* | $O(n \log n)$ | $O(n \log n)$ | $O(n²)$ | $O(\log n)$ en promedio para la pila recursiva; $O(n)$ en el peor caso |
+| Algoritmo                    | Mejor caso    | Caso medio    | Peor caso     | Memoria adicional                                                      |
+|------------------------------|---------------|---------------|---------------|------------------------------------------------------------------------|
+| Inserción (*insertion sort*) | $O(n)$        | $O(n²)$       | $O(n²)$       | $O(1)$                                                                 |
+| Selección (*selection sort*) | $O(n²)$       | $O(n²)$       | $O(n²)$       | $O(1)$                                                                 |
+| Mezcla (*mergesort*)         | $O(n \log n)$ | $O(n \log n)$ | $O(n \log n)$ | $O(n)$                                                                 |
+| Rápida (*quicksort*)         | $O(n \log n)$ | $O(n \log n)$ | $O(n²)$       | Depende de la variante                                                 |
+| Rápida, partición *in-place* | $O(n \log n)$ | $O(n \log n)$ | $O(n²)$       | $O(\log n)$ en promedio para la pila recursiva; $O(n)$ en el peor caso |
 
-En esta tabla, $n$ representa el número de elementos que hay que ordenar. La memoria adicional no incluye la memoria que ya ocupa la secuencia original.
+En esta tabla, $n$ representa el número de elementos que hay que
+ordenar. La memoria adicional no incluye la memoria que ya ocupa
+la secuencia original.
 
-| Algoritmo | Ventajas | Inconvenientes | Cuándo utilizarlo |
-|---|---|---|---|
-| Inserción | Muy sencillo; eficiente con secuencias pequeñas o casi ordenadas; poca memoria adicional. | Lento con secuencias grandes y desordenadas. | Secuencias pequeñas o casi ordenadas. |
-| Selección | Muy sencillo; poca memoria adicional; pocos intercambios. | Realiza muchas comparaciones incluso si la secuencia ya está ordenada. | Secuencias pequeñas cuando interesa reducir los intercambios. |
-| Mezcla (*mergesort*) | Tiempo $O(n \log n)$ garantizado; puede ser estable. | Necesita memoria adicional en la variante estudiada. | Cuando interesa un rendimiento predecible o mantener el orden relativo de elementos iguales. |
-| Rápida (*quicksort*) | Muy eficiente en promedio; las variantes *in-place* aprovechan bien la memoria. | Puede alcanzar $O(n²)$; el rendimiento depende de la partición y del pivote. | Secuencias grandes cuando se utiliza una implementación bien optimizada. |
+| Algoritmo            | Ventajas                                                                                  | Inconvenientes                                                               | Cuándo utilizarlo                                                                            |
+|----------------------|-------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
+| Inserción            | Muy sencillo; eficiente con secuencias pequeñas o casi ordenadas; poca memoria adicional. | Lento con secuencias grandes y desordenadas.                                 | Secuencias pequeñas o casi ordenadas.                                                        |
+| Selección            | Muy sencillo; poca memoria adicional; pocos intercambios.                                 | Realiza muchas comparaciones incluso si la secuencia ya está ordenada.       | Secuencias pequeñas cuando interesa reducir los intercambios.                                |
+| Mezcla (*mergesort*) | Tiempo $O(n \log n)$ garantizado; puede ser estable.                                      | Necesita memoria adicional en la variante estudiada.                         | Cuando interesa un rendimiento predecible o mantener el orden relativo de elementos iguales. |
+| Rápida (*quicksort*) | Muy eficiente en promedio; las variantes *in-place* aprovechan bien la memoria.           | Puede alcanzar $O(n²)$; el rendimiento depende de la partición y del pivote. | Secuencias grandes cuando se utiliza una implementación bien optimizada.                     |
 
-Las implementaciones estudiadas tienen un propósito didáctico: permiten comprender las ideas fundamentales y analizar su complejidad. En programas reales, normalmente utilizaremos las funciones de ordenación de las bibliotecas estándar, que incorporan optimizaciones y estrategias adicionales.
-
-
-
+Las implementaciones estudiadas tienen un propósito didáctico:
+permiten comprender las ideas fundamentales y analizar su
+complejidad. En programas reales, normalmente utilizaremos las
+funciones de ordenación de las bibliotecas estándar, que
+incorporan optimizaciones y estrategias adicionales.
 
 ### Una advertencia sobre las implementaciones
 
@@ -1147,12 +1148,12 @@ resolver este problema.
 
 - Mezcla (*mergesort*). Divide recursivamente la secuencia en dos
   partes, las ordena y después mezcla los resultados. Su coste
-  temporal es (O(n \\log n)) en todos los casos, aunque la
+  temporal es (O(n \log n)) en todos los casos, aunque la
   variante estudiada necesita memoria adicional.
 
 - Rápida (*quicksort*). Elige un pivote, distribuye los elementos
   a ambos lados y ordena recursivamente las dos partes. Su coste
-  medio es (O(n \\log n)), pero puede alcanzar (O(n²)) si las
+  medio es (O(n \log n)), pero puede alcanzar (O(n²)) si las
   particiones son muy desequilibradas.
 
 La técnica de *divide y vencerás* aparece en *mergesort* y
