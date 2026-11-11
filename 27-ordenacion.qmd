@@ -1043,8 +1043,8 @@ grandes secuencias con rapidez.
 
 ### Mezcla (*mergesort*)
 
-Su principal ventaja es que garantiza un coste temporal  `(O(n log
-n) )`, con independencia de cómo estén distribuidos inicialmente
+Su principal ventaja es que garantiza un coste temporal  (O(n log
+n) ), con independencia de cómo estén distribuidos inicialmente
 los elementos. También puede implementarse de manera estable: los
 elementos iguales conservan su orden relativo.
 
@@ -1056,7 +1056,7 @@ de datos para las que la mezcla resulta especialmente adecuada.
 
 ### Rápida (*quicksort*)
 
-En promedio, *quicksort* tiene un coste temporal (O(n \log n)) y
+En promedio, *quicksort* tiene un coste temporal (O(n log n)) y
 puede funcionar muy bien con secuencias grandes. Las
 implementaciones habituales que reorganizan los elementos dentro
 de la propia estructura suelen aprovechar bien la memoria y
@@ -1148,12 +1148,12 @@ resolver este problema.
 
 - Mezcla (*mergesort*). Divide recursivamente la secuencia en dos
   partes, las ordena y después mezcla los resultados. Su coste
-  temporal es (O(n \log n)) en todos los casos, aunque la
+  temporal es (O(n log n)) en todos los casos, aunque la
   variante estudiada necesita memoria adicional.
 
 - Rápida (*quicksort*). Elige un pivote, distribuye los elementos
   a ambos lados y ordena recursivamente las dos partes. Su coste
-  medio es (O(n \log n)), pero puede alcanzar (O(n²)) si las
+  medio es (O(n log n)), pero puede alcanzar (O(n²)) si las
   particiones son muy desequilibradas.
 
 La técnica de *divide y vencerás* aparece en *mergesort* y
