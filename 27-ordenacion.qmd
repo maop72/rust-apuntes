@@ -1043,8 +1043,8 @@ grandes secuencias con rapidez.
 
 ### Mezcla (*mergesort*)
 
-Su principal ventaja es que garantiza un coste temporal (O(n \log
-n)), con independencia de cómo estén distribuidos inicialmente
+Su principal ventaja es que garantiza un coste temporal  `(O(n log
+n) )`, con independencia de cómo estén distribuidos inicialmente
 los elementos. También puede implementarse de manera estable: los
 elementos iguales conservan su orden relativo.
 
