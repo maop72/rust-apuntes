@@ -63,8 +63,13 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
 <p class="intro">Tomamos cada elemento y lo comparamos con el anterior. Si es menor, los permutamos y repetimos la comparación hacia la izquierda hasta encontrar su posición.</p>
 <section class="panel">
 <label for="values">Secuencia inicial</label>
-<div class="input-row"><input id="values" value="7, 3, 8, 2, 6, 4, 5" aria-describedby="hint error"><button id="apply" class="primary">Aplicar</button></div>
-<p id="hint" class="hint">Introduce entre 2 y 12 enteros separados por comas o espacios.</p><p id="error" class="error" role="alert"></p>
+<div class="input-row">
+<input id="values" value="" aria-describedby="hint error">
+<button id="apply" class="primary">Aplicar</button>
+<button id="random">Generar aleatoria</button>
+</div>
+<p id="hint" class="hint">Introduce entre 2 y 12 enteros separados por comas o espacios. La secuencia aleatoria contiene 5 números entre 1 y 9.</p>
+<p id="error" class="error" role="alert"></p>
 </section>
 <div class="workspace">
 <section class="panel">
@@ -85,7 +90,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
-let original=[7,3,8,2,6,4,5],steps=[],index=0,timer=null,maxSeen=0;
+let original=[],steps=[],index=0,timer=null,maxSeen=0;
+
 function makeSteps(values){
  const a=values.slice();
  const out=[{a:a.slice(),sorted:1,active:[],text:'Al principio, el primer elemento forma por sí solo un tramo ordenado.',log:null}];
@@ -110,6 +116,15 @@ function makeSteps(values){
  return out;
 }
 function stop(){if(timer){clearInterval(timer);timer=null;}}
+function randomValues(){
+ return Array.from({length:5},()=>Math.floor(Math.random()*9)+1);
+}
+function generateRandom(){
+ const values=randomValues();
+ $('values').value=values.join(', ');
+ $('error').textContent='';
+ start(values);
+}
 function addHistoryThrough(n){
  const history=$('history');
  for(let k=maxSeen+1;k<=n;k++){
@@ -130,7 +145,8 @@ function addHistoryThrough(n){
   }
  }
  maxSeen=Math.max(maxSeen,n);
- $('historyCount').textContent=`${history.querySelectorAll('li:not(.empty)').length} ${history.querySelectorAll('li:not(.empty)').length===1?'movimiento':'movimientos'}`;
+ const count=history.querySelectorAll('li:not(.empty)').length;
+ $('historyCount').textContent=`${count} ${count===1?'movimiento':'movimientos'}`;
  if(n>0)history.scrollTop=history.scrollHeight;
 }
 function clearHistory(){
@@ -152,11 +168,31 @@ function go(n){
 function start(values){
  stop();original=values.slice();steps=makeSteps(original);index=0;clearHistory();render();
 }
-$('apply').addEventListener('click',()=>{try{const tokens=$('values').value.trim().split(/[\s,;]+/).filter(Boolean);if(tokens.length<2||tokens.length>12)throw Error('Introduce entre 2 y 12 enteros.');const values=tokens.map(t=>{if(!/^[+-]?\d+$/.test(t)||!Number.isSafeInteger(Number(t)))throw Error(`«${t}» no es un entero válido.`);return Number(t);});$('error').textContent='';start(values);}catch(e){$('error').textContent=e.message;}});
-$('first').addEventListener('click',()=>go(0));$('prev').addEventListener('click',()=>go(index-1));$('next').addEventListener('click',()=>go(index+1));$('reset').addEventListener('click',()=>start(original));
-$('play').addEventListener('click',()=>{if(timer){stop();render();return;}if(index===steps.length-1){index=0;}timer=setInterval(()=>{if(index>=steps.length-1){stop();render();return;}index++;addHistoryThrough(index);render();if(index>=steps.length-1){stop();render();}},1200);render();});
+$('apply').addEventListener('click',()=>{
+ try{
+  const tokens=$('values').value.trim().split(/[\s,;]+/).filter(Boolean);
+  if(tokens.length<2||tokens.length>12)throw Error('Introduce entre 2 y 12 enteros.');
+  const values=tokens.map(t=>{if(!/^[+-]?\d+$/.test(t)||!Number.isSafeInteger(Number(t)))throw Error(`«${t}» no es un entero válido.`);return Number(t);});
+  $('error').textContent='';start(values);
+ }catch(e){$('error').textContent=e.message;}
+});
+$('random').addEventListener('click',generateRandom);
+$('first').addEventListener('click',()=>go(0));
+$('prev').addEventListener('click',()=>go(index-1));
+$('next').addEventListener('click',()=>go(index+1));
+$('reset').addEventListener('click',()=>start(original));
+$('play').addEventListener('click',()=>{
+ if(timer){stop();render();return;}
+ if(index===steps.length-1){index=0;}
+ timer=setInterval(()=>{
+  if(index>=steps.length-1){stop();render();return;}
+  index++;addHistoryThrough(index);render();
+  if(index>=steps.length-1){stop();render();}
+ },1200);
+ render();
+});
 $('values').addEventListener('keydown',e=>{if(e.key==='Enter')$('apply').click();});
-start(original);
+generateRandom();
 })();
 </script>
 </body>
