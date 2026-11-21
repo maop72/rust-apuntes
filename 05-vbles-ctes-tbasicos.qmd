@@ -296,6 +296,119 @@ descarta y la expresión pasa a producir el valor `()`.
 
 : Tipos de datos básicos de Rust {#tbl-tipos-basicos}
 
+## Conversión de tipos
+
+Rust tiene un sistema de tipos bastante estricto (*strong
+typing*). A diferencia de otros lenguajes, no realiza
+automáticamente determinadas conversiones entre tipos, aunque
+estas puedan parecer naturales. Por ejemplo, no se puede utilizar
+directamente un valor entero donde se espera un número real: hay
+que realizar la conversión explícitamente. Esto permite evitar
+conversiones inesperadas y hace que el comportamiento del
+programa sea más predecible.
+
+Para realizar una conversión explícita se puede utilizar el
+operador `as`. Por ejemplo, el siguiente programa muestra algunas
+conversiones entre tipos numéricos:
+
+``` rust
+{{< include c05/ejemplo_as/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20x%3A%20i32%20%3D%2010%3B%0A%20%20%20%20let%20y%3A%20f64%20%3D%20x%20as%20f64%3B%0A%0A%20%20%20%20println%21%28%22Conversi%C3%B3n%20del%20entero%20%7B%7D%20a%20real%3A%20%7B%7D%22%2C%20x%2Cy%29%3B%0A%0A%20%20%20%20let%20a%3A%20f64%20%3D%203.75%3B%0A%20%20%20%20let%20b%3A%20i32%20%3D%20a%20as%20i32%3B%0A%0A%20%20%20%20println%21%28%22Conversi%C3%B3n%20de%20real%20%7B%7D%20a%20entero%3A%20%7B%7D%22%2C%20a%2Cb%29%3B%0A%0A%20%20%20%20let%20c%3A%20i32%20%3D%20300%3B%0A%20%20%20%20let%20d%3A%20u8%20%3D%20c%20as%20u8%3B%0A%0A%20%20%20%20println%21%28%22Conversi%C3%B3n%20del%20i32%20%7B%7D%20a%20u8%3A%20%7B%7D%22%2Cc%2Cd%29%3B%0A%7D%0A)
+
+:::
+
+El operador `as` permite realizar conversiones entre distintos
+tipos numéricos, pero hay que tener cuidado: no todas las
+conversiones conservan necesariamente el valor original. Algunas
+casos especialmente relevantes:
+
+- Al convertir un número real a entero se pierde la parte
+  decimal. La conversión trunca el valor hacia cero.
+- Al convertir entre tipos enteros de distinto tamaño o signo, si
+  el valor no cabe en el tipo de destino, se pueden perder bits.
+  En el ejemplo, `300` se convierte en `44` al pasarlo a `u8`.
+
+### Conversiones más seguras
+
+El operador `as` es cómodo, pero no siempre es la mejor opción.
+Rust proporciona otros mecanismos para realizar conversiones
+comprobando que sean válidas. Están basadas en el enumerado
+`Result`, que veremos en la @sec-enum-result y en `match`, que
+estudiaremos en la @sec-match.
+
+Por ejemplo, el método `try_from` permite intentar una conversión
+y obtener un resultado de tipo `Result`. Si el valor no puede
+representarse en el tipo de destino, la conversión devuelve un
+error:
+
+``` rust
+{{< include c05/ejemplo_try_from/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Aconvert%3A%3ATryFrom%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20x%3A%20i32%20%3D%20300%3B%0A%20%20%20%20let%20y%20%3D%20u8%3A%3Atry_from%28x%29%3B%0A%0A%20%20%20%20match%20y%20%7B%0A%20%20%20%20%20%20%20%20Ok%28valor%29%20%3D%3E%20println%21%28%22Valor%20convertido%3A%20%7B%7D%22%2Cvalor%29%2C%0A%20%20%20%20%20%20%20%20Err%28_%29%20%3D%3E%20println%21%28%22El%20valor%20%7B%7D%20no%20cabe%20en%20un%20u8%22%2Cx%29%2C%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+También existe el trait `From`, que permiten realizar
+conversiones que están garantizadas para cualquier valor del tipo
+de origen. Para poder utilizarlo, Rust debe disponer de una
+implementación de la conversión correspondiente; si no existe, el
+programa no compila.
+
+Por ejemplo:
+
+
+``` rust
+{{< include c05/ejemplo_from/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20x%3A%20i32%20%3D%2010%3B%0A%20%20%20%20let%20y%3A%20f64%20%3D%20f64%3A%3Afrom%28x%29%3B%0A%0A%20%20%20%20println%21%28%22Valor%20convertido%3A%20%7B%7D%22%2Cy%29%3B%0A%7D%0A)
+
+:::
+
+
+En general:
+
+- Es preferible utilizar `From` cuando la conversión es
+  siempre válida,
+- `TryFrom`  cuando puede producirse un error.
+- El operador `as` resulta apropiado cuando buscamos una
+  conversión sencilla y cuando conocemos y aceptamos las
+  consecuencias de la conversión.
+
+### Conversión y división de números
+
+Hay que tener en cuenta que la división de dos números enteros
+produce un resultado entero: se descarta la parte decimal. El
+siguiente programa muestra la diferencia entre dividir dos
+enteros y dividir dos números reales:
+
+
+``` rust
+{{< include c05/division/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=fn%20main%28%29%20%7B%0A%20%20%20%20let%20a%20%3D%207%3B%0A%20%20%20%20let%20b%20%3D%202%3B%0A%0A%20%20%20%20let%20resultado1%20%3D%20a%20/%20b%3B%0A%20%20%20%20println%21%28%22Divisi%C3%B3n%20entera%20entera%20entre%20%7B%7D%20y%20%7B%7D%3A%20%7B%7D%22%2Ca%2Cb%2Cresultado1%29%3B%0A%0A%20%20%20%20let%20resultado2%20%3D%20a%20as%20f64%20/%20b%20as%20f64%3B%0A%20%20%20%20println%21%28%22Divisi%C3%B3n%20real%20entre%20%7B%7D%20y%20%7B%7D%3A%20%7B%7D%22%2Ca%2Cb%2Cresultado2%29%3B%0A%7D%0A)
+
+:::
+
+
+No basta con asignar el resultado a una variable real: la
+división se realiza antes de la asignación. Por tanto, si los dos
+operandos son enteros, se realiza una división entera, aunque el
+resultado se quiera almacenar en una variable de tipo `f64`. Hay
+que convertir los operandos antes de efectuar la operación.
+
 ## Mutables e inmutables
 
 Comenzaremos por repasar dos ideas previas:

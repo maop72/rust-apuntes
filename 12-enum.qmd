@@ -12,7 +12,7 @@ frecuencia tanto en programas escritos por el usuario como en la
 propia biblioteca estándar de Rust. En este capítulo estudiaremos
 cómo definir `enum` y crear valores de este tipo. En el
 @sec-patrones veremos cómo trabajar con ellos mediante `match`,
-en la @sec-enum-option estudiaremos el enumerado `Option` y en el
+en la @sec-enum-option estudiaremos el enumerado `Option` y en la
 @sec-enum-result, el enumerado `Result<T, E>`.
 
 ## Definición
