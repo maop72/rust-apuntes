@@ -286,7 +286,8 @@ otras más costosas.
 
 En una cola con prioridades puede ocurrir un problema conocido
 como inanición (*starvation*). Se produce cuando un elemento de
-baja prioridad espera durante mucho tiempo porque continuamente
+baja prioridad espera durante demasiado tiempo, o
+incluso espera indefinidamente porque continuamente
 aparecen elementos de mayor prioridad.
 
 Una conocida anécdota aparece en el libro *Operating System
