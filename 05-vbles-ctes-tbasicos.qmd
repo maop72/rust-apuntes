@@ -359,9 +359,7 @@ También existe el trait `From`, que permiten realizar
 conversiones que están garantizadas para cualquier valor del tipo
 de origen. Para poder utilizarlo, Rust debe disponer de una
 implementación de la conversión correspondiente; si no existe, el
-programa no compila.
-
-Por ejemplo:
+programa no compila. Por ejemplo:
 
 
 ``` rust
@@ -411,7 +409,8 @@ que convertir los operandos antes de efectuar la operación.
 
 ## Mutables e inmutables
 
-Comenzaremos por repasar dos ideas previas:
+Antes de tratar la mutabilidad e inmutabilidad en Rust, 
+comenzaremos por repasar dos ideas previas:
 
 - Tiempo de compilación (*compile time*): fase en la que el
   compilador analiza y traduce el código fuente a código máquina

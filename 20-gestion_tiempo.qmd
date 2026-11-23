@@ -84,7 +84,8 @@ transcurrido al finalizar.
 La función `Instant::now()` obtiene el instante inicial. Su
 representación interna depende del sistema y, cuando se muestra
 con `{:?}`, produce un valor que no se corresponde con la fecha y
-hora del reloj de pared, que es la que normalmente usamos las personas.
+hora del reloj de pared, que es la que normalmente usamos las
+personas.
 
 El método `elapsed()` devuelve el tiempo transcurrido desde ese
 instante, representado mediante un valor de tipo `Duration`.
@@ -114,16 +115,23 @@ absoluta que podamos guardar y utilizar como fecha de un evento.
 
 ## Hora del reloj de pared (`SystemTime`)
 
+Representa un instante del tiempo real, el que usamos todos los
+humanos, asociado al calendario.
+
 Cuando necesitamos conocer la fecha y hora en que se produce un
 suceso, Rust proporciona el tipo `SystemTime`, definido en el
-módulo `std::time`.
+módulo `std::time`. Sin embargo, `SystemTime` no dispone de
+métodos para convertir directamente un instante en una fecha y
+hora legibles. Para ello podemos utilizar bibliotecas externas,
+como `chrono`, que permite obtener la hora local y formatearla de
+distintas maneras.
 
-Sin embargo, `SystemTime` no dispone de métodos para convertir
-directamente un instante en una fecha y hora legibles. Para ello
-podemos utilizar bibliotecas externas, como `chrono`, que permite
-obtener la hora local y formatearla de distintas maneras. El
-siguiente ejemplo muestra la fecha y hora actuales en un formato
-habitual y en formato ISO 8601:
+### Formatos legibles
+
+La forma más habitual de representar la hora es con formatos
+legibles para las personas: día, mes, año, etc. El siguiente
+ejemplo muestra la fecha y hora actuales mediante una cadena de
+formato personalizada y en formato ISO 8601:
 
 ``` rust
 use chrono::Local;
@@ -166,6 +174,56 @@ manualmente la siguiente sección al fichero `Cargo.toml`:
 chrono = "0.4"
 ```
 
+### Hora Unix
+
+La hora Unix (*Unix time* o *Unix timestamp*) es una forma de
+representar un instante mediante un número entero: los segundos
+transcurridos desde el 1 de enero de 1970 a las 00:00:00 UTC,
+conocido como *Unix epoch*.
+
+Puede resultar extraño incluirla en el apartado de reloj de
+pared, puesto que no es un formato que utilicen los relojes
+convencionales. Sin embargo, representa exactamente el mismo
+tiempo, simplemente expresado de otra manera. Podemos comprobarlo
+en páginas web como [unixtime.io](https://unixtime.io/), que
+permiten convertir entre la hora Unix y las fechas y horas
+convencionales.
+
+Esta representación resulta especialmente útil para almacenar
+fechas, compararlas o calcular el tiempo transcurrido entre dos
+sucesos. Las fechas convencionales, con meses de 28, 29, 30 o 31
+días, hacen bastante complejas operaciones que deberían ser
+sencillas, como sumar 90 días a una fecha. Con la hora Unix,
+estas operaciones se reducen a simples operaciones aritméticas
+sobre números enteros.
+
+Rust permite obtener la hora Unix utilizando únicamente la
+biblioteca estándar. Para ello, disponemos de la constante
+`UNIX_EPOCH`, que representa el instante inicial, y del método
+`duration_since()`, que calcula el tiempo transcurrido desde
+dicho instante.
+
+El siguiente ejemplo muestra cómo obtener la hora Unix actual:
+
+
+``` rust
+{{< include c20/unix_time/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Atime%3A%3A%7BSystemTime%2C%20UNIX_EPOCH%7D%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20ahora%20%3D%20SystemTime%3A%3Anow%28%29%3B%0A%0A%20%20%20%20let%20segundos%20%3D%20ahora%0A%20%20%20%20%20%20%20%20.duration_since%28UNIX_EPOCH%29%0A%20%20%20%20%20%20%20%20.unwrap%28%29%0A%20%20%20%20%20%20%20%20.as_secs%28%29%3B%0A%0A%20%20%20%20println%21%28%22Hora%20Unix%3A%20%7B%7D%22%2C%20segundos%29%3B%0A%7D%0A)
+
+:::
+
+
+El método `duration_since()` devuelve un valor de tipo `Result`,
+ya que técnicamente el reloj del sistema podría indicar un
+instante anterior al *Unix epoch*. En ese caso se produciría un
+error. En este ejemplo utilizamos `unwrap()` para obtener
+directamente el resultado, suponiendo que el reloj está
+correctamente configurado.
+
 ## Resumen
 
 En Rust podemos trabajar con el tiempo de distintas maneras,
@@ -177,10 +235,10 @@ según las necesidades del programa:
   `std::time`, permite medir el tiempo transcurrido entre dos
   instantes. El resultado se representa mediante un valor de tipo
   `Duration`.
-- Hora del reloj de pared: el tipo `SystemTime`, también del módulo
-  `std::time`, permite obtener un instante del reloj del sistema.
-  Para convertirlo en una fecha y hora legibles podemos utilizar
-  bibliotecas externas, como `chrono`.
+- Hora del reloj de pared: el tipo `SystemTime`, también del
+  módulo `std::time`, permite obtener un instante del reloj del
+  sistema. Para convertirlo en una fecha y hora legibles podemos
+  utilizar bibliotecas externas, como `chrono`.
 
 Es importante distinguir entre ordenar sucesos, medir cuánto
 tiempo transcurre y conocer la fecha y hora en que ocurre un
