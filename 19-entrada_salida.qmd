@@ -127,12 +127,21 @@ fallará porque el fichero escrito en una ejecución anterior no se
 conserva. Cada ejecución tiene lugar en un entorno temporal e
 independiente.
 
+
 ## Propagación de errores en E/S.
 
 En los ejemplos anteriores hemos utilizado el método `expect()`
-para finalizar el programa cuando se produce un error. Como vimos
-en @sec-question-mark, otra posibilidad consiste en propagar el
-error al código que llamó a la función mediante el operador `?`.
+para finalizar el programa cuando se produce un error. Sin embargo,
+en muchas ocasiones es preferible que una función no decida qué
+hacer cuando se produce un error, sino que lo comunique a quien
+la ha llamado.
+Como vimos en la @sec-question-mark, podemos utilizar el operador `?`
+para propagar un error al código que llamó a la función.
+
+Consideremos el siguiente ejemplo, en el que definimos una función
+`leer_fichero()` que recibe el nombre de un fichero y devuelve
+su contenido:
+
 
 ``` rust
 {{< include c19/lectura02/src/main.rs >}}
@@ -140,25 +149,38 @@ error al código que llamó a la función mediante el operador `?`.
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0A%0Afn%20main%28%29%20-%3E%20io%3A%3AResult%3C%28%29%3E%20%7B%0A%20%20%20%20let%20contenido%20%3D%20fs%3A%3Aread_to_string%28%22/tmp/mensaje.txt%22%29%3F%3B%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20contenido%29%3B%0A%20%20%20%20Ok%28%28%29%29%0A%7D%0A%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0A%0Afn%20leer_fichero%28nombre%3A%20%26str%29%20-%3E%20io%3A%3AResult%3CString%3E%20%7B%0A%20%20%20%20let%20contenido%20%3D%20fs%3A%3Aread_to_string%28nombre%29%3F%3B%0A%20%20%20%20Ok%28contenido%29%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20nombre%20%3D%20%22/tmp/mensaje.txt%22%3B%0A%0A%20%20%20%20match%20leer_fichero%28nombre%29%20%7B%0A%20%20%20%20%20%20%20%20Ok%28contenido%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22Contenido%20del%20fichero%3A%22%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20print%21%28%22%7B%7D%22%2C%20contenido%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20Err%28error%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22No%20se%20pudo%20leer%20el%20fichero%3A%20%7B%7D%22%2C%20error%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A)
 
 :::
 
-El operador `?` se aplica sobre un valor de tipo `Result`. Si la
-operación tiene éxito, extrae el valor contenido en `Ok` y la
-ejecución continúa normalmente. Si se produce un error, la
-función finaliza inmediatamente devolviendo dicho error.
 
-Es importante recordar que una función solo puede utilizar el
-operador `?` si devuelve un tipo de error compatible con el de la
-operación que está realizando. En este ejemplo,
-`read_to_string()` devuelve un `io::Result<String>`, por lo que
-`main()` debe devolver también un `io::Result<()>` (o un tipo
-compatible).
+La función `read_to_string()` devuelve un `io::Result<String>`.
+Si la lectura tiene éxito, el operador `?` extrae el contenido
+del valor `Ok` y la ejecución continúa. Si se produce un error,
+la función `leer_fichero()` finaliza inmediatamente y devuelve
+dicho error.
 
-En otro caso, el compilador produciría un error. Este es uno de
-los problemas más habituales cuando se comienza a utilizar el
-operador `?`.
+Por tanto, `leer_fichero()` también debe devolver un `Result`
+compatible con el de la operación que está realizando. En este
+caso, devuelve `io::Result<String>`, que es una forma abreviada de
+escribir `Result<String, io::Error>`.
+
+Por su parte, `main()` recibe el resultado de la llamada y utiliza
+`match` para distinguir entre los dos casos posibles:
+
+- `Ok(contenido)`: la lectura ha tenido éxito y podemos procesar
+  el contenido del fichero.
+- `Err(error)`: se ha producido un error y podemos tratarlo
+  adecuadamente.
+
+Es importante recordar que el operador `?` solo puede utilizarse
+en funciones que devuelvan un tipo `Result` (o `Option`)
+compatible con el de la operación. Si intentásemos utilizarlo
+directamente en `main()`, que en este ejemplo devuelve `()`,
+el compilador produciría un error.
+
+
+
 
 ## Resumen
 

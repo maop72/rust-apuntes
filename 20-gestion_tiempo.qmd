@@ -165,7 +165,6 @@ cargo add chrono
 
 Cargo añadirá la dependencia al fichero `Cargo.toml` y descargará
 la biblioteca cuando sea necesario compilar el proyecto.
-
 Si no disponemos del subcomando `cargo add`, podemos añadir
 manualmente la siguiente sección al fichero `Cargo.toml`:
 

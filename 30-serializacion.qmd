@@ -103,7 +103,7 @@ reglas adicionales para delimitar o escapar esos caracteres.
 
 ### CSV
 
-Uno de los formatos más conocidos de este tipo es CSV
+Uno de los formatos tradicionales más conocido es CSV
 (*Comma-Separated Values*). Su uso se extendió especialmente
 durante las décadas de 1970 y 1980, con la popularización de las
 hojas de cálculo y las aplicaciones de gestión de datos. Permite
@@ -469,7 +469,7 @@ ausencia de un valor.
 }
 ```
 
-### Objetos
+### Objetos {#sec-objetos_json}
 
 Un objeto es una colección de pares formados por un nombre y un
 valor. Los nombres, también denominados claves, son cadenas de
@@ -683,59 +683,32 @@ reconstruye la estructura a partir de él.
 
 Una vez que nuestras estructuras implementan el trait
 `Serialize`, podemos convertir sus valores a una representación
-JSON.
+JSON. La biblioteca `serde_json` proporciona varias funciones
+para ello. Las principales son:
 
-La biblioteca `serde_json` proporciona varias funciones para
-ello. La más sencilla es `to_string`, que recibe una referencia a
-un valor y devuelve una cadena con su representación JSON.
+- `to_string`, que recibe una referencia a un valor y devuelve
+  una cadena de una sola línea con su representación JSON.
+
+- `to_string_pretty`, muy similar a la anterior pero que devuelve
+  una representación menos compacta pero más legible, con
+  espacios y saltos de línea
 
 Por ejemplo:
 
 ``` rust
-use serde::Serialize;
-
-#[derive(Serialize)]
-struct Interfaz {
-    nombre: String,
-    mtu: u32,
-    activa: bool,
-}
-
-fn main() {
-    let interfaz = Interfaz {
-        nombre: String::from("eth0"),
-        mtu: 1500,
-        activa: true,
-    };
-
-    match serde_json::to_string(&interfaz) {
-        Ok(json) => println!("{}", json),
-        Err(error) => println!("Error al serializar: {}", error),
-    }
-}
+{{< include c30/serialize/src/main.rs >}}
 ```
 
-La salida será:
+::: {.text-end .small}
 
-``` json
-{"nombre":"eth0","mtu":1500,"activa":true}
-```
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20serde%3A%3ASerialize%3B%0Ause%20serde_json%3A%3Ato_string_pretty%3B%0A%0A%23%5Bderive%28Serialize%29%5D%0Astruct%20Interfaz%20%7B%0A%20%20%20%20nombre%3A%20String%2C%0A%20%20%20%20mtu%3A%20u32%2C%0A%20%20%20%20activa%3A%20bool%2C%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20interfaz%20%3D%20Interfaz%20%7B%0A%20%20%20%20%20%20%20%20nombre%3A%20String%3A%3Afrom%28%22eth0%22%29%2C%0A%20%20%20%20%20%20%20%20mtu%3A%201500%2C%0A%20%20%20%20%20%20%20%20activa%3A%20true%2C%0A%20%20%20%20%7D%3B%0A%0A%20%20%20%20match%20to_string_pretty%28%26interfaz%29%20%7B%0A%20%20%20%20%20%20%20%20Ok%28json%29%20%3D%3E%20println%21%28%22%7B%7D%22%2C%20json%29%2C%0A%20%20%20%20%20%20%20%20Err%28error%29%20%3D%3E%20println%21%28%22Error%20al%20serializar%3A%20%7B%7D%22%2C%20error%29%2C%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
 
 Observamos que los campos de la estructura Rust se convierten en
 propiedades de un objeto JSON, conservando sus nombres y valores.
 
-Si queremos obtener una representación más legible, con espacios
-y saltos de línea, podemos utilizar `to_string_pretty` en lugar
-de `to_string`:
-
-``` rust
-match serde_json::to_string_pretty(&interfaz) {
-    Ok(json) => println!("{}", json),
-    Err(error) => println!("Error al serializar: {}", error),
-}
-```
-
-Ambas funciones devuelven un valor de tipo
+El resultado es un valor de tipo
 `Result<String, serde_json::Error>`. Si la operación tiene éxito,
 obtenemos la cadena JSON en la variante `Ok`. Si se produce un
 error, recibimos información sobre él en la variante `Err`.
@@ -744,24 +717,177 @@ También podemos serializar colecciones y estructuras anidadas.
 Por ejemplo, un `Vec<Interfaz>` se convierte en un array JSON
 cuyos elementos son objetos.
 
-### Deserialización
+### Deserialización a estructuras definidas
 
-### Lectura y escritura de ficheros
+La operación inversa a la serialización consiste en reconstruir
+una estructura de datos Rust a partir de una representación JSON.
+Para ello utilizaremos el trait `Deserialize`.
 
-### Otros formatos
+La biblioteca `serde_json` proporciona la función `from_str`, que
+recibe una cadena con un documento JSON y devuelve el valor
+correspondiente al tipo de datos indicado. Por ejemplo, podemos
+recuperar una estructura `Interfaz` a partir de una cadena:
 
-## Consideraciones y limitaciones
+``` rust
+{{< include c30/deserialize/src/main.rs >}}
+```
 
-### Correspondencia entre los tipos de Rust y los formatos externos
+::: {.text-end .small}
 
-### Campos opcionales y valores nulos
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20serde%3A%3ADeserialize%3B%0A%0A%23%5Bderive%28Debug%2C%20Deserialize%29%5D%0Astruct%20Interfaz%20%7B%0A%20%20%20%20nombre%3A%20String%2C%0A%20%20%20%20mtu%3A%20u32%2C%0A%20%20%20%20activa%3A%20bool%2C%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20json%20%3D%20r%23%22%0A%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%22nombre%22%3A%20%22eth0%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%22mtu%22%3A%201500%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%22activa%22%3A%20true%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%22%23%3B%0A%0A%20%20%20%20match%20serde_json%3A%3Afrom_str%3A%3A%3CInterfaz%3E%28json%29%20%7B%0A%20%20%20%20%20%20%20%20Ok%28interfaz%29%20%3D%3E%20println%21%28%22%7B%3A%3F%7D%22%2C%20interfaz%29%2C%0A%20%20%20%20%20%20%20%20Err%28error%29%20%3D%3E%20println%21%28%22Error%20al%20deserializar%3A%20%7B%7D%22%2C%20error%29%2C%0A%20%20%20%20%7D%0A%7D%0A%0A)
 
-### Campos desconocidos y campos ausentes
+:::
 
-### Diferencias entre formatos
+En este ejemplo utilizamos `r#"... "#` para definir una cadena
+literal (*raw string*), evitando tener que escapar las comillas
+dobles del documento JSON.
 
-### Información que puede perderse durante una conversión
+El operador `::<Interfaz>` indica el tipo de dato que queremos
+obtener. Serde utiliza esa información para reconstruir la
+estructura, asociando cada propiedad JSON con el campo
+correspondiente.
 
-### Compatibilidad entre versiones de las estructuras de datos
+La función devuelve un `Result`, ya que pueden producirse errores
+si el documento JSON tiene una sintaxis incorrecta o si sus datos
+no son compatibles con la estructura Rust indicada.
 
-## Resumen
+Para que la deserialización tenga éxito, los campos deben tener
+tipos compatibles con los valores recibidos. Por ejemplo, no
+podemos recuperar un número entero en un campo de tipo `bool`.
+
+También podemos deserializar colecciones y estructuras anidadas,
+siempre que sus tipos implementen `Deserialize`.
+
+### Deserialización a un HashMap
+
+Como hemos visto en la @sec-objetos_json, los objetos JSON están
+formados por una colección de pares clave-valor, un concepto muy
+similar al de los `HashMap` de Rust. Podemos deserializar
+directamente uno en el otro.
+
+Para ello, utilizaremos un `HashMap<String, Value>`. Las claves
+serán cadenas (`String`) y los valores serán de tipo `Value`, lo
+que permite almacenar datos de cualquiera de los tipos admitidos
+por JSON. Por ejemplo:
+
+``` rust
+{{< include c30/deser_hash/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20serde_json%3A%3AValue%3B%0Ause%20std%3A%3Acollections%3A%3AHashMap%3B%0A%0Afn%20procesar%28datos%3A%20HashMap%3CString%2C%20Value%3E%29%20%7B%0A%20%20%20%20for%20%28clave%2C%20valor%29%20in%20%26datos%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%3A%20%7B%7D%22%2C%20clave%2C%20valor%29%3B%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20json%20%3D%20r%23%22%0A%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%22nombre%22%3A%20%22eth0%22%2C%0A%20%20%20%20%20%20%20%20%22mtu%22%3A%201500%2C%0A%20%20%20%20%20%20%20%20%22activa%22%3A%20true%0A%20%20%20%20%7D%0A%20%20%20%20%22%23%3B%0A%0A%20%20%20%20match%20serde_json%3A%3Afrom_str%3A%3A%3CHashMap%3CString%2C%20Value%3E%3E%28json%29%20%7B%0A%20%20%20%20%20%20%20%20Ok%28datos%29%20%3D%3E%20procesar%28datos%29%2C%0A%20%20%20%20%20%20%20%20Err%28error%29%20%3D%3E%20println%21%28%22Error%20al%20deserializar%3A%20%7B%7D%22%2C%20error%29%2C%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+En este ejemplo, `serde_json` construye directamente el `HashMap`
+durante la deserialización. No necesitamos conocer previamente
+las claves del objeto ni los tipos de sus valores.
+
+Podemos acceder a los elementos mediante sus claves o recorrer el
+mapa para procesar todas sus entradas. Naturalmente, los valores
+pueden ser también objetos o arrays JSON, por lo que podemos
+encontrar estructuras anidadas.
+
+### Deserialización a un valor JSON genérico
+
+En los ejemplos anteriores hemos deserializado el documento JSON,
+pero partiendo de ciertas presunciones sobre su contenido:
+
+- O bien que se correspondería con una estructura (`struct`)
+  concreta, completamente detallada en el código fuente.
+
+- O bien que sería un objeto JSON (una colección de pares
+  clave-valor, y no, por ejemplo, una lista o una cadena).
+
+Sin embargo, en ocasiones podemos necesitar procesar documentos
+JSON cuyo contenido desconocemos por completo o que puede variar.
+Esto es posible porque el tipo `Value` puede representar
+cualquiera de los tipos de datos admitidos por JSON: cadenas,
+números, valores booleanos, valores nulos, objetos y arrays.
+
+Además, el tipo `Value` proporciona una serie de métodos para
+comprobar cuál es el tipo de valor:
+
+| Método         | Comprueba si el valor es... |
+|:---------------|:----------------------------|
+| `is_object()`  | Un objeto                   |
+| `is_array()`   | Un array                    |
+| `is_string()`  | Una cadena                  |
+| `is_number()`  | Un número                   |
+| `is_boolean()` | Un booleano                 |
+| `is_null()`    | Nulo                        |
+
+Este enfoque ofrece mayor flexibilidad, pero renuncia a parte de
+las garantías del tipado estático: el compilador no puede
+comprobar que una propiedad exista o que contenga un valor del
+tipo esperado. Es responsabilidad del programa realizar esas
+comprobaciones durante la ejecución.
+
+Esto permite escribir programas que inspeccionen documentos JSON
+sin conocer previamente su estructura, como hace el siguiente
+ejemplo:
+
+``` rust
+{{< include c30/recursivo/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20serde_json%3A%3AValue%3B%0A%0Afn%20procesar%28valor%3A%20%26Value%2C%20nivel%3A%20usize%29%20%7B%0A%20%20%20%20let%20indentacion%20%3D%20%22%20%20%22.repeat%28nivel%29%3B%0A%0A%20%20%20%20if%20valor.is_null%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7DValor%20nulo%22%2C%20indentacion%29%3B%0A%0A%20%20%20%20%7D%20else%20if%20let%20Some%28b%29%20%3D%20valor.as_bool%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7DBooleano%3A%20%7B%7D%22%2C%20indentacion%2C%20b%29%3B%0A%0A%20%20%20%20%7D%20else%20if%20let%20Some%28n%29%20%3D%20valor.as_number%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7DN%C3%BAmero%3A%20%7B%7D%22%2C%20indentacion%2C%20n%29%3B%0A%0A%20%20%20%20%7D%20else%20if%20let%20Some%28cadena%29%20%3D%20valor.as_str%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7DCadena%3A%20%7B%7D%22%2C%20indentacion%2C%20cadena%29%3B%0A%0A%20%20%20%20%7D%20else%20if%20let%20Some%28array%29%20%3D%20valor.as_array%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7DArray%20%28%7B%7D%20elementos%29%3A%22%2C%20indentacion%2C%20array.len%28%29%29%3B%0A%0A%20%20%20%20%20%20%20%20for%20elemento%20in%20array%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20procesar%28elemento%2C%20nivel%20%2B%201%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%7D%20else%20if%20let%20Some%28objeto%29%20%3D%20valor.as_object%28%29%20%7B%0A%20%20%20%20%20%20%20%20println%21%28%22%7B%7DObjeto%20%28%7B%7D%20propiedades%29%3A%22%2C%20indentacion%2C%20objeto.len%28%29%29%3B%0A%0A%20%20%20%20%20%20%20%20for%20%28clave%2C%20valor%29%20in%20objeto%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20println%21%28%22%7B%7D%7B%7D%3A%22%2C%20indentacion%2C%20clave%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20procesar%28valor%2C%20nivel%20%2B%201%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20json%20%3D%20r%23%22%0A%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%22nombre%22%3A%20%22eth0%22%2C%0A%20%20%20%20%20%20%20%20%22mtu%22%3A%201500%2C%0A%20%20%20%20%20%20%20%20%22activa%22%3A%20true%2C%0A%20%20%20%20%20%20%20%20%22direcciones%22%3A%20%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20%22192.168.1.10%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%22fe80%3A%3A1%22%0A%20%20%20%20%20%20%20%20%5D%2C%0A%20%20%20%20%20%20%20%20%22configuracion%22%3A%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%22automatica%22%3A%20false%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%22prioridad%22%3A%202%0A%20%20%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%20%20%22observaciones%22%3A%20null%0A%20%20%20%20%7D%0A%20%20%20%20%22%23%3B%0A%0A%20%20%20%20let%20datos%3A%20Value%20%3D%20serde_json%3A%3Afrom_str%28json%29.unwrap%28%29%3B%0A%0A%20%20%20%20procesar%28%26datos%2C%200%29%3B%0A%7D%0A)
+
+:::
+
+- La función `procesar` recibe un valor JSON y lo analiza para
+  determinar cuál de sus seis tipos contiene.
+- Si es un valor simple (cadena, número, booleano o nulo),
+  muestra su contenido.
+- Si es un objeto, recorre sus propiedades, mostrando cada clave
+  y procesando recursivamente su valor.
+- Si es un array, recorre sus elementos y los procesa
+  recursivamente.
+- El parámetro `nivel` indica la profundidad a la que se
+  encuentra el elemento dentro de la estructura. Se utiliza para
+  controlar la indentación de la salida.
+- La expresión `"  ".repeat(nivel)` genera una cadena formada por
+  dos espacios repetidos tantas veces como indica `nivel`. Es una
+  forma sencilla de construir la indentación sin necesidad de
+  concatenar espacios manualmente.
+- La función `main` deserializa el documento JSON a un valor
+  `Value` y llama a `procesar` para comenzar su recorrido.
+
+# Resumen
+
+- La serialización consiste en convertir estructuras de datos en
+  una representación que pueda almacenarse o transmitirse. La
+  deserialización realiza la operación inversa.
+
+- JSON es un formato de intercambio de datos que permite
+  representar seis tipos de valores: cadenas, números, booleanos,
+  valores nulos, objetos y arrays. Los objetos y arrays pueden
+  anidarse para representar estructuras complejas.
+
+- Serde es una biblioteca de Rust que proporciona mecanismos
+  comunes de serialización y deserialización. Los traits
+  `Serialize` y `Deserialize` permiten realizar estas
+  operaciones, y se pueden implementar automáticamente mediante
+  `derive`.
+
+- La biblioteca `serde_json` permite trabajar con documentos
+  JSON:
+
+  - `to_string` y `to_string_pretty` convierten valores Rust en
+    cadenas JSON.
+  - `from_str` permite reconstruir valores Rust a partir de una
+    cadena JSON.
+
+- Podemos deserializar documentos JSON directamente a estructuras
+  (`struct`) o colecciones como `HashMap<String, Value>`, siempre
+  que sus tipos implementen `Deserialize`.
+
+- El tipo `Value` permite representar cualquier valor JSON sin
+  conocer previamente su estructura. Proporciona métodos para
+  comprobar el tipo de valor y acceder a su contenido. Esto
+  permite procesar documentos JSON de estructura desconocida o
+  variable, aunque obliga a realizar comprobaciones durante la
+  ejecución.
