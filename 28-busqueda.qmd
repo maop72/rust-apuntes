@@ -201,7 +201,7 @@ $`\lceil x \rceil`$, denominada *techo* (*ceil*), redondea un
 número al entero superior o lo deja igual si ya es entero.
 
 O dicho de otro modo: en el peor caso necesita 7 preguntas, pues
-$`2^6 = 64 < 100 < 128 = 2^7`$
+$2^6 = 64 < 100 < 128 = 2^7$
 
 ``` rust
 {{< include c28/binaria/src/main.rs >}}
