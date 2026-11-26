@@ -83,7 +83,7 @@ En los siguientes apartados estudiaremos otras estructuras de
 datos que permiten realizar búsquedas más rápidas.
 
 ![Representación de una tabla de símbolos implementada con un
-vector.](figs/tabla_simbolos_vector){#fig-tabla_simbolos_vector}
+vector.](figs/tabla_simbolos_vector.png){#fig-tabla_simbolos_vector}
 
 ## Árboles binarios de búsqueda
 
