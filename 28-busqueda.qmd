@@ -33,14 +33,12 @@ recuperarla a partir de una clave. Por ejemplo, un programa de
 administración de una red puede mantener una tabla con las
 direcciones IP de los equipos y sus nombres.
 
-
 | Dirección IP (Clave) | Nombre del equipo (Valor) |
-| :--- | :--- |
-| 192.168.1.10 | pc1 |
-| 192.168.1.20 | pc2 |
-| 192.168.1.30 | servidor |
-| 192.168.1.40 | router |
-
+|:---------------------|:--------------------------|
+| 192.168.1.10         | pc1                       |
+| 192.168.1.20         | pc2                       |
+| 192.168.1.30         | servidor                  |
+| 192.168.1.40         | router                    |
 
 Una tabla de símbolos permite recuperar la información asociada a
 una clave sin necesidad de conocer previamente dónde está
@@ -132,13 +130,30 @@ Si buscamos `65`, pasamos de `50` a `70`, después a `60` y
 finalmente al hijo derecho de `60`, que está vacío. La clave no
 se encuentra en el árbol.
 
+
 ### Eficiencia
 
-La eficiencia de la búsqueda depende de la forma del árbol. Si
-está razonablemente equilibrado, la búsqueda puede ser mucho más
-rápida que en un vector sin ordenar. Sin embargo, si las claves
-se insertan en un orden desfavorable, el árbol puede degenerar y
-comportarse como una lista.
+La eficiencia de la búsqueda depende de la forma del árbol y,
+en particular, de su altura. En el ejemplo anterior, las claves
+se han insertado intencionadamente en un orden muy favorable,
+que da lugar a un árbol equilibrado. En la práctica, no tiene
+por qué suceder así.
+
+
+- Si el árbol está razonablemente equilibrado, la búsqueda
+  tiene un coste $O(\log n)$, por lo que puede ser mucho más
+  rápida que en un vector sin ordenar, $O(n)$.
+
+- Sin embargo, esto no tiene por qué suceder así. Si las claves
+  se insertan en un orden desfavorable, el árbol puede degenerar
+  y comportarse como una lista. En ese caso, la búsqueda tiene
+  un coste $O(n)$.
+
+- Si es importante mantener búsquedas eficientes, se pueden
+  utilizar árboles autoequilibrados, que reorganizan el árbol
+  durante las inserciones y eliminaciones para mantener una
+  altura razonablemente pequeña. Esto tiene un coste adicional.
+
 
 ## Búsqueda binaria
 
@@ -379,8 +394,8 @@ buscar elementos, pero utilizan métodos diferentes.
 
 En términos generales, sus características son las siguientes:
 
-| Estructura | Búsqueda | Principal limitación |
-|----|----|----|
-| Vector sin ordenar | Recorrido secuencial | Puede ser lenta con muchos elementos |
-| Árbol binario de búsqueda | Comparaciones sucesivas | Depende de la forma del árbol |
-| Tabla hash | Cálculo de una posición | Hay que resolver las colisiones |
+| Estructura                | Búsqueda                | Principal limitación                 |
+|---------------------------|-------------------------|--------------------------------------|
+| Vector sin ordenar        | Recorrido secuencial    | Puede ser lenta con muchos elementos |
+| Árbol binario de búsqueda | Comparaciones sucesivas | Depende de la forma del árbol        |
+| Tabla hash                | Cálculo de una posición | Hay que resolver las colisiones      |
