@@ -9,19 +9,19 @@ fn main() {
 
     // Recorremos claves y valores.
     for (protocolo, puerto) in tabla.iter() {
-        println!("{protocolo}: {puerto}");
+        println!("{}: {}",protocolo,puerto);
     }
     println!();
 
     // Recorremos únicamente las claves.
     for protocolo in tabla.keys() {
-        println!("{protocolo}");
+        println!("{}",protocolo);
     }
     println!();
 
     // Recorremos únicamente los valores.
     for puerto in tabla.values() {
-        println!("{puerto}");
+        println!("{}",puerto);
     }
     println!();
 }

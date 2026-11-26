@@ -286,7 +286,7 @@ def process_qmd_file(qmd_path, verbose=False):
 
             new_lines.append(new_line)
             changed = True
-            file_status = "updated"
+            file_status = "updated!"
 
             verbose_print(
                 verbose,

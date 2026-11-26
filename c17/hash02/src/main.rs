@@ -8,5 +8,5 @@ fn main() {
     contador.entry("HTTP").or_insert(443);
     contador.entry("SSH").or_insert(22);
 
-    println!("{contador:?}");
+    println!("{:?}",contador);
 }
