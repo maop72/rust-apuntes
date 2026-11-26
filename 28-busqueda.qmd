@@ -155,12 +155,10 @@ suceder así.
 
 Cuando los elementos de un vector están ordenados, podemos
 utilizar un algoritmo de búsqueda más eficiente que la búsqueda
-lineal: la búsqueda binaria.
-
-La idea consiste en comparar el elemento buscado con el elemento
-situado en el centro del intervalo de búsqueda. Si ambos
-coinciden, hemos terminado. Si no, podemos descartar la mitad del
-intervalo:
+lineal: la búsqueda binaria.  La idea consiste en comparar el 
+elemento buscado con el elemento situado en el centro del 
+intervalo de búsqueda. Si ambos coinciden, hemos terminado. Si 
+no, podemos descartar la mitad del intervalo:
 
 - Si el elemento buscado es menor que el elemento central,
   continuamos por la mitad izquierda.
@@ -231,13 +229,13 @@ entre 1 y 3.
 ### Complejidad
 
 En la búsqueda lineal, en el peor caso tenemos que examinar todos
-los elementos. Si el vector contiene (n) elementos, el número de
-comparaciones crece proporcionalmente a (n).
+los elementos, la complejidad es $O(n)$. Si el vector contiene $n$ elementos, el número de
+comparaciones crece proporcionalmente a $n$.
 
 En la búsqueda binaria, cada comparación reduce aproximadamente a
 la mitad el número de elementos que quedan por examinar. Por
 tanto, el número de comparaciones crece mucho más lentamente: es
-proporcional a ($\log_2 n$).
+proporcional a $\log_2 n$.
 
 Por ejemplo, para buscar en un millón de elementos, la búsqueda
 lineal puede necesitar un millón de comparaciones, mientras que
