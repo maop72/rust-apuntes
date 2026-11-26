@@ -75,9 +75,15 @@ de clave y valor en un vector.
   búsqueda crece proporcionalmente al tamaño del vector.
 
 Esta solución es sencilla, pero puede resultar poco eficiente
-cuando la tabla contiene muchos elementos. En los siguientes
-apartados estudiaremos otras estructuras de datos que permiten
-realizar búsquedas más rápidas.
+cuando la tabla contiene muchos elementos. La
+@fig-tabla_simbolos_vector muestra una representación de esta
+estuctura.
+
+En los siguientes apartados estudiaremos otras estructuras de
+datos que permiten realizar búsquedas más rápidas.
+
+![Representación de una tabla de símbolos implementada con un
+vector.](figs/tabla_simbolos_vector){#fig-tabla_simbolos_vector}
 
 ## Árboles binarios de búsqueda
 
@@ -117,17 +123,12 @@ un nuevo nodo.
 ### Ejemplo
 
 Supongamos que insertamos, en este orden, las claves
-`50, 30, 70, 20, 40, 60, 80`.
+`50, 30, 70, 20, 40, 60, 80`. La @fig-arbol_binario muestra una
+representación de esta estuctura.
 
-El árbol resultante es:
-
-``` text
-        50
-       /  \
-     30    70
-    / \    / \
-   20  40  60  80
-```
+![Representación de una tabla hash con resolución de colisiones
+mediante
+encadenamiento.](figs/arbol_binario.png){#fig-arbol_binario}
 
 Para buscar la clave `40`, comenzamos en `50`. Como `40` es
 menor, pasamos a la izquierda, al nodo `30`. Como `40` es mayor,
@@ -195,7 +196,7 @@ $`\lceil x \rceil`$, denominada *techo* (*ceil*), redondea un
 número al entero superior o lo deja igual si ya es entero.
 
 O dicho de otro modo: en el peor caso necesita 7 preguntas, pues
-(2^6 = 64 \< 100 \< 128 = 2^7)
+$`2^6 = 64 < 100 < 128 = 2^7`$
 
 ``` rust
 {{< include c28/binaria/src/main.rs >}}
@@ -267,7 +268,7 @@ Por ejemplo, si utilizamos una tabla de 10 posiciones y la
 función hash
 
 ``` math
-h(k) = k \bmod 10
+h(k) = k mod 10
 ```
 
 la clave `42` corresponde a la posición `2`, porque el resto de
@@ -306,17 +307,51 @@ posiciones, utilizando la función hash anterior.
 Calculamos las posiciones:
 
 - `12` corresponde a la posición `2`.
+
 - `25` corresponde a la posición `5`.
+
 - `32` corresponde a la posición `2`.
+
 - `18` corresponde a la posición `8`.
+
 - `42` corresponde a la posición `2`.
 
-Las claves `12`, `32` y `42` colisionan en la posición `2`.
-Utilizando encadenamiento, las tres se almacenan en la lista
-asociada a esa posición.
+- Las claves `12`, `32` y `42` colisionan en la posición `2`.
+  Utilizando encadenamiento, las tres se almacenan en la lista
+  asociada a esa posición.
 
-Para buscar la clave `32`, calculamos su posición, que es `2`, y
-buscamos dentro de la lista correspondiente.
+- Para buscar la clave `32`, calculamos su posición, que es `2`,
+  y buscamos dentro de la lista correspondiente.
+
+La @fig-hashmap muestra una representación de esta estuctura.
+
+![Representación de una tabla hash con resolución de colisiones
+mediante encadenamiento.](figs/hashmap.png){#fig-hashmap}
+
+### Implementaciones reales
+
+El ejemplo anterior es deliberadamente sencillo, para ilustrar
+mejor el concepto. En una implementación real de una tabla hash:
+
+- La función hash suele ser más sofisticada que una simple
+  operación módulo. Su objetivo es distribuir las claves de
+  manera uniforme. Por ejemplo, el [algoritmo
+  FNV-1a](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function)
+  calcula un hash recorriendo los bytes de la clave y
+  combinándolos mediante operaciones XOR y multiplicaciones por
+  una constante.
+
+- El número de posiciones de la tabla puede cambiar dinámicamente
+  a medida que se insertan elementos, para evitar que aumenten
+  demasiado las colisiones.
+
+- Existen diferentes estrategias para resolver las colisiones. El
+  encadenamiento mediante listas es una de ellas, pero no la
+  única.
+
+Por tanto, aunque las implementaciones concretas pueden ser muy
+diferentes, todas utilizan el mismo principio: calcular un hash a
+partir de la clave para determinar dónde buscar el elemento.
 
 ### Eficiencia
 
