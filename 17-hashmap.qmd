@@ -130,53 +130,6 @@ existe.
 
 :::
 
-## La API `entry()`
-
-En ocasiones es necesario realizar una operación distinta según
-que una clave exista o no en el `HashMap`. Por ejemplo, puede ser
-necesario insertar un valor únicamente si la clave no existe,
-inicializar un contador o modificar el valor asociado a una clave
-existente.
-
-Una posibilidad sería comprobar primero si la clave existe y, a
-continuación, actuar en consecuencia. Sin embargo, este enfoque
-no es el más eficiente, ya que obliga a buscar la misma clave dos
-veces: una para comprobar si existe y otra para insertar o
-modificar el valor.
-
-Para resolver este problema, `HashMap` proporciona la API
-`entry()`, que realiza una única búsqueda y permite actuar sobre
-la entrada correspondiente, tanto si la clave ya existe como si
-no.
-
-### El método `or_insert()`
-
-El método `or_insert()` se utiliza junto con `entry()`. Recibe un
-valor que se insertará únicamente si la clave indicada en
-`entry()` no existe previamente en el `HashMap`.
-
-- Si la clave ya existe, no sucede nada y el valor asociado se
-  conserva.
-
-- Si la clave no existe, se inserta un nuevo elemento con dicha
-  clave y el valor indicado.
-
-Este comportamiento resulta útil para inicializar valores sin
-tener que comprobar previamente si la clave existe.
-
-``` rust
-{{< include c17/hash02/src/main.rs >}}
-```
-
-::: {.text-end .small}
-
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Acollections%3A%3AHashMap%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20mut%20contador%20%3D%20HashMap%3A%3Anew%28%29%3B%0A%0A%20%20%20%20contador.insert%28%22HTTP%22%2C%20443%29%3B%0A%0A%20%20%20%20contador.entry%28%22HTTP%22%29.or_insert%28443%29%3B%0A%20%20%20%20contador.entry%28%22SSH%22%29.or_insert%2822%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%3A%3F%7D%22%2Ccontador%29%3B%0A%7D%0A)
-
-:::
-
-En este ejemplo, la clave `"HTTP"` ya existe, por lo que conserva
-el valor `443`. En cambio, la clave `"SSH"` no existía y se
-inserta con el valor `22`.
 
 ## Recorrido de un `HashMap`
 
@@ -249,8 +202,6 @@ Las ideas principales son las siguientes:
   biblioteca estándar.
 - El método `get()` devuelve un `Option<&V>`, por lo que es
   necesario tratar el caso en que la clave no exista.
-- La API `entry()` permite insertar o modificar valores de forma
-  eficiente sin realizar búsquedas repetidas.
 - Es posible recorrer un `HashMap` mediante un bucle `for`,
   obteniendo referencias a sus claves y valores.
 
