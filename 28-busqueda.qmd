@@ -139,12 +139,12 @@ lugar a un árbol equilibrado. En la práctica, no tiene por qué
 suceder así.
 
 - Si el árbol está razonablemente equilibrado, la búsqueda tiene
-  un coste $`O(\log n)`$, por lo que puede ser mucho más rápida
-  que en un vector sin ordenar, $`O(n)`$.
+  un coste $O(\log n)$, por lo que puede ser mucho más rápida
+  que en un vector sin ordenar, $O(n)$.
 
 - Si las claves se insertan en un orden desfavorable, el árbol
   puede degenerar y comportarse como una lista. En ese caso, la
-  búsqueda tiene un coste $`O(n)`$.
+  búsqueda tiene un coste $O(n)$.
 
 - Si es importante mantener búsquedas eficientes, se pueden
   utilizar árboles autoequilibrados, que reorganizan el árbol
@@ -196,8 +196,8 @@ valores posibles, hasta encontrar el número o detectar respuestas
 inconsistentes.
 
 En el peor caso necesita 7 preguntas, pues
-$`\lceil \log_2(100) \rceil = 7`$. La función
-$`\lceil x \rceil`$, denominada *techo* (*ceil*), redondea un
+$\lceil \log_2(100) \rceil = 7$. La función
+$\lceil x \rceil$, denominada *techo* (*ceil*), redondea un
 número al entero superior o lo deja igual si ya es entero.
 
 O dicho de otro modo: en el peor caso necesita 7 preguntas, pues
