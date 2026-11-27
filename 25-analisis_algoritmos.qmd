@@ -537,6 +537,9 @@ matemáticas del logaritmo. Basta con recordar esta idea:
 > Una complejidad `O(log n)` aparece habitualmente cuando en cada
 > paso podemos descartar aproximadamente la mitad de los datos.
 
+Podríamos afinar y especificar que el logaritmo es $\log_2$, pero
+en esta notación la base del logaritmo se ignora.
+
 ## Combinar operaciones
 
 Un algoritmo puede realizar varias operaciones con diferentes

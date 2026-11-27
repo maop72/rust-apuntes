@@ -111,7 +111,7 @@ función `std::fs::read_to_string()`.
 
 ::: {.text-end .small}
 
-[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Afs%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20contenido%20%3D%20fs%3A%3Aread_to_string%28%22/tmp/mensaje.txt%22%29%0A%20%20%20%20%20%20%20%20.expect%28%22Error%20al%20leer%20el%20fichero%22%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20contenido%29%3B%0A%7D%0A%0A)
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Afs%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20contenido%20%3D%20fs%3A%3Aread_to_string%28%22/tmp/mensaje.txt%22%29%0A%20%20%20%20%20%20%20%20.expect%28%22Error%20al%20leer%20el%20fichero%22%29%3B%0A%0A%20%20%20%20println%21%28%22%7B%7D%22%2C%20contenido%29%3B%0A%7D%0A)
 
 :::
 
@@ -127,6 +127,54 @@ fallará porque el fichero escrito en una ejecución anterior no se
 conserva. Cada ejecución tiene lugar en un entorno temporal e
 independiente.
 
+
+## Obtención de variables de entorno
+
+El ejemplo anterior lee un fichero desde un trayecto absoluto,
+`/tmp/mensaje.txt`. Habrá ocasiones en las que el fichero a leer
+tenga una dirección relativa al directorio personal (directorio
+*home*). Por ejemplo, `~/pst2/mensaje.txt`. La virgulilla (`~`)
+representa el directorio personal del usuario en Unix y Linux,
+pero lenguajes como Rust no la expanden automáticamente.
+
+Para obtener la dirección absoluta del directorio personal del
+usuario actual, es necesario leer la variable de entorno `HOME`.
+
+Las variables de entorno son cadenas de texto asociadas al entorno
+en el que se ejecuta un programa. Se utilizan habitualmente para
+proporcionar información de configuración, como directorios,
+opciones de ejecución o credenciales, sin necesidad de incluir
+estos valores directamente en el código fuente.
+
+En Rust, la función `std::env::var()` permite obtener el valor de
+una variable de entorno a partir de su nombre. Recibe una cadena
+con el nombre de la variable y devuelve un `Result<String,
+VarError>`.
+
+
+Por ejemplo, el siguiente programa obtiene el valor de la
+variable `HOME`:
+
+
+``` rust
+{{< include c19/vbles_entorno/src/main.rs >}}
+```
+
+::: {.text-end .small}
+
+[Ejecutar▶](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&code=use%20std%3A%3Aenv%3B%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20match%20env%3A%3Avar%28%22HOME%22%29%20%7B%0A%20%20%20%20%20%20%20%20Ok%28valor%29%20%3D%3E%20println%21%28%22HOME%20%3D%20%7Bvalor%7D%22%29%2C%0A%20%20%20%20%20%20%20%20Err%28error%29%20%3D%3E%20println%21%28%22Error%20al%20leer%20HOME%3A%20%7Berror%7D%22%29%2C%0A%20%20%20%20%7D%0A%7D%0A)
+
+:::
+
+
+El resultado es de tipo `Result` porque la lectura puede fallar,
+por ejemplo, si la variable no está definida o si su contenido
+no representa una cadena UTF-8 válida.
+
+En caso de éxito, se obtiene un valor `Ok` que contiene el
+contenido de la variable como un objeto `String`. En caso de
+error, se obtiene un valor `Err` que contiene información sobre
+el motivo del fallo.
 
 ## Propagación de errores en E/S.
 
